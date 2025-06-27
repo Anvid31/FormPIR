@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESS - Sistema de Formularios</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --success-hover: #047857;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --warning-color: #d97706;
+            --warning-hover: #b45309;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label.required::after {
+            content: " *";
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-input:disabled {
+            background-color: var(--gray-100);
+            color: var(--gray-500);
+            cursor: not-allowed;
+        }
+
+        /* File Upload Styles */
+        .file-upload-container {
+            position: relative;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            background: var(--gray-50);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-container:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .file-upload-container.dragover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-upload-content {
+            pointer-events: none;
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-container:hover .file-upload-icon {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .file-upload-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-hint {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .file-upload-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+            display: none;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .file-preview-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-preview-icon {
+            font-size: 2rem;
+            color: var(--success-color);
+        }
+
+        .file-preview-info {
+            flex: 1;
+        }
+
+        .file-preview-name {
+            font-weight: 500;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .file-preview-size {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .file-preview-remove {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-preview-remove:hover {
+            background: var(--danger-hover);
+            transform: scale(1.1);
+        }
+
+        /* Image Preview */
+        .image-preview {
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        .image-preview.show {
+            display: block;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            border: 2px solid var(--gray-200);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--gray-600);
+            border: 2px solid var(--gray-300);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: var(--gray-100);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--gray-200);
+        }
+
+        .table-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+            font-style: italic;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: rgba(5, 150, 105, 0.1);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            color: var(--success-color);
+        }
+
+        .alert-error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: var(--danger-color);
+        }
+
+        .alert-warning {
+            background: rgba(217, 119, 6, 0.1);
+            border: 1px solid rgba(217, 119, 6, 0.2);
+            color: var(--warning-color);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 2rem;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-step-number {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: var(--gray-300);
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .progress-step-number {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .progress-step.completed .progress-step-number {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .progress-step-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .progress-step.active .progress-step-label {
+            color: var(--primary-color);
+        }
+
+        .progress-step.completed .progress-step-label {
+            color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-clipboard-list"></i> DESS</h1>
+            <p>Sistema de Gestión de Formularios Técnicos</p>
+        </div>
+
+        <div class="progress-steps">
+            <div class="progress-step active" id="step1">
+                <div class="progress-step-number">1</div>
+                <div class="progress-step-label">Información General</div>
+            </div>
+            <div class="progress-step" id="step2">
+                <div class="progress-step-number">2</div>
+                <div class="progress-step-label">Datos Específicos</div>
+            </div>
+            <div class="progress-step" id="step3">
+                <div class="progress-step-number">3</div>
+                <div class="progress-step-label">Documentos</div>
+            </div>
+        </div>
+
+        <div id="alerts-container"></div>
+        
+        <!-- Indicador de conexión WebSocket -->
+        <div id="websocket-status" style="position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 0.5rem 1rem; border-radius: var(--border-radius); background: var(--gray-300); color: var(--gray-700); font-size: 0.875rem; display: none;">
+            <i class="fas fa-wifi" id="ws-icon"></i>
+            <span id="ws-text">Conectando...</span>
+        </div>
+        
+        <!-- Tabla de datos en tiempo real -->
+        <div id="realtime-data-section" class="form-section" style="display: none;">
+            <h2 class="section-title">
+                <i class="fas fa-database"></i>
+                Datos en Tiempo Real
+            </h2>
+            <div class="table-container">
+                <table class="table" id="realtime-table">
+                    <thead>
+                        <tr>
+                            <th>Campo 1</th>
+                            <th>Campo 2</th>
+                            <th>Campo 3</th>
+                            <th>Campo 4</th>
+                            <th>Campo 5</th>
+                            <th>Foto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-empty">
+                            <td colspan="7">
+                                <i class="fas fa-inbox"></i>
+                                No hay datos en tiempo real. Los datos aparecerán aquí automáticamente.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Formulario para agregar items en tiempo real -->
+            <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--border-radius); margin-top: 1rem;">
+                <h4 style="margin-bottom: 1rem; color: var(--gray-700);">Agregar Item en Tiempo Real</h4>
+                <form id="realtime-item-form">
+                    <div class="form-grid" style="grid-template-columns: repeat(5, 1fr);">
+                        <div class="form-group">
+                            <label class="form-label">Campo 1</label>
+                            <input type="text" id="rt_campo_1" class="form-input" placeholder="Valor 1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Campo 2</label>
+                            <input type="text" id="rt_campo_2" class="form-input" placeholder="Valor 2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Campo 3</label>
+                            <input type="text" id="rt_campo_3" class="form-input" placeholder="Valor 3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Campo 4</label>
+                            <input type="text" id="rt_campo_4" class="form-input" placeholder="Valor 4">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Campo 5</label>
+                            <input type="text" id="rt_campo_5" class="form-input" placeholder="Valor 5">
+                        </div>
+                    </div>
+                    <div class="button-group" style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Agregar Item
+                        </button>
+                        <button type="button" id="clear-rt-form" class="btn btn-outline">
+                            <i class="fas fa-eraser"></i>
+                            Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Sección 1: Información General -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                ESTRUCTURAS DE BAJA TENSIÓN
+            </h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label required">Fecha</label>
+                    <input type="date" id="fecha" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Cod. Usuario</label>
+                    <input type="text" id="cod_usuario" class="form-input" required placeholder="Código de usuario">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">E.P.S</label>
+                    <select id="eps" class="form-input" required>
+                        <option value="">Seleccionar EPS</option>
+                        <option value="Consigna">Consigna</option>
+                        <option value="Entrega">Entrega</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">T. Inv.</label>
+                    <select id="t_inv" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        <option value="I">I</option>
+                        <option value="II">II</option>
+                        <option value="III">III</option>
+                        <option value="IV">IV</option>
+                        <option value="V">V</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Municipio</label>
+                    <select id="municipio" class="form-input" required>
+                        <option value="">Seleccionar municipio</option>
+                        <option value="Medellín">Medellín</option>
+                        <option value="Bello">Bello</option>
+                        <option value="Itagüí">Itagüí</option>
+                        <option value="Envigado">Envigado</option>
+                        <option value="Sabaneta">Sabaneta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número X</label>
+                    <input type="number" id="numero_x" class="form-input" placeholder="1089777">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Regional</label>
+                    <select id="regional" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Ocaña">Ocaña</option>
+                        <option value="Norte">Norte</option>
+                        <option value="Sur">Sur</option>
+                        <option value="Oriente">Oriente</option>
+                        <option value="Occidente">Occidente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Dirección</label>
+                    <input type="text" id="direccion" class="form-input" required placeholder="Dirección completa">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número Y</label>
+                    <input type="number" id="numero_y" class="form-input" placeholder="1386035">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Alimentador</label>
+                    <select id="alimentador" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        <option value="OCAOCANA1">OCAOCANA1</option>
+                        <option value="OCAOCANA2">OCAOCANA2</option>
+                        <option value="OCAOCANA3">OCAOCANA3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Barrio/Vereda</label>
+                    <input type="text" id="barrio_vereda" class="form-input" required placeholder="Nombre del barrio o vereda">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número Z</label>
+                    <input type="number" id="numero_z" class="form-input" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Nivel de Tensión</label>
+                    <select id="nivel_tension" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        <option value="1">1 - Baja Tensión</option>
+                        <option value="2">2 - Media Tensión</option>
+                        <option value="3">3 - Alta Tensión</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Circuito</label>
+                    <input type="text" id="circuito" class="form-input" required placeholder="Código del circuito">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 2: Información de Estructuras -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <i class="fas fa-building"></i>
+                Información de Estructuras
+            </h2>
+            
+            <!-- Estructura Nueva -->
+            <div style="background: #e8f5e8; padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 2rem; border-left: 4px solid #059669;">
+                <h3 style="color: #059669; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">
+                    <i class="fas fa-plus-circle"></i> Estructura Nueva
+                </h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label required">Cod Est.</label>
+                        <input type="text" id="cod_est_nueva" class="form-input" required placeholder="Código estructura">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Apoyo</label>
+                        <select id="apoyo_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Poste">Poste</option>
+                            <option value="Torre">Torre</option>
+                            <option value="Cruceta">Cruceta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Material</label>
+                        <select id="material_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="fibra de vidrio">Fibra de vidrio</option>
+                            <option value="concreto">Concreto</option>
+                            <option value="madera">Madera</option>
+                            <option value="metalico">Metálico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Altura</label>
+                        <select id="altura_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="8">8 metros</option>
+                            <option value="10">10 metros</option>
+                            <option value="12">12 metros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Población</label>
+                        <select id="poblacion_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="urbana">Urbana</option>
+                            <option value="rural">Rural</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Disposición</label>
+                        <select id="disposicion_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="suspensión">Suspensión</option>
+                            <option value="retención">Retención</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">KGF</label>
+                        <select id="kgf_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="510">510</option>
+                            <option value="750">750</option>
+                            <option value="1000">1000</option>
+                            <option value="1500">1500</option>
+                            <option value="2000">2000</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Tipo Red</label>
+                        <select id="tipo_red_nueva" class="form-input" required>
+                            <option value="">Seleccionar</option>
+                            <option value="red común">Red común</option>
+                            <option value="red trenzada">Red trenzada</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estructura Retirada -->
+            <div style="background: #fef3c7; padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 2rem; border-left: 4px solid #d97706;">
+                <h3 style="color: #d97706; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">
+                    <i class="fas fa-minus-circle"></i> Estructura Retirada
+                </h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Cod Est.</label>
+                        <input type="text" id="cod_est_retirada" class="form-input" placeholder="Código estructura (opcional)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Apoyo</label>
+                        <select id="apoyo_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="Poste">Poste</option>
+                            <option value="Torre">Torre</option>
+                            <option value="Cruceta">Cruceta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Material</label>
+                        <select id="material_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="madera">Madera</option>
+                            <option value="concreto">Concreto</option>
+                            <option value="fibra de vidrio">Fibra de vidrio</option>
+                            <option value="metalico">Metálico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Altura</label>
+                        <select id="altura_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="8">8 metros</option>
+                            <option value="10">10 metros</option>
+                            <option value="12">12 metros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Población</label>
+                        <select id="poblacion_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="urbana">Urbana</option>
+                            <option value="rural">Rural</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">KGF</label>
+                        <select id="kgf_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="N.A.">N.A.</option>
+                            <option value="510">510</option>
+                            <option value="750">750</option>
+                            <option value="1000">1000</option>
+                            <option value="1500">1500</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Disposición</label>
+                        <select id="disposicion_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="suspensión">Suspensión</option>
+                            <option value="retención">Retención</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Punto</label>
+                        <input type="text" id="punto_retirada" class="form-input" placeholder="Punto de referencia">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo Red</label>
+                        <select id="tipo_red_retirada" class="form-input">
+                            <option value="">Seleccionar</option>
+                            <option value="red común">Red común</option>
+                            <option value="red trenzada">Red trenzada</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Información del Proyecto -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <i class="fas fa-project-diagram"></i>
+                Información del Proyecto
+            </h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label required">Nombre</label>
+                    <select id="nombre" class="form-input" required>
+                        <option value="">Seleccionar responsable</option>
+                        <option value="Juan Pérez">Juan Pérez</option>
+                        <option value="María González">María González</option>
+                        <option value="Carlos Rodríguez">Carlos Rodríguez</option>
+                        <option value="Ana Martínez">Ana Martínez</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ot mano obr.</label>
+                    <input type="text" id="ot_mano_obra" class="form-input" placeholder="Orden trabajo mano obra" style="background: #fef3c7;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ot Materia.</label>
+                    <input type="text" id="ot_materia" class="form-input" placeholder="Orden trabajo material" style="background: #fef3c7;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Contrato</label>
+                    <select id="contrato" class="form-input" required>
+                        <option value="">Seleccionar contrato</option>
+                        <option value="CONT-2025-001">CONT-2025-001</option>
+                        <option value="CONT-2025-002">CONT-2025-002</option>
+                        <option value="CONT-2025-003">CONT-2025-003</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Pro.Terc.</label>
+                    <select id="pro_terc" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Reposición anual de postes B.T">Reposición anual de postes B.T</option>
+                        <option value="Mantenimiento preventivo">Mantenimiento preventivo</option>
+                        <option value="Expansión de red">Expansión de red</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Móvil</label>
+                    <select id="movil" class="form-input" required>
+                        <option value="">Seleccionar móvil</option>
+                        <option value="MOV-001">MOV-001</option>
+                        <option value="MOV-002">MOV-002</option>
+                        <option value="MOV-003">MOV-003</option>
+                        <option value="MOV-004">MOV-004</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Proyect.</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" id="instalados" class="form-input" placeholder="0" style="width: 30%;">
+                        <span style="font-weight: 500;">Instalados</span>
+                        <input type="number" id="pendientes" class="form-input" placeholder="0" style="width: 30%; background: #fee2e2;">
+                        <span style="font-weight: 500; color: var(--danger-color);">Pendientes</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección UC con descripción -->
+            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--gray-50); border-radius: var(--border-radius); border: 1px solid var(--gray-200);">
+                <div class="form-grid" style="grid-template-columns: 200px 1fr 100px;">
+                    <div class="form-group">
+                        <label class="form-label required">UC</label>
+                        <div style="position: relative;">
+                            <select id="uc_codigo" class="form-input" required disabled>
+                                <option value=""></option>
+                            </select>
+                            <div id="uc_status" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none;">
+                                <i class="fas fa-check-circle" style="color: var(--success-color); font-size: 1.2rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Descripción</label>
+                        <input type="text" id="descripcion_uc" class="form-input" required 
+                               placeholder="Poste de fibra de vidrio - 8 m - rural - retención - red común" 
+                               readonly style="background: var(--gray-100);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Documentos -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <i class="fas fa-file-alt"></i>
+                Documentos y Archivos
+            </h2>
+            <form id="formFinal">
+                <div class="form-group">
+                    <label class="form-label required">Archivo AutoCAD</label>
+                    <div class="file-upload-container" id="cad-upload">
+                        <input type="file" id="archivo_cad" class="file-upload-input" accept=".dwg,.dxf,.dws" required>
+                        <div class="file-upload-content">
+                            <i class="fas fa-drafting-compass file-upload-icon"></i>
+                            <div class="file-upload-text">Cargar archivo AutoCAD</div>
+                            <div class="file-upload-hint">Formatos soportados: .dwg, .dxf, .dws (Máx. 50MB)</div>
+                        </div>
+                    </div>
+                    <div class="file-preview" id="cad-preview">
+                        <div class="file-preview-content">
+                            <i class="fas fa-file-archive file-preview-icon"></i>
+                            <div class="file-preview-info">
+                                <div class="file-preview-name" id="cad-filename"></div>
+                                <div class="file-preview-size" id="cad-filesize"></div>
+                            </div>
+                            <button type="button" class="file-preview-remove" id="cad-remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fotografías del proyecto -->
+                <div class="form-group">
+                    <label class="form-label required">Fotografías del proyecto</label>
+                    <div class="file-upload-container" id="photos-upload">
+                        <input type="file" id="fotos_proyecto" class="file-upload-input" accept="image/*" multiple required>
+                        <div class="file-upload-content">
+                            <i class="fas fa-camera file-upload-icon"></i>
+                            <div class="file-upload-text">Cargar fotografías</div>
+                            <div class="file-upload-hint">Selecciona múltiples imágenes (JPG, PNG, máx. 5MB cada una)</div>
+                        </div>
+                    </div>
+                    <div class="image-preview" id="photos-preview">
+                        <div id="photos-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;"></div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn btn-outline" id="preview-form">
+                        <i class="fas fa-eye"></i>
+                        Vista Previa
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submitFinal">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Formulario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let items = [];
+        let currentStep = 1;
+        let formId = '{{ form_id|default:"" }}' || generateFormId();
+        let websocket = null;
+        let reconnectAttempts = 0;
+        let maxReconnectAttempts = 5;
+        let realtimeItems = [];
+
+        // Generar ID único para el formulario si no existe
+        function generateFormId() {
+            return 'form_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Mapeo completo de UCs basado en la tabla proporcionada
+        const UC_MAPPING = {
+            // Postes de concreto
+            'Poste-concreto-10-urbana-retención-red común': 'N1P26',
+            'Poste-concreto-10-urbana-retención-red trenzada': 'N1P74',
+            'Poste-concreto-10-urbana-suspensión-red común': 'N1P2',
+            'Poste-concreto-10-urbana-suspensión-red trenzada': 'N1P50',
+            'Poste-concreto-12-rural-retención-red común': 'N1P39',
+            'Poste-concreto-12-rural-retención-red trenzada': 'N1P87',
+            'Poste-concreto-12-rural-suspensión-red común': 'N1P15',
+            'Poste-concreto-12-rural-suspensión-red trenzada': 'N1P63',
+            'Poste-concreto-12-urbana-retención-red trenzada': 'N1P75',
+            'Poste-concreto-12-urbana-suspensión-red común': 'N1P3',
+            'Poste-concreto-12-urbana-suspensión-red trenzada': 'N1P51',
+            'Poste-concreto-12-urbana-retención-red común': 'N1P27',
+            'Poste-concreto-8-rural-retención-red trenzada': 'N1P85',
+            'Poste-concreto-8-rural-suspensión-red común': 'N1P13',
+            'Poste-concreto-8-rural-suspensión-red trenzada': 'N1P61',
+            'Poste-concreto-8-rural-retención-red común': 'N1P37',
+            'Poste-concreto-8-urbana-retención-red común': 'N1P25',
+            'Poste-concreto-8-urbana-retención-red trenzada': 'N1P73',
+            'Poste-concreto-8-urbana-suspensión-red común': 'N1P1',
+            'Poste-concreto-8-urbana-suspensión-red trenzada': 'N1P49',
+            'Poste-concreto-10-rural-retención-red trenzada': 'N1P86',
+            'Poste-concreto-10-rural-suspensión-red común': 'N1P14',
+            'Poste-concreto-10-rural-suspensión-red trenzada': 'N1P62',
+            'Poste-concreto-10-rural-retención-red común': 'N1P38',
+
+            // Postes de fibra de vidrio
+            'Poste-fibra de vidrio-10-rural-retención-red común': 'N1P47',
+            'Poste-fibra de vidrio-10-rural-retención-red trenzada': 'N1P95',
+            'Poste-fibra de vidrio-10-rural-suspensión-red común': 'N1P23',
+            'Poste-fibra de vidrio-10-rural-suspensión-red trenzada': 'N1P71',
+            'Poste-fibra de vidrio-10-urbana-retención-red común': 'N1P35',
+            'Poste-fibra de vidrio-10-urbana-retención-red trenzada': 'N1P83',
+            'Poste-fibra de vidrio-10-urbana-suspensión-red común': 'N1P11',
+            'Poste-fibra de vidrio-10-urbana-suspensión-red trenzada': 'N1P59',
+            'Poste-fibra de vidrio-12-rural-retención-red común': 'N1P48',
+            'Poste-fibra de vidrio-12-rural-retención-red trenzada': 'N1P96',
+            'Poste-fibra de vidrio-12-rural-suspensión-red común': 'N1P24',
+            'Poste-fibra de vidrio-12-rural-suspensión-red trenzada': 'N1P72',
+            'Poste-fibra de vidrio-12-urbana-retención-red común': 'N1P36',
+            'Poste-fibra de vidrio-12-urbana-retención-red trenzada': 'N1P84',
+            'Poste-fibra de vidrio-12-urbana-suspensión-red común': 'N1P12',
+            'Poste-fibra de vidrio-12-urbana-suspensión-red trenzada': 'N1P60',
+            'Poste-fibra de vidrio-8-rural-retención-red común': 'N1P46',
+            'Poste-fibra de vidrio-8-rural-retención-red trenzada': 'N1P94',
+            'Poste-fibra de vidrio-8-rural-suspensión-red común': 'N1P22',
+            'Poste-fibra de vidrio-8-rural-suspensión-red trenzada': 'N1P70',
+            'Poste-fibra de vidrio-8-urbana-retención-red común': 'N1P34',
+            'Poste-fibra de vidrio-8-urbana-retención-red trenzada': 'N1P82',
+            'Poste-fibra de vidrio-8-urbana-suspensión-red común': 'N1P10',
+            'Poste-fibra de vidrio-8-urbana-suspensión-red trenzada': 'N1P58',
+
+            // Postes de madera
+            'Poste-madera-10-rural-retención-red común': 'N1P41',
+            'Poste-madera-10-rural-retención-red trenzada': 'N1P89',
+            'Poste-madera-10-rural-suspensión-red común': 'N1P17',
+            'Poste-madera-10-rural-suspensión-red trenzada': 'N1P65',
+            'Poste-madera-10-urbana-retención-red común': 'N1P29',
+            'Poste-madera-10-urbana-retención-red trenzada': 'N1P77',
+            'Poste-madera-10-urbana-suspensión-red común': 'N1P5',
+            'Poste-madera-10-urbana-suspensión-red trenzada': 'N1P53',
+            'Poste-madera-12-rural-retención-red común': 'N1P42',
+            'Poste-madera-12-rural-retención-red trenzada': 'N1P90',
+            'Poste-madera-12-rural-suspensión-red común': 'N1P18',
+            'Poste-madera-12-rural-suspensión-red trenzada': 'N1P66',
+            'Poste-madera-12-urbana-retención-red común': 'N1P30',
+            'Poste-madera-12-urbana-retención-red trenzada': 'N1P78',
+            'Poste-madera-12-urbana-suspensión-red común': 'N1P6',
+            'Poste-madera-12-urbana-suspensión-red trenzada': 'N1P54',
+            'Poste-madera-8-rural-retención-red común': 'N1P40',
+            'Poste-madera-8-rural-retención-red trenzada': 'N1P88',
+            'Poste-madera-8-rural-suspensión-red común': 'N1P16',
+            'Poste-madera-8-rural-suspensión-red trenzada': 'N1P64',
+            'Poste-madera-8-urbana-retención-red común': 'N1P28',
+            'Poste-madera-8-urbana-retención-red trenzada': 'N1P76',
+            'Poste-madera-8-urbana-suspensión-red común': 'N1P4',
+            'Poste-madera-8-urbana-suspensión-red trenzada': 'N1P52',
+
+            // Postes metálicos
+            'Poste-metalico-10-rural-retención-red común': 'N1P44',
+            'Poste-metalico-10-rural-retención-red trenzada': 'N1P92',
+            'Poste-metalico-10-rural-suspensión-red común': 'N1P20',
+            'Poste-metalico-10-rural-suspensión-red trenzada': 'N1P68',
+            'Poste-metalico-10-urbana-retención-red común': 'N1P32',
+            'Poste-metalico-10-urbana-retención-red trenzada': 'N1P80',
+            'Poste-metalico-10-urbana-suspensión-red común': 'N1P8',
+            'Poste-metalico-10-urbana-suspensión-red trenzada': 'N1P56',
+            'Poste-metalico-12-rural-retención-red común': 'N1P45',
+            'Poste-metalico-12-rural-retención-red trenzada': 'N1P93',
+            'Poste-metalico-12-rural-suspensión-red común': 'N1P21',
+            'Poste-metalico-12-rural-suspensión-red trenzada': 'N1P69',
+            'Poste-metalico-12-urbana-retención-red trenzada': 'N1P81',
+            'Poste-metalico-12-urbana-suspensión-red común': 'N1P9',
+            'Poste-metalico-12-urbana-suspensión-red trenzada': 'N1P57',
+            'Poste-metalico-12-urbana-retención-red común': 'N1P33',
+            'Poste-metalico-8-rural-retención-red común': 'N1P43',
+            'Poste-metalico-8-rural-retención-red trenzada': 'N1P91',
+            'Poste-metalico-8-rural-suspensión-red común': 'N1P19',
+            'Poste-metalico-8-rural-suspensión-red trenzada': 'N1P67',
+            'Poste-metalico-8-urbana-retención-red común': 'N1P31',
+            'Poste-metalico-8-urbana-retención-red trenzada': 'N1P79',
+            'Poste-metalico-8-urbana-suspensión-red común': 'N1P7',
+            'Poste-metalico-8-urbana-suspensión-red trenzada': 'N1P55'
+        };
+
+        // ========== WEBSOCKET FUNCTIONS ==========
+        
+        // Inicializar WebSocket
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/form/${formId}/`;
+            
+            try {
+                websocket = new WebSocket(wsUrl);
+                
+                websocket.onopen = function(event) {
+                    console.log('WebSocket conectado');
+                    updateWebSocketStatus('connected');
+                    reconnectAttempts = 0;
+                    
+                    // Mostrar la sección de datos en tiempo real
+                    document.getElementById('realtime-data-section').style.display = 'block';
+                };
+                
+                websocket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                };
+                
+                websocket.onclose = function(event) {
+                    console.log('WebSocket desconectado');
+                    updateWebSocketStatus('disconnected');
+                    
+                    // Intentar reconectar
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        setTimeout(() => {
+                            reconnectAttempts++;
+                            console.log(`Reintentando conexión... (${reconnectAttempts}/${maxReconnectAttempts})`);
+                            initWebSocket();
+                        }, 2000 * reconnectAttempts);
+                    }
+                };
+                
+                websocket.onerror = function(error) {
+                    console.error('Error WebSocket:', error);
+                    updateWebSocketStatus('error');
+                };
+                
+            } catch (error) {
+                console.error('Error creando WebSocket:', error);
+                updateWebSocketStatus('error');
+            }
+        }
+        
+        // Actualizar estado visual del WebSocket
+        function updateWebSocketStatus(status) {
+            const statusDiv = document.getElementById('websocket-status');
+            const icon = document.getElementById('ws-icon');
+            const text = document.getElementById('ws-text');
+            
+            statusDiv.style.display = 'block';
+            
+            switch (status) {
+                case 'connected':
+                    statusDiv.style.background = 'var(--success-color)';
+                    statusDiv.style.color = 'white';
+                    icon.className = 'fas fa-wifi';
+                    text.textContent = 'Conectado';
+                    setTimeout(() => statusDiv.style.display = 'none', 3000);
+                    break;
+                case 'disconnected':
+                    statusDiv.style.background = 'var(--warning-color)';
+                    statusDiv.style.color = 'white';
+                    icon.className = 'fas fa-wifi';
+                    text.textContent = 'Desconectado';
+                    break;
+                case 'error':
+                    statusDiv.style.background = 'var(--danger-color)';
+                    statusDiv.style.color = 'white';
+                    icon.className = 'fas fa-exclamation-triangle';
+                    text.textContent = 'Error de conexión';
+                    break;
+                case 'connecting':
+                    statusDiv.style.background = 'var(--gray-300)';
+                    statusDiv.style.color = 'var(--gray-700)';
+                    icon.className = 'fas fa-spinner fa-spin';
+                    text.textContent = 'Conectando...';
+                    break;
+            }
+        }
+        
+        // Manejar mensajes del WebSocket
+        function handleWebSocketMessage(data) {
+            console.log('Mensaje WebSocket recibido:', data);
+            
+            switch (data.type) {
+                case 'initial_data':
+                    loadInitialData(data.data);
+                    break;
+                case 'item_added':
+                    addRealtimeItemToTable(data.data);
+                    break;
+                case 'item_updated':
+                    updateRealtimeItemInTable(data.data);
+                    break;
+                case 'item_deleted':
+                    removeRealtimeItemFromTable(data.data.item_id);
+                    break;
+                case 'form_updated':
+                    updateFormFields(data.data);
+                    break;
+                case 'validation_error':
+                    showAlert(`Error de validación en ${data.field}: ${data.message}`, 'error');
+                    break;
+                case 'uc_validation':
+                    handleUCValidation(data);
+                    break;
+                case 'error':
+                    showAlert(`Error: ${data.message}`, 'error');
+                    break;
+                default:
+                    console.log('Tipo de mensaje no reconocido:', data.type);
+            }
+        }
+        
+        // Enviar mensaje via WebSocket
+        function sendWebSocketMessage(type, data) {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({
+                    type: type,
+                    data: data
+                }));
+            } else {
+                console.warn('WebSocket no está conectado');
+                showAlert('Conexión perdida. Intentando reconectar...', 'warning');
+            }
+        }
+        
+        // Cargar datos iniciales
+        function loadInitialData(data) {
+            if (data.formulario) {
+                // Cargar datos del formulario en los campos
+                Object.keys(data.formulario).forEach(key => {
+                    const field = document.getElementById(key);
+                    if (field && data.formulario[key]) {
+                        field.value = data.formulario[key];
+                    }
+                });
+                
+                // Actualizar UC si existe
+                updateUC();
+            }
+            
+            if (data.items && data.items.length > 0) {
+                realtimeItems = data.items;
+                data.items.forEach(item => addRealtimeItemToTable(item));
+            }
+        }
+        
+        // Agregar item a la tabla en tiempo real
+        function addRealtimeItemToTable(item) {
+            const tbody = document.querySelector('#realtime-table tbody');
+            
+            // Remover mensaje vacío si existe
+            const emptyRow = tbody.querySelector('.table-empty');
+            if (emptyRow) {
+                emptyRow.remove();
+            }
+            
+            const row = tbody.insertRow();
+            row.id = `rt-row-${item.id}`;
+            row.dataset.itemId = item.id;
+            
+            // Agregar celdas
+            row.insertCell().textContent = item.campo_1 || '-';
+            row.insertCell().textContent = item.campo_2 || '-';
+            row.insertCell().textContent = item.campo_3 || '-';
+            row.insertCell().textContent = item.campo_4 || '-';
+            row.insertCell().textContent = item.campo_5 || '-';
+            
+            // Celda de foto
+            const fotoCell = row.insertCell();
+            if (item.foto_path) {
+                fotoCell.innerHTML = `<img src="${item.foto_path}" class="table-image" alt="Foto">`;
+            } else {
+                fotoCell.textContent = 'Sin foto';
+            }
+            
+            // Celda de acciones
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `
+                <button onclick="editRealtimeItem('${item.id}')" class="btn btn-primary" style="padding: 0.25rem 0.5rem; margin-right: 0.25rem;">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deleteRealtimeItem('${item.id}')" class="btn btn-danger" style="padding: 0.25rem 0.5rem;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            // Agregar al array local
+            if (!realtimeItems.find(i => i.id === item.id)) {
+                realtimeItems.push(item);
+            }
+            
+            // Mostrar notificación
+            showAlert(`Item agregado: ${item.campo_1 || 'Nuevo item'}`, 'success');
+        }
+        
+        // Actualizar item en la tabla
+        function updateRealtimeItemInTable(item) {
+            const row = document.getElementById(`rt-row-${item.id}`);
+            if (row) {
+                const cells = row.cells;
+                cells[0].textContent = item.campo_1 || '-';
+                cells[1].textContent = item.campo_2 || '-';
+                cells[2].textContent = item.campo_3 || '-';
+                cells[3].textContent = item.campo_4 || '-';
+                cells[4].textContent = item.campo_5 || '-';
+                
+                if (item.foto_path) {
+                    cells[5].innerHTML = `<img src="${item.foto_path}" class="table-image" alt="Foto">`;
+                } else {
+                    cells[5].textContent = 'Sin foto';
+                }
+                
+                // Actualizar en array local
+                const index = realtimeItems.findIndex(i => i.id === item.id);
+                if (index !== -1) {
+                    realtimeItems[index] = item;
+                }
+                
+                showAlert(`Item actualizado: ${item.campo_1 || 'Item'}`, 'success');
+            }
+        }
+        
+        // Remover item de la tabla
+        function removeRealtimeItemFromTable(itemId) {
+            const row = document.getElementById(`rt-row-${itemId}`);
+            if (row) {
+                row.remove();
+                
+                // Remover del array local
+                realtimeItems = realtimeItems.filter(i => i.id !== itemId);
+                
+                // Si no quedan items, mostrar mensaje vacío
+                const tbody = document.querySelector('#realtime-table tbody');
+                if (tbody.children.length === 0) {
+                    tbody.innerHTML = `
+                        <tr class="table-empty">
+                            <td colspan="7">
+                                <i class="fas fa-inbox"></i>
+                                No hay datos en tiempo real.
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                showAlert('Item eliminado', 'success');
+            }
+        }
+        
+        // Editar item en tiempo real
+        function editRealtimeItem(itemId) {
+            const item = realtimeItems.find(i => i.id === itemId);
+            if (item) {
+                // Llenar el formulario con los datos del item
+                document.getElementById('rt_campo_1').value = item.campo_1 || '';
+                document.getElementById('rt_campo_2').value = item.campo_2 || '';
+                document.getElementById('rt_campo_3').value = item.campo_3 || '';
+                document.getElementById('rt_campo_4').value = item.campo_4 || '';
+                document.getElementById('rt_campo_5').value = item.campo_5 || '';
+                
+                // Cambiar el formulario a modo edición
+                const form = document.getElementById('realtime-item-form');
+                form.dataset.editingId = itemId;
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Item';
+                submitBtn.className = 'btn btn-warning';
+                
+                // Agregar botón cancelar
+                if (!document.getElementById('cancel-edit-btn')) {
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.type = 'button';
+                    cancelBtn.id = 'cancel-edit-btn';
+                    cancelBtn.className = 'btn btn-outline';
+                    cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancelar';
+                    cancelBtn.onclick = cancelEditRealtimeItem;
+                    
+                    submitBtn.parentElement.insertBefore(cancelBtn, submitBtn.nextSibling);
+                }
+            }
+        }
+        
+        // Cancelar edición
+        function cancelEditRealtimeItem() {
+            const form = document.getElementById('realtime-item-form');
+            form.reset();
+            delete form.dataset.editingId;
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-plus"></i> Agregar Item';
+            submitBtn.className = 'btn btn-primary';
+            
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            if (cancelBtn) {
+                cancelBtn.remove();
+            }
+        }
+        
+        // Eliminar item en tiempo real
+        function deleteRealtimeItem(itemId) {
+            if (confirm('¿Está seguro de eliminar este item?')) {
+                sendWebSocketMessage('delete_item', { item_id: itemId });
+            }
+        }
+        
+        // Actualizar campos del formulario desde WebSocket
+        function updateFormFields(data) {
+            Object.keys(data).forEach(key => {
+                const field = document.getElementById(key);
+                if (field && field.value !== data[key]) {
+                    field.value = data[key];
+                    // Añadir efecto visual para mostrar que el campo fue actualizado
+                    field.style.background = 'rgba(5, 150, 105, 0.1)';
+                    setTimeout(() => {
+                        field.style.background = '';
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Manejar validación de UC
+        function handleUCValidation(data) {
+            const ucField = document.getElementById('uc_codigo');
+            const statusIcon = document.getElementById('uc_status');
+            
+            if (data.valid) {
+                if (statusIcon) {
+                    statusIcon.style.display = 'block';
+                    statusIcon.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success-color);"></i>';
+                }
+                showAlert(`UC válido: ${data.uc}`, 'success');
+            } else {
+                if (statusIcon) {
+                    statusIcon.style.display = 'block';
+                    statusIcon.innerHTML = '<i class="fas fa-exclamation-circle" style="color: var(--danger-color);"></i>';
+                }
+                showAlert(`UC inválido: ${data.message}`, 'error');
+            }
+        }
+
+        // Función para actualizar el UC automáticamente
+        function updateUC() {
+            // Probar estructura nueva primero
+            let apoyo = document.getElementById('apoyo_nueva').value;
+            let material = document.getElementById('material_nueva').value;
+            let altura = document.getElementById('altura_nueva').value;
+            let poblacion = document.getElementById('poblacion_nueva').value;
+            let disposicion = document.getElementById('disposicion_nueva').value;
+            let tipoRed = document.getElementById('tipo_red_nueva').value;
+            let tipo = 'nueva';
+
+            // Si no están completos los campos de nueva, probar retirada
+            if (!apoyo || !material || !altura || !poblacion || !disposicion || !tipoRed) {
+                apoyo = document.getElementById('apoyo_retirada').value;
+                material = document.getElementById('material_retirada').value;
+                altura = document.getElementById('altura_retirada').value;
+                poblacion = document.getElementById('poblacion_retirada').value;
+                disposicion = document.getElementById('disposicion_retirada').value;
+                tipoRed = document.getElementById('tipo_red_retirada').value;
+                tipo = 'retirada';
+            }
+            
+            const ucCodigoSelect = document.getElementById('uc_codigo');
+            const descripcionInput = document.getElementById('descripcion_uc');
+            const ucStatus = document.getElementById('uc_status');
+            
+            if (apoyo && material && altura && poblacion && disposicion && tipoRed) {
+                // Crear la clave para buscar en el mapeo
+                const key = `${apoyo}-${material}-${altura}-${poblacion}-${disposicion}-${tipoRed}`;
+                const ucCodigo = UC_MAPPING[key];
+                const descripcion = `${apoyo} de ${material} - ${altura} m - ${poblacion} - ${disposicion} - ${tipoRed}`;
+                
+                if (ucCodigo) {
+                    // Limpiar opciones anteriores
+                    ucCodigoSelect.innerHTML = '<option value="">Se generará automáticamente</option>';
+                    
+                    // Agregar la nueva opción
+                    const newOption = document.createElement('option');
+                    newOption.value = ucCodigo;
+                    newOption.textContent = ucCodigo;
+                    newOption.selected = true;
+                    ucCodigoSelect.appendChild(newOption);
+                    
+                    descripcionInput.value = descripcion;
+                    
+                    // Mostrar ícono de éxito
+                    if (ucStatus) {
+                        ucStatus.style.display = 'block';
+                    }
+                    
+                    // Mostrar mensaje de éxito indicando de qué estructura proviene
+                    const estructuraTipo = tipo === 'nueva' ? 'Estructura Nueva' : 'Estructura Retirada';
+                    showAlert(`UC generado automáticamente desde ${estructuraTipo}: ${ucCodigo}`, 'success');
+                } else {
+                    // Limpiar campos si no se puede generar UC
+                    ucCodigoSelect.innerHTML = '<option value="">Se generará automáticamente</option>';
+                    descripcionInput.value = '';
+                    if (ucStatus) {
+                        ucStatus.style.display = 'none';
+                    }
+                    showAlert(`No se encontró UC para: ${key}`, 'warning');
+                }
+            } else {
+                // Limpiar campos si no están todos los datos
+                ucCodigoSelect.innerHTML = '<option value="">Se generará automáticamente</option>';
+                descripcionInput.value = '';
+                if (ucStatus) {
+                    ucStatus.style.display = 'none';
+                }
+            }
+        }
+
+        // Función para mostrar alertas
+        function showAlert(message, type = 'error') {
+            const alertsContainer = document.getElementById('alerts-container');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHTML = `
+                <div class="alert alert-${type}" id="${alertId}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            alertsContainer.innerHTML = alertHTML;
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Función para actualizar pasos del progreso
+        function updateProgressSteps(step) {
+            const steps = document.querySelectorAll('.progress-step');
+            steps.forEach((stepEl, index) => {
+                const stepNumber = index + 1;
+                stepEl.classList.remove('active', 'completed');
+                
+                if (stepNumber < step) {
+                    stepEl.classList.add('completed');
+                } else if (stepNumber === step) {
+                    stepEl.classList.add('active');
+                }
+            });
+        }
+
+        // Función para formatear tamaño de archivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Configurar drag & drop para archivos
+        function setupFileUpload(containerId, inputId, previewId, isImage = false) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+
+            // Verificar que todos los elementos existan
+            if (!container || !input || !preview) {
+                console.warn(`No se pudieron encontrar los elementos para: ${containerId}, ${inputId}, ${previewId}`);
+                return;
+            }
+
+            // Drag & Drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                container.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                container.addEventListener(eventName, () => container.classList.add('dragover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                container.addEventListener(eventName, () => container.classList.remove('dragover'), false);
+            });
+
+            container.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                input.files = files;
+                handleFiles(files);
+            }
+
+            input.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    showFilePreview(file, preview, isImage);
+                }
+            }
+        }
+
+        // Mostrar vista previa de archivo
+        function showFilePreview(file, preview, isImage = false) {
+            if (isImage) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = preview.querySelector('img');
+                    img.src = e.target.result;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const filename = preview.parentElement.querySelector('.file-preview-name');
+                const filesize = preview.parentElement.querySelector('.file-preview-size');
+                
+                if (filename) filename.textContent = file.name;
+                if (filesize) filesize.textContent = formatFileSize(file.size);
+                
+                preview.classList.add('show');
+            }
+        }
+
+        // Inicializar upload de archivos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar WebSocket
+            initWebSocket();
+            
+            // Solo configurar upload de archivos si los elementos existen
+            if (document.getElementById('cad-upload') && document.getElementById('archivo_cad') && document.getElementById('cad-preview')) {
+                setupFileUpload('cad-upload', 'archivo_cad', 'cad-preview', false);
+            }
+
+            // Botón para remover archivo CAD
+            const cadRemoveBtn = document.getElementById('cad-remove');
+            if (cadRemoveBtn) {
+                cadRemoveBtn.addEventListener('click', function() {
+                    const cadInput = document.getElementById('archivo_cad');
+                    const cadPreview = document.getElementById('cad-preview');
+                    if (cadInput) cadInput.value = '';
+                    if (cadPreview) cadPreview.classList.remove('show');
+                });
+            }
+
+            // Event listeners para autocompletado de UC
+            const ucFieldsNueva = ['apoyo_nueva', 'material_nueva', 'altura_nueva', 'poblacion_nueva', 'disposicion_nueva', 'tipo_red_nueva'];
+            const ucFieldsRetirada = ['apoyo_retirada', 'material_retirada', 'altura_retirada', 'poblacion_retirada', 'disposicion_retirada', 'tipo_red_retirada'];
+            
+            // Agregar listeners para campos de estructura nueva
+            ucFieldsNueva.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('change', function() {
+                        updateUC();
+                        // Enviar actualización via WebSocket
+                        if (websocket && websocket.readyState === WebSocket.OPEN) {
+                            const formData = collectFormData();
+                            sendWebSocketMessage('form_update', formData);
+                        }
+                    });
+                }
+            });
+
+            // Agregar listeners para campos de estructura retirada
+            ucFieldsRetirada.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('change', function() {
+                        updateUC();
+                        // Enviar actualización via WebSocket
+                        if (websocket && websocket.readyState === WebSocket.OPEN) {
+                            const formData = collectFormData();
+                            sendWebSocketMessage('form_update', formData);
+                        }
+                    });
+                }
+            });
+            
+            // Event listener para formulario de items en tiempo real
+            const realtimeForm = document.getElementById('realtime-item-form');
+            if (realtimeForm) {
+                realtimeForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        campo_1: document.getElementById('rt_campo_1').value,
+                        campo_2: document.getElementById('rt_campo_2').value,
+                        campo_3: document.getElementById('rt_campo_3').value,
+                        campo_4: document.getElementById('rt_campo_4').value,
+                        campo_5: document.getElementById('rt_campo_5').value,
+                    };
+                    
+                    // Verificar si estamos editando o agregando
+                    const editingId = this.dataset.editingId;
+                    
+                    if (editingId) {
+                        // Actualizar item existente
+                        formData.id = editingId;
+                        sendWebSocketMessage('update_item', formData);
+                        cancelEditRealtimeItem();
+                    } else {
+                        // Agregar nuevo item
+                        sendWebSocketMessage('add_item', formData);
+                    }
+                    
+                    // Limpiar formulario
+                    this.reset();
+                });
+            }
+            
+            // Botón limpiar formulario tiempo real
+            const clearRtForm = document.getElementById('clear-rt-form');
+            if (clearRtForm) {
+                clearRtForm.addEventListener('click', function() {
+                    document.getElementById('realtime-item-form').reset();
+                    cancelEditRealtimeItem();
+                });
+            }
+            
+            // Agregar listeners para campos del formulario principal (con debounce)
+            const allFormFields = [
+                'trabajo', 'municipio', 'numero_x', 'regional', 'direccion', 'numero_y',
+                'alimentador', 'barrio_vereda', 'numero_z', 'nivel_tension', 'circuito',
+                'cod_est_nueva', 'cod_est_retirada', 'kgf_nueva', 'kgf_retirada',
+                'punto_retirada', 'nombre', 'ot_mano_obra', 'ot_materia', 'contrato',
+                'pro_terc', 'movil', 'instalados', 'pendientes'
+            ];
+            
+            allFormFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    // Debounce para evitar demasiadas actualizaciones
+                    let timeout;
+                    field.addEventListener('input', function() {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => {
+                            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                                const formData = collectFormData();
+                                sendWebSocketMessage('form_update', formData);
+                            }
+                        }, 1000); // Esperar 1 segundo antes de enviar
+                    });
+                }
+            });
+        });
+        
+        // Función para recopilar todos los datos del formulario
+        function collectFormData() {
+            const formData = {};
+            
+            const allFields = [
+                'trabajo', 'municipio', 'numero_x', 'regional', 'direccion', 'numero_y',
+                'alimentador', 'barrio_vereda', 'numero_z', 'nivel_tension', 'circuito',
+                'cod_est_nueva', 'apoyo_nueva', 'material_nueva', 'altura_nueva',
+                'poblacion_nueva', 'disposicion_nueva', 'kgf_nueva', 'tipo_red_nueva',
+                'cod_est_retirada', 'apoyo_retirada', 'material_retirada', 'altura_retirada',
+                'poblacion_retirada', 'kgf_retirada', 'disposicion_retirada', 
+                'punto_retirada', 'tipo_red_retirada', 'nombre', 'ot_mano_obra', 
+                'ot_materia', 'contrato', 'pro_terc', 'movil', 'instalados', 
+                'pendientes', 'uc_codigo', 'descripcion_uc', 'archivo_cad'
+            ];
+            
+            allFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    formData[fieldId] = field.value;
+                }
+            });
+            
+            return formData;
+        }
+
+        // Event listeners agregados en DOMContentLoaded
+
+        // Vista previa del formulario
+        document.getElementById('preview-form').addEventListener('click', function() {
+            const conductor = document.getElementById('conductor').value;
+            const supervisor = document.getElementById('supervisor').value;
+            const fecha = document.getElementById('fecha').value;
+            
+            let previewContent = `
+                <h3>Vista Previa del Formulario</h3>
+                <p><strong>Conductor:</strong> ${conductor || 'No especificado'}</p>
+                <p><strong>Supervisor:</strong> ${supervisor || 'No especificado'}</p>
+                <p><strong>Fecha:</strong> ${fecha || 'No especificada'}</p>
+                <p><strong>Items agregados:</strong> ${items.length}</p>
+            `;
+            
+            if (items.length > 0) {
+                previewContent += '<h4>Items:</h4><ul>';
+                items.forEach(item => {
+                    previewContent += `<li>${item.bid} - ${item.card} - ${item.material}</li>`;
+                });
+                previewContent += '</ul>';
+            }
+            
+            showAlert(previewContent, 'success');
+        });
+
+        // Envío final del formulario
+        document.getElementById('formFinal').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Validar que el UC esté seleccionado
+            const ucCodigo = document.getElementById('uc_codigo').value;
+            const descripcionUC = document.getElementById('descripcion_uc').value;
+            
+            if (!ucCodigo || ucCodigo === '' || ucCodigo === 'Se generará automáticamente') {
+                showAlert('Por favor, complete los campos de estructura para generar el UC automáticamente.', 'warning');
+                return;
+            }
+
+            if (!descripcionUC) {
+                showAlert('La descripción del UC es requerida.', 'warning');
+                return;
+            }
+
+            // Obtener campos básicos del formulario
+            const archivoCad = document.getElementById('archivo_cad')?.files[0];
+            const fotosProyecto = document.getElementById('fotos_proyecto')?.files;
+
+            if (!archivoCad) {
+                showAlert('Por favor, agregue el archivo AutoCAD.', 'warning');
+                return;
+            }
+
+            if (!fotosProyecto || fotosProyecto.length === 0) {
+                showAlert('Por favor, agregue al menos una fotografía del proyecto.', 'warning');
+                return;
+            }
+
+            // Mostrar spinner
+            const submitBtn = document.getElementById('submitFinal');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner"></span> Enviando...';
+            submitBtn.disabled = true;
+
+            // Recopilar todos los datos del formulario
+            const formData = new FormData();
+            
+            // Información general
+            const campos = [
+                'trabajo', 'municipio', 'numero_x', 'regional', 'direccion', 'numero_y',
+                'alimentador', 'barrio_vereda', 'numero_z', 'nivel_tension', 'circuito'
+            ];
+            
+            campos.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento) {
+                    formData.append(campo, elemento.value);
+                }
+            });
+
+            // Información de estructuras
+            const camposEstructura = [
+                'cod_est_nueva', 'apoyo_nueva', 'material_nueva', 'altura_nueva', 
+                'poblacion_nueva', 'disposicion_nueva', 'kgf_nueva', 'tipo_red_nueva',
+                'cod_est_retirada', 'apoyo_retirada', 'material_retirada', 'altura_retirada',
+                'poblacion_retirada', 'kgf_retirada', 'disposicion_retirada', 'punto_retirada', 'tipo_red_retirada'
+            ];
+            
+            camposEstructura.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento) {
+                    formData.append(campo, elemento.value);
+                }
+            });
+
+            // Información del proyecto
+            const camposProyecto = [
+                'nombre', 'ot_mano_obra', 'ot_materia', 'contrato', 'pro_terc', 'movil',
+                'instalados', 'pendientes'
+            ];
+            
+            camposProyecto.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento) {
+                    formData.append(campo, elemento.value);
+                }
+            });
+
+            // UC y descripción
+            formData.append('uc_codigo', ucCodigo);
+            formData.append('descripcion_uc', descripcionUC);
+
+            // Archivos
+            formData.append('archivo_cad', archivoCad);
+            
+            // Agregar todas las fotos
+            for (let i = 0; i < fotosProyecto.length; i++) {
+                formData.append('fotos_proyecto', fotosProyecto[i]);
+            }
+
+            try {
+                const response = await fetch('/submit/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showAlert('¡Formulario enviado con éxito! UC generado: ' + ucCodigo, 'success');
+                    updateProgressSteps(3);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                } else {
+                    throw new Error('Error en el servidor');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error al enviar el formulario. Por favor, inténtelo de nuevo.', 'error');
+            } finally {
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

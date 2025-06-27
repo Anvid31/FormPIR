@@ -1,0 +1,29 @@
+# Core Django
+Django>=5.2.3
+djangorestframework>=3.14.0
+
+# WebSocket support
+channels>=4.0.0
+channels-redis>=4.1.0
+redis>=5.0.0
+
+# Database
+oracledb>=2.0.0
+python-decouple>=3.8
+
+# File handling
+Pillow>=10.0.0
+cloudinary>=1.36.0
+
+# Development
+python-dotenv>=1.0.0
+
+# Security
+cryptography>=41.0.0
+
+# Production server
+gunicorn>=21.2.0
+daphne>=4.0.0
+
+# Other utilities
+requests>=2.31.0
