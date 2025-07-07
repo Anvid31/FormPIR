@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESS - Lista de Formularios</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: 'Inter', sans-serif;
+            color: #111827;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con fondo azul -->
+    <header class="bg-blue-600 text-white py-8 px-4 mb-8">
+        <div class="container mx-auto max-w-6xl">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Sistema de Formularios DESS</h1>
+                    <p class="text-blue-100">Lista de Formularios Guardados</p>
+                </div>
+                <a href="{% url 'form' %}" 
+                   class="bg-blue-500 hover:bg-blue-400 text-white px-6 py-3 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nuevo Formulario
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 max-w-6xl">
+        {% if formularios %}
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    Formularios Registrados ({{ formularios|length }})
+                </h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ID
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Información General
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Estructuras
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Proyecto
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Fecha
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for item in formularios %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                #{{ item.formulario.id }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div>
+                                    <div class="font-medium">{{ item.formulario.municipio|default:"Sin municipio" }}</div>
+                                    <div class="text-gray-500">{{ item.formulario.regional|default:"Sin regional" }}</div>
+                                    <div class="text-gray-500">{{ item.formulario.alimentador|default:"Sin alimentador" }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div class="flex space-x-2">
+                                    {% if item.estructuras_nuevas > 0 %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-plus-circle mr-1"></i>
+                                        {{ item.estructuras_nuevas }} Nueva{{ item.estructuras_nuevas|pluralize }}
+                                    </span>
+                                    {% endif %}
+                                    {% if item.estructuras_retiradas > 0 %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                        <i class="fas fa-minus-circle mr-1"></i>
+                                        {{ item.estructuras_retiradas }} Retirada{{ item.estructuras_retiradas|pluralize }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {% if item.proyecto %}
+                                <div>
+                                    <div class="font-medium">{{ item.proyecto.nombre|truncatechars:30 }}</div>
+                                    <div class="text-gray-500">{{ item.proyecto.contrato|default:"Sin contrato" }}</div>
+                                </div>
+                                {% else %}
+                                <span class="text-gray-400">Sin proyecto</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div>
+                                    <div>{{ item.formulario.created_at|date:"d/m/Y" }}</div>
+                                    <div class="text-gray-500">{{ item.formulario.created_at|date:"H:i" }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'form_detail' item.formulario.id %}" 
+                                       class="text-blue-600 hover:text-blue-900">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'form_detail' item.formulario.id %}" 
+                                       class="text-green-600 hover:text-green-900">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        {% else %}
+        <!-- Estado vacío -->
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-clipboard-list text-4xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                No hay formularios registrados
+            </h3>
+            <p class="text-gray-600 mb-6">
+                Comienza creando tu primer formulario de estructura eléctrica.
+            </p>
+            <a href="{% url 'form' %}" 
+               class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Crear Primer Formulario
+            </a>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

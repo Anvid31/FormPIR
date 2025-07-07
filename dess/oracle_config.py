@@ -12,29 +12,20 @@ class OracleConfig:
     
     @staticmethod
     def init_oracle_client():
-        """Initialize Oracle client in thin or thick mode."""
+        """Initialize Oracle client in thin mode."""
         try:
-            # Try to initialize in thick mode first (if Oracle Client is available)
-            oracle_client_path = config('ORACLE_CLIENT_PATH', default='')
-            if oracle_client_path:
-                oracledb.init_oracle_client(lib_dir=oracle_client_path)
-                logger.info("Oracle client initialized in thick mode")
-            else:
-                # Use thin mode (no Oracle Client required)
-                logger.info("Using Oracle thin mode (no client installation required)")
+            # Using thin mode by default (no client installation required)
+            logger.info("Using Oracle thin mode (no client installation required)")
         except Exception as e:
-            logger.warning(f"Oracle client initialization failed: {e}")
-            logger.info("Falling back to thin mode")
+            logger.error(f"Oracle client initialization failed: {e}")
     
     @staticmethod
     def get_connection_string():
-        """Get Oracle connection string compatible with Django."""
+        """Get the Oracle connection string from environment variables."""
         host = config('DB_HOST', default='localhost')
         port = config('DB_PORT', default='1521')
-        service_name = config('DB_SERVICE_NAME', default='XEPDB1')
-        
-        # Use the same format as Django expects
-        return f"{host}:{port}/{service_name}"
+        service = config('DB_SERVICE_NAME', default='XEPDB1')
+        return f"{host}:{port}/{service}"
     
     @staticmethod
     def get_django_connection_string():

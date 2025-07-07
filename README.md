@@ -1,31 +1,30 @@
-# Sistema de Formularios en Tiempo Real - DESS
+# Sistema de Formularios DESS - Oracle Database
 
 ## 🚀 Descripción
 
-Sistema web desarrollado con Django que permite la gestión de formularios con actualizaciones en tiempo real utilizando WebSockets (Django Channels) y base de datos Oracle. Ideal para entornos colaborativos donde múltiples usuarios necesitan trabajar simultáneamente en el mismo formulario.
+Sistema web desarrollado con Django para la gestión de formularios de estructuras eléctricas (postes) con integración directa a base de datos Oracle. Diseñado para facilitar el registro, seguimiento y administración de trabajos de infraestructura eléctrica.
 
 ## ✨ Características Principales
 
-- **🔄 Tiempo Real**: Sincronización automática entre usuarios usando WebSockets
-- **📊 Interface Dinámica**: Tabla interactiva con agregar/editar/eliminar en vivo
+- **� Formularios Estructurados**: Gestión completa de estructuras nuevas y retiradas
 - **🔍 Autocompletado UC**: Sistema inteligente de sugerencias para códigos UC
-- **🗄️ Oracle Database**: Integración completa con Oracle para persistencia empresarial
+- **🗄️ Oracle Database**: Integración nativa con Oracle para persistencia empresarial
 - **📱 Responsive**: Interface adaptable a diferentes dispositivos
-- **🔒 Validaciones**: Validación en tiempo real de campos y datos
+- **🔒 Validaciones**: Validación completa de campos y datos
+- **📋 Lista de Formularios**: Vista completa de todos los formularios registrados
+- **⚡ HTTP Tradicional**: Sin dependencias de WebSocket para máxima compatibilidad
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **Backend**: Django 5.2+, Django Channels, Django REST Framework
-- **Frontend**: HTML5, Bootstrap 5, JavaScript (WebSockets)
+- **Backend**: Django 5.2+, Django REST Framework
+- **Frontend**: HTML5, Tailwind CSS, JavaScript
 - **Base de Datos**: Oracle Database
-- **WebSockets**: Django Channels con Redis (producción) / InMemory (desarrollo)
-- **Deployment**: Daphne (ASGI Server)
+- **Deployment**: Gunicorn (WSGI Server)
 
 ## 📋 Requisitos
 
 - Python 3.8+
 - Oracle Database (11g+)
-- Redis (para producción)
 - Cliente Oracle (Instant Client)
 
 ## 🚀 Instalación
@@ -61,12 +60,9 @@ Crear archivo `.env` basado en `.env.example`:
 # Base de Datos Oracle
 DB_HOST=localhost
 DB_PORT=1521
-DB_SERVICE_NAME=XEPDB1
-DB_USER=tu_usuario
-DB_PASSWORD=tu_password
-
-# Redis (producción)
-REDIS_URL=redis://localhost:6379
+DB_SERVICE_NAME=XE
+DB_USER=C##DESS_USER
+DB_PASSWORD=dess123
 
 # Django
 SECRET_KEY=tu_clave_secreta_muy_segura
@@ -74,32 +70,143 @@ DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 ```
 
-### 5. Aplicar migraciones
+### 5. Crear tablas en Oracle
+
+```bash
+python manage.py create_oracle_tables
+```
+
+### 6. Aplicar migraciones Django (opcional)
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Ejecutar pruebas del sistema (opcional)
+### 7. Crear superusuario (opcional)
 
 ```bash
-python test_sistema.py
+python manage.py createsuperuser
 ```
 
-### 7. Iniciar servidor
+### 8. Iniciar servidor
 
 ```bash
 # Desarrollo
 python manage.py runserver
 
 # Producción
-daphne -b 0.0.0.0 -p 8000 dess.asgi:application
+gunicorn dess.wsgi:application
 ```
 
 ## 🌐 Uso
 
-1. **Acceder al formulario**: `http://localhost:8000/forms/`
-2. **Completar campos**: Usar autocompletado UC y validaciones en tiempo real
+1. **Formulario Principal**: `http://localhost:8000/` - Crear nuevo formulario
+2. **Lista de Formularios**: `http://localhost:8000/list/` - Ver formularios registrados
+3. **Admin Panel**: `http://localhost:8000/admin/` - Administración (requiere superusuario)
+
+## 📊 Estructura de la Base de Datos
+
+### Tablas Principales
+
+- **AC_FORMULARIO_GLOBAL_PIR**: Información general del trabajo
+- **AC_ESTRUCTURA_NUEVA_PIR**: Datos de estructuras nuevas instaladas
+- **AC_ESTRUCTURA_RETIRADA_PIR**: Datos de estructuras retiradas
+- **AC_PROYECTO_INFO_PIR**: Información del proyecto y contrato
+
+### Preparado para Expansión
+
+El sistema está diseñado para agregar fácilmente nuevas tablas:
+
+```python
+# En models.py - ejemplo para nueva tabla
+class NuevaTabla(models.Model):
+    formulario = models.ForeignKey(FormularioGlobal, on_delete=models.CASCADE)
+    # ... otros campos
+    
+    class Meta:
+        db_table = 'AC_NUEVA_TABLA_PIR'
+```
+
+## 🔧 Comandos de Gestión
+
+```bash
+# Crear tablas Oracle
+python manage.py create_oracle_tables
+
+# Recrear tablas (elimina datos existentes)
+python manage.py create_oracle_tables --drop
+
+# Verificar conexión Oracle
+python test_oracle.py
+```
+
+## 📁 Estructura del Proyecto
+
+```
+forms/
+├── management/commands/
+│   └── create_oracle_tables.py    # Comando para crear tablas
+├── templates/forms/
+│   ├── form.html                  # Formulario principal
+│   ├── list.html                  # Lista de formularios
+│   └── success.html               # Página de éxito
+├── static/js/
+│   └── uc-mapping.js              # Autocompletado UC
+├── models.py                      # Modelos Django-Oracle
+├── views.py                       # Lógica de vistas
+└── urls.py                        # Configuración de URLs
+```
+
+## 🔄 Flujo de Trabajo
+
+1. **Llenar Formulario**: Usuario completa campos obligatorios
+2. **Validación**: Sistema valida datos en frontend y backend
+3. **Guardar**: Datos se almacenan en Oracle via HTTP POST
+4. **Confirmación**: Página de éxito muestra resultado
+5. **Gestión**: Lista de formularios para seguimiento
+
+## 🎯 Características del Autocompletado UC
+
+- **Base de Datos**: Mapping completo de códigos UC
+- **Búsqueda Inteligente**: Filtrado por código y descripción
+- **Interfaz Intuitiva**: Sugerencias en tiempo real
+
+## 🔒 Seguridad
+
+- CSRF Protection habilitado
+- Validación de datos en backend
+- Configuración de cabeceras de seguridad
+- Variables de entorno para credenciales
+
+## 📈 Rendimiento
+
+- Consultas optimizadas con `select_related`
+- Paginación preparada para grandes conjuntos de datos
+- Índices en campos clave de Oracle
+
+## 🚀 Despliegue en Producción
+
+1. Configurar variables de entorno de producción
+2. Usar Gunicorn como servidor WSGI
+3. Configurar proxy reverso (Nginx)
+4. Configurar respaldos de base de datos
+
+## 🤝 Desarrollo
+
+### Agregar Nueva Tabla
+
+1. **Crear modelo** en `models.py`
+2. **Agregar tabla** al comando `create_oracle_tables.py`
+3. **Actualizar vista** `submit_form` en `views.py`
+4. **Modificar formulario** HTML según necesidades
+
+### Estructura Extensible
+
+El sistema utiliza un patrón modular que permite:
+- Agregar nuevos tipos de formularios
+- Extender campos existentes
+- Integrar nuevas validaciones
+- Personalizar flujos de trabajo
 3. **Agregar elementos**: Los elementos aparecen instantáneamente en la tabla
 4. **Colaboración**: Múltiples usuarios pueden trabajar simultáneamente
 
@@ -120,6 +227,7 @@ formPreview V2/
 │       └── form.html        # Interface principal
 ├── .env                     # Variables de entorno
 ├── requirement.txt          # Dependencias
+└── manage.py                # Archivo Principal
 
 ## 🔧 APIs Disponibles
 
