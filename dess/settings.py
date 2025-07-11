@@ -71,31 +71,17 @@ WSGI_APPLICATION = 'dess.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Configuración temporal: Solo SQLite para pruebas
+# Configuración Oracle para producción
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.oracle'),
+        'NAME': config('DB_NAME', default='XE'),
+        'USER': config('DB_USER', default='FORM_PIR'),
+        'PASSWORD': config('DB_PASSWORD', default='dess123'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='1521'),
     }
 }
-
-# Configuración Oracle (comentada hasta que esté lista)
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     },
-#     'oracle': {
-#         'ENGINE': config('DB_ENGINE', default='django.db.backends.oracle'),
-#         'NAME': 'XE',
-#         'USER': 'C##DESS_USER',
-#         'PASSWORD': 'dess123',
-#         'HOST': 'localhost',
-#         'PORT': '1521',
-#     }
-# }
-
-# DATABASE_ROUTERS = ['forms.routers.FormularioRouter']
 
 
 # Password validation

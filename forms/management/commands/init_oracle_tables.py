@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         force = options['force']
-        schema_name = config('ORACLE_SCHEMA', default='C##DESS_USER')
+        schema_name = config('ORACLE_SCHEMA', default='FORM_PIR')
         
         # Definición de las tablas
         tables_sql = {

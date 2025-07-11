@@ -20,7 +20,7 @@ class FormularioGlobal(models.Model):
 
     class Meta:
         db_table = 'AC_FORMULARIO_GLOBAL_PIR'
-        managed = True  # True para SQLite, False para Oracle
+        managed = False  # False para Oracle (tablas ya existen)
 
     def __str__(self):
         return f"Formulario {self.id} - {self.trabajo or 'Sin trabajo'}"
@@ -42,7 +42,7 @@ class EstructuraNueva(models.Model):
 
     class Meta:
         db_table = 'AC_ESTRUCTURA_NUEVA_PIR'
-        managed = True  # Temporalmente True para pruebas con SQLite
+        managed = False  # False para Oracle (tablas ya existen)
 
     def __str__(self):
         return f"Estructura Nueva {self.cod_est} - Formulario {self.formulario_id}"
@@ -62,7 +62,7 @@ class EstructuraRetirada(models.Model):
 
     class Meta:
         db_table = 'AC_ESTRUCTURA_RETIRADA_PIR'
-        managed = True  # Temporalmente True para pruebas con SQLite
+        managed = False  # False para Oracle (tablas ya existen)
 
     def __str__(self):
         return f"Estructura Retirada {self.cod_est} - Formulario {self.formulario_id}"
@@ -81,7 +81,7 @@ class ProyectoInfo(models.Model):
 
     class Meta:
         db_table = 'AC_PROYECTO_INFO_PIR'
-        managed = True  # Temporalmente True para pruebas con SQLite
+        managed = False  # False para Oracle (tablas ya existen)
 
     def __str__(self):
         return f"Proyecto {self.nombre} - Formulario {self.formulario_id}"

@@ -25,8 +25,8 @@ class FormularioView(View):
             formulario = None
             form_id = None
 
-        # Guardar el ID del formulario en la sesión
-        request.session['form_id'] = form_id
+        # Eliminar el uso de sesiones temporalmente
+        # request.session['form_id'] = form_id
         
         context = {
             'form_id': form_id,
@@ -134,173 +134,6 @@ class FormularioAPIView(View):
             } if proyecto else None
         }
 
-class FormularioSubmitView(View):
-    """Vista para enviar formulario completo directamente a la base de datos sin WebSocket"""
-    
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-    
-    def post(self, request):
-        """Procesar envío del formulario completo"""
-        try:
-            # Crear o obtener el formulario global
-            formulario = FormularioGlobal()
-            
-            # Mapear datos del formulario global
-            formulario.trabajo = request.POST.get('eps', '')
-            formulario.municipio = request.POST.get('municipio', '')
-            formulario.numero_x = self.parse_int(request.POST.get('numero_x'))
-            formulario.regional = request.POST.get('regional', '')
-            formulario.direccion = request.POST.get('direccion', '')
-            formulario.numero_y = self.parse_int(request.POST.get('numero_y'))
-            formulario.alimentador = request.POST.get('alimentador', '')
-            formulario.barrio_vereda = request.POST.get('barrio_vereda', '')
-            formulario.numero_z = self.parse_int(request.POST.get('numero_z'))
-            formulario.nivel_tension = request.POST.get('nivel_tension', '')
-            formulario.circuito = request.POST.get('circuito', '')
-            
-            # Guardar formulario global
-            formulario.save()
-            
-            # Procesar estructura nueva
-            self.process_estructura_nueva(request, formulario)
-            
-            # Procesar estructura retirada
-            self.process_estructura_retirada(request, formulario)
-            
-            # Procesar información del proyecto
-            self.process_proyecto_info(request, formulario)
-            
-            # Procesar archivos de documentos
-            self.process_document_files(request, formulario)
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Formulario guardado exitosamente',
-                'formulario_id': formulario.id
-            })
-            
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'error': str(e)
-            }, status=500)
-    
-    def process_estructura_nueva(self, request, formulario):
-        """Procesar estructura nueva"""
-        cod_est_nueva = request.POST.get('cod_est_nueva')
-        if cod_est_nueva:
-            estructura_nueva = EstructuraNueva()
-            estructura_nueva.formulario = formulario
-            estructura_nueva.cod_est = cod_est_nueva
-            estructura_nueva.apoyo = request.POST.get('apoyo_nueva', '')
-            estructura_nueva.material = request.POST.get('material_nueva', '')
-            estructura_nueva.altura = self.parse_decimal(request.POST.get('altura_nueva'))
-            estructura_nueva.tipo_red = request.POST.get('tipo_red_nueva', '')
-            
-            # Procesar fotos de estructura nueva (guardar localmente)
-            if 'fotos_nueva' in request.FILES:
-                fotos = request.FILES.getlist('fotos_nueva')
-                for i, foto in enumerate(fotos):
-                    self.save_image_locally(foto, f'estructura_nueva_{formulario.id}_{i}')
-            
-            estructura_nueva.save()
-    
-    def process_estructura_retirada(self, request, formulario):
-        """Procesar estructura retirada"""
-        cod_est_retirada = request.POST.get('cod_est_retirada')
-        if cod_est_retirada:
-            estructura_retirada = EstructuraRetirada()
-            estructura_retirada.formulario = formulario
-            estructura_retirada.cod_est = cod_est_retirada
-            estructura_retirada.apoyo = request.POST.get('apoyo_retirada', '')
-            estructura_retirada.material = request.POST.get('material_retirada', '')
-            estructura_retirada.altura = self.parse_decimal(request.POST.get('altura_retirada'))
-            estructura_retirada.tipo_red = request.POST.get('tipo_red_retirada', '')
-            estructura_retirada.punto = request.POST.get('punto_retirada', '')
-            estructura_retirada.save()
-    
-    def process_proyecto_info(self, request, formulario):
-        """Procesar información del proyecto"""
-        nombre_proyecto = request.POST.get('nombre')
-        if nombre_proyecto:
-            proyecto = ProyectoInfo()
-            proyecto.formulario = formulario
-            proyecto.nombre = nombre_proyecto
-            proyecto.ot_mano_obra = request.POST.get('ot_mano_obra', '')
-            proyecto.ot_materia = request.POST.get('ot_materia', '')
-            proyecto.contrato = request.POST.get('contrato', '')
-            proyecto.pro_terc = request.POST.get('pro_terc', '')
-            proyecto.save()
-    
-    def process_document_files(self, request, formulario):
-        """Procesar archivos de documentos"""
-        if 'archivo_cad' in request.FILES:
-            archivo_cad = request.FILES['archivo_cad']
-            self.save_file_locally(archivo_cad, f'cad_formulario_{formulario.id}')
-        
-        if 'archivo_kmz' in request.FILES:
-            archivo_kmz = request.FILES['archivo_kmz']
-            self.save_file_locally(archivo_kmz, f'kmz_formulario_{formulario.id}')
-    
-    def parse_int(self, value):
-        """Convertir string a int de manera segura"""
-        try:
-            return int(value) if value else None
-        except (ValueError, TypeError):
-            return None
-    
-    def parse_decimal(self, value):
-        """Convertir string a decimal de manera segura"""
-        try:
-            return Decimal(value) if value else None
-        except (ValueError, TypeError, InvalidOperation):
-            return None
-    
-    def save_file_locally(self, file, filename_prefix):
-        """Guardar archivo en el directorio media local"""
-        try:
-            # Crear directorio si no existe
-            media_dir = os.path.join(settings.MEDIA_ROOT, 'documentos')
-            os.makedirs(media_dir, exist_ok=True)
-            
-            # Generar nombre único
-            ext = os.path.splitext(file.name)[1]
-            filename = f"{filename_prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}{ext}"
-            filepath = os.path.join(media_dir, filename)
-            
-            # Guardar archivo
-            with open(filepath, 'wb+') as destination:
-                for chunk in file.chunks():
-                    destination.write(chunk)
-            
-            return filename
-        except Exception as e:
-            print(f"Error guardando archivo {filename_prefix}: {str(e)}")
-            return None
-    
-    def save_image_locally(self, image, filename_prefix):
-        """Guardar imagen en el directorio media local"""
-        try:
-            # Crear directorio si no existe
-            media_dir = os.path.join(settings.MEDIA_ROOT, 'estructuras')
-            os.makedirs(media_dir, exist_ok=True)
-            
-            # Generar nombre único
-            ext = os.path.splitext(image.name)[1]
-            filename = f"{filename_prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}{ext}"
-            filepath = os.path.join(media_dir, filename)
-            
-            # Guardar imagen
-            with open(filepath, 'wb+') as destination:
-                for chunk in image.chunks():
-                    destination.write(chunk)
-            
-            return filename
-        except Exception as e:
-            print(f"Error guardando imagen {filename_prefix}: {str(e)}")
-            return None
 
 class FormularioListView(View):
     """Vista para listar todos los formularios guardados"""
@@ -328,73 +161,114 @@ class FormularioListView(View):
         }
         return render(request, self.template_name, context)
 
-# Vista para envío del formulario completo
-@method_decorator(csrf_exempt)
+# Vista principal para envío del formulario completo
+@csrf_exempt
 def submit_form(request):
     """
-    Maneja el envío completo del formulario con todos los datos
+    Maneja el envío completo del formulario con todos los datos guardando en Oracle
     """
     if request.method != 'POST':
         return redirect('form')
     
     try:
-        # Crear un nuevo formulario global con los campos correctos del modelo
-        formulario = FormularioGlobal.objects.create(
-            trabajo=request.POST.get('cod_usuario'),  # Mapear cod_usuario a trabajo
-            municipio=request.POST.get('municipio'),
-            numero_x=int(request.POST.get('numero_x', 0)) if request.POST.get('numero_x') else None,
-            regional=request.POST.get('regional'),
-            direccion=request.POST.get('direccion'),
-            numero_y=int(request.POST.get('numero_y', 0)) if request.POST.get('numero_y') else None,
-            alimentador=request.POST.get('alimentador'),
-            barrio_vereda=request.POST.get('barrio_vereda'),
-            numero_z=int(request.POST.get('numero_z', 0)) if request.POST.get('numero_z') else None,
-            nivel_tension=request.POST.get('nivel_tension'),
-            circuito=request.POST.get('circuito'),
-        )
+        # Debug: imprimir los datos recibidos
+        print("=== DATOS RECIBIDOS DEL FORMULARIO ===")
+        for key, value in request.POST.items():
+            print(f"{key}: {value}")
+        print("=== FIN DATOS ===")
+        
+        # Función auxiliar para convertir valores de manera segura
+        def safe_int(value):
+            try:
+                return int(value) if value and value.strip() else None
+            except (ValueError, TypeError):
+                return None
+        
+        def safe_float(value):
+            try:
+                return float(value) if value and value.strip() else None
+            except (ValueError, TypeError):
+                return None
+        
+        # Crear un nuevo formulario global con mapeo correcto de campos
+        formulario_data = {
+            'trabajo': request.POST.get('cod_usuario', ''),  # Mapear cod_usuario a trabajo
+            'municipio': request.POST.get('municipio', ''),
+            'numero_x': safe_int(request.POST.get('numero_x')),
+            'regional': request.POST.get('regional', ''),
+            'direccion': request.POST.get('direccion', ''),
+            'numero_y': safe_int(request.POST.get('numero_y')),
+            'alimentador': request.POST.get('alimentador', ''),
+            'barrio_vereda': request.POST.get('barrio_vereda', ''),
+            'numero_z': safe_int(request.POST.get('numero_z')),
+            'nivel_tension': request.POST.get('nivel_tension', ''),
+            'circuito': request.POST.get('circuito', ''),
+        }
+        
+        print(f"=== CREANDO FORMULARIO GLOBAL ===")
+        print(f"Datos: {formulario_data}")
+        
+        formulario = FormularioGlobal.objects.create(**formulario_data)
+        print(f"Formulario creado con ID: {formulario.id}")
         
         estructura_nueva_creada = False
         estructura_retirada_creada = False
         proyecto_info_creado = False
         
         # Crear estructura nueva si hay datos
-        if request.POST.get('cod_est_nueva'):
-            estructura_nueva = EstructuraNueva.objects.create(
-                formulario=formulario,
-                cod_est=request.POST.get('cod_est_nueva'),
-                apoyo=request.POST.get('apoyo_nueva'),
-                material=request.POST.get('material_nueva'),
-                altura=float(request.POST.get('altura_nueva', 0)) if request.POST.get('altura_nueva') else None,
-                tipo_red=request.POST.get('tipo_red_nueva'),
-                poblacion=request.POST.get('poblacion_nueva'),
-                disposicion=request.POST.get('disposicion_nueva'),
-                kgf=float(request.POST.get('kgf_nueva', 0)) if request.POST.get('kgf_nueva') else None,
-            )
+        cod_est_nueva = request.POST.get('cod_est_nueva')
+        if cod_est_nueva and cod_est_nueva.strip():
+            print(f"=== CREANDO ESTRUCTURA NUEVA ===")
+            estructura_nueva_data = {
+                'formulario': formulario,
+                'cod_est': cod_est_nueva.strip(),
+                'apoyo': request.POST.get('apoyo_nueva', ''),
+                'material': request.POST.get('material_nueva', ''),
+                'altura': safe_float(request.POST.get('altura_nueva')),
+                'tipo_red': request.POST.get('tipo_red_nueva', ''),
+                'poblacion': request.POST.get('poblacion_nueva', ''),
+                'disposicion': request.POST.get('disposicion_nueva', ''),
+                'kgf': safe_float(request.POST.get('kgf_nueva')),
+            }
+            print(f"Datos estructura nueva: {estructura_nueva_data}")
+            
+            estructura_nueva = EstructuraNueva.objects.create(**estructura_nueva_data)
+            print(f"Estructura nueva creada con ID: {estructura_nueva.id}")
             estructura_nueva_creada = True
         
         # Crear estructura retirada si hay datos
-        if request.POST.get('cod_est_retirada'):
-            EstructuraRetirada.objects.create(
-                formulario=formulario,
-                cod_est=request.POST.get('cod_est_retirada'),
-                apoyo=request.POST.get('apoyo_retirada'),
-                material=request.POST.get('material_retirada'),
-                altura=float(request.POST.get('altura_retirada', 0)) if request.POST.get('altura_retirada') else None,
-                tipo_red=request.POST.get('tipo_red_retirada'),
-                punto=request.POST.get('punto_retirada'),
-            )
+        cod_est_retirada = request.POST.get('cod_est_retirada')
+        if cod_est_retirada and cod_est_retirada.strip():
+            print(f"=== CREANDO ESTRUCTURA RETIRADA ===")
+            estructura_retirada_data = {
+                'formulario': formulario,
+                'cod_est': cod_est_retirada.strip(),
+                'apoyo': request.POST.get('apoyo_retirada', ''),
+                'material': request.POST.get('material_retirada', ''),
+                'altura': safe_float(request.POST.get('altura_retirada')),
+                'tipo_red': request.POST.get('tipo_red_retirada', ''),
+                'punto': request.POST.get('punto_retirada', ''),
+            }
+            print(f"Datos estructura retirada: {estructura_retirada_data}")
+            
+            EstructuraRetirada.objects.create(**estructura_retirada_data)
             estructura_retirada_creada = True
         
         # Crear información del proyecto
-        if request.POST.get('nombre'):
-            ProyectoInfo.objects.create(
-                formulario=formulario,
-                nombre=request.POST.get('nombre'),
-                ot_mano_obra=request.POST.get('ot_mano_obra'),
-                ot_materia=request.POST.get('ot_materia'),
-                contrato=request.POST.get('contrato'),
-                pro_terc=request.POST.get('pro_terc'),
-            )
+        nombre_proyecto = request.POST.get('nombre')
+        if nombre_proyecto and nombre_proyecto.strip():
+            print(f"=== CREANDO PROYECTO INFO ===")
+            proyecto_data = {
+                'formulario': formulario,
+                'nombre': nombre_proyecto.strip(),
+                'ot_mano_obra': request.POST.get('ot_mano_obra', ''),
+                'ot_materia': request.POST.get('ot_materia', ''),
+                'contrato': request.POST.get('contrato', ''),
+                'pro_terc': request.POST.get('pro_terc', ''),
+            }
+            print(f"Datos proyecto: {proyecto_data}")
+            
+            ProyectoInfo.objects.create(**proyecto_data)
             proyecto_info_creado = True
         
         # Guardar archivos localmente si existen
@@ -408,6 +282,12 @@ def submit_form(request):
         if 'archivo_kmz' in request.FILES:
             save_file_locally(request.FILES['archivo_kmz'], f'kmz_formulario_{formulario.id}')
         
+        print(f"=== FORMULARIO GUARDADO EXITOSAMENTE ===")
+        print(f"ID: {formulario.id}")
+        print(f"Estructura nueva: {estructura_nueva_creada}")
+        print(f"Estructura retirada: {estructura_retirada_creada}")
+        print(f"Proyecto info: {proyecto_info_creado}")
+        
         # Redirigir a página de éxito con información
         context = {
             'form_id': formulario.id,
@@ -415,11 +295,17 @@ def submit_form(request):
             'estructura_nueva': estructura_nueva_creada,
             'estructura_retirada': estructura_retirada_creada,
             'proyecto_info': proyecto_info_creado,
+            'formulario': formulario,  # Añadir el objeto formulario para mostrar más detalles
         }
         
         return render(request, 'forms/success.html', context)
         
     except Exception as e:
+        print(f"=== ERROR AL GUARDAR FORMULARIO ===")
+        print(f"Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
         messages.error(request, f'Error al guardar formulario: {str(e)}')
         return redirect('form')
 

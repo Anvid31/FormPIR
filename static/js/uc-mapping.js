@@ -152,9 +152,11 @@ function getUCFromStructure(material, altura, poblacion, disposicion, tipoRed) {
         // Verificar material (debe coincidir exactamente)
         if (materialNorm) {
             let materialMatch = false;
-            if (materialNorm === 'fibra de vidrio' && desc.includes('fibra de vidrio')) materialMatch = true;
+            if (materialNorm === 'fibra de vidrio' && (desc.includes('fibra de vidrio') || desc.includes('prfv'))) materialMatch = true;
+            else if (materialNorm === 'prfv' && (desc.includes('fibra de vidrio') || desc.includes('prfv'))) materialMatch = true;
             else if (materialNorm === 'concreto' && desc.includes('concreto')) materialMatch = true;
-            else if (materialNorm === 'metálico' && desc.includes('metálico')) materialMatch = true;
+            else if (materialNorm === 'metálico' && (desc.includes('metálico') || desc.includes('metalico'))) materialMatch = true;
+            else if (materialNorm === 'metalico' && (desc.includes('metálico') || desc.includes('metalico'))) materialMatch = true;
             else if (materialNorm === 'madera' && desc.includes('madera')) materialMatch = true;
             
             if (!materialMatch) continue;
@@ -167,13 +169,16 @@ function getUCFromStructure(material, altura, poblacion, disposicion, tipoRed) {
         if (poblacionNorm === 'urbana' && !desc.includes('urbano')) continue;
         if (poblacionNorm === 'rural' && !desc.includes('rural')) continue;
         
-        // Verificar disposición
+        // Verificar disposición - mapear suspencion->suspensión
         if (disposicionNorm === 'retención' && !desc.includes('retención')) continue;
+        if (disposicionNorm === 'retencion' && !desc.includes('retención')) continue;
         if (disposicionNorm === 'suspensión' && !desc.includes('suspensión')) continue;
+        if (disposicionNorm === 'suspencion' && !desc.includes('suspensión')) continue;
         
-        // Verificar tipo de red
-        if (tipoRedNorm === 'red común' && !desc.includes('red común')) continue;
-        if (tipoRedNorm === 'red trenzada' && !desc.includes('red trenzada')) continue;
+        // Verificar tipo de red - mapear común->red común y trenzada->red trenzada
+        if (tipoRedNorm === 'común' && !desc.includes('red común')) continue;
+        if (tipoRedNorm === 'comun' && !desc.includes('red común')) continue;
+        if (tipoRedNorm === 'trenzada' && !desc.includes('red trenzada')) continue;
         
         console.log('¡UC encontrado!', uc, ':', descripcion);
         return uc;

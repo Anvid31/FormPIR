@@ -30,19 +30,18 @@ class Command(BaseCommand):
             cursor.execute("""
                 SELECT COUNT(*) 
                 FROM DBA_USERS 
-                WHERE USERNAME = 'C##DESS_USER'
+                WHERE USERNAME = config('ORACLE_USER', default='FORM_PIR')
             """)
             user_exists = cursor.fetchone()[0] > 0
 
             if not user_exists:
-                self.stdout.write('Creando usuario C##DESS_USER...')
+                self.stdout.write('Creando usuario {config("ORACLE_USER", default="FORM_PIR")}...')
                 # Crear el usuario si no existe usando el prefijo C## para usuarios comunes
                 cursor.execute("""
-                    CREATE USER C##DESS_USER IDENTIFIED BY dess123
+                    CREATE USER {config('ORACLE_USER', default='FORM_PIR')} IDENTIFIED BY {config('ORACLE_PASSWORD', default='dess123')}
                     DEFAULT TABLESPACE USERS
                     TEMPORARY TABLESPACE TEMP
                     QUOTA UNLIMITED ON USERS
-                    CONTAINER=ALL
                 """)
                 self.stdout.write('  ✓ Usuario C##DESS_USER creado')
 
@@ -73,7 +72,7 @@ class Command(BaseCommand):
 
             for permission in permissions:
                 try:
-                    cursor.execute(f"GRANT {permission} TO C##DESS_USER")
+                    cursor.execute(f"GRANT {permission} TO {config('ORACLE_USER', default='FORM_PIR')}")
                     self.stdout.write(f'  ✓ Permiso {permission} otorgado')
                 except oracledb.DatabaseError as e:
                     self.stdout.write(f'  ❌ Error al otorgar {permission}: {str(e)}')

@@ -11,8 +11,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             # Configuración desde .env
-            user = config('ORACLE_USER', default='C##DESS_USER')
-            password = config('ORACLE_PASSWORD', default='dess123')
+            user = config('DB_USER', default='system')
+            password = config('DB_PASSWORD', default='jmendoza8')
             host = config('DB_HOST', default='localhost')
             port = config('DB_PORT', default='1521')
             service = config('DB_SERVICE_NAME', default='XE')
@@ -51,5 +51,5 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'✗ Error conectando a Oracle: {str(e)}'))
             self.stdout.write('Verifica que:')
             self.stdout.write('1. Oracle esté ejecutándose')
-            self.stdout.write('2. El usuario C##DESS_USER exista')
+            self.stdout.write('2. El usuario FORM_PIR exista')
             self.stdout.write('3. Las credenciales en .env sean correctas')

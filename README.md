@@ -2,23 +2,24 @@
 
 ## 🚀 Descripción
 
-Sistema web desarrollado con Django para la gestión de formularios de estructuras eléctricas (postes) con integración directa a base de datos Oracle. Diseñado para facilitar el registro, seguimiento y administración de trabajos de infraestructura eléctrica.
+Sistema web desarrollado con Django para la gestión de formularios de estructuras eléctricas (postes) con integración directa a base de datos Oracle. Diseñado para facilitar el registro, seguimiento y administración de trabajos de infraestructura eléctrica utilizando el usuario `FORM_PIR` para conexión con Oracle 21c.
 
 ## ✨ Características Principales
 
-- **� Formularios Estructurados**: Gestión completa de estructuras nuevas y retiradas
+- **🏗️ Formularios Estructurados**: Gestión completa de estructuras nuevas y retiradas
 - **🔍 Autocompletado UC**: Sistema inteligente de sugerencias para códigos UC
-- **🗄️ Oracle Database**: Integración nativa con Oracle para persistencia empresarial
+- **🗄️ Oracle Database**: Integración nativa con Oracle 21c para persistencia empresarial
 - **📱 Responsive**: Interface adaptable a diferentes dispositivos
 - **🔒 Validaciones**: Validación completa de campos y datos
 - **📋 Lista de Formularios**: Vista completa de todos los formularios registrados
 - **⚡ HTTP Tradicional**: Sin dependencias de WebSocket para máxima compatibilidad
+- **🔧 Comandos de Gestión**: Scripts automatizados para setup y diagnóstico
 
-## 🛠️ Tecnologías Utilizadas
+## ️ Tecnologías Utilizadas
 
 - **Backend**: Django 5.2+, Django REST Framework
 - **Frontend**: HTML5, Tailwind CSS, JavaScript
-- **Base de Datos**: Oracle Database
+- **Base de Datos**: Oracle Database 21c
 - **Deployment**: Gunicorn (WSGI Server)
 
 ## 📋 Requisitos
@@ -61,7 +62,7 @@ Crear archivo `.env` basado en `.env.example`:
 DB_HOST=localhost
 DB_PORT=1521
 DB_SERVICE_NAME=XE
-DB_USER=C##DESS_USER
+DB_USER=FORM_PIR
 DB_PASSWORD=dess123
 
 # Django
@@ -127,34 +128,63 @@ class NuevaTabla(models.Model):
         db_table = 'AC_NUEVA_TABLA_PIR'
 ```
 
-## 🔧 Comandos de Gestión
+## 🔧 Comandos de Gestión Disponibles
 
 ```bash
-# Crear tablas Oracle
+# Crear/recrear tablas Oracle
 python manage.py create_oracle_tables
 
 # Recrear tablas (elimina datos existentes)
 python manage.py create_oracle_tables --drop
 
-# Verificar conexión Oracle
-python test_oracle.py
+# Diagnóstico de conexión Oracle
+python manage.py diagnose_oracle
+
+# Inicializar tablas vacías
+python manage.py init_oracle_tables
+
+# Configurar usuario Oracle
+python manage.py setup_oracle_user
+
+# Probar conexión Oracle
+python manage.py test_oracle
 ```
 
 ## 📁 Estructura del Proyecto
 
-```
-forms/
-├── management/commands/
-│   └── create_oracle_tables.py    # Comando para crear tablas
-├── templates/forms/
-│   ├── form.html                  # Formulario principal
-│   ├── list.html                  # Lista de formularios
-│   └── success.html               # Página de éxito
-├── static/js/
-│   └── uc-mapping.js              # Autocompletado UC
-├── models.py                      # Modelos Django-Oracle
-├── views.py                       # Lógica de vistas
-└── urls.py                        # Configuración de URLs
+```text
+formPreview V2/
+├── dess/                           # Configuración Django
+│   ├── settings.py                # Configuración principal
+│   ├── oracle_config.py           # Configuración Oracle
+│   ├── urls.py                    # URLs principales
+│   ├── wsgi.py                    # Configuración WSGI
+│   └── asgi.py                    # Configuración ASGI
+├── forms/                         # Aplicación principal
+│   ├── management/commands/       # Comandos personalizados
+│   │   ├── create_oracle_tables.py
+│   │   ├── diagnose_oracle.py
+│   │   ├── init_oracle_tables.py
+│   │   ├── setup_oracle_user.py
+│   │   └── test_oracle.py
+│   ├── templates/forms/           # Plantillas HTML
+│   │   ├── form.html             # Formulario principal
+│   │   ├── list.html             # Lista de formularios
+│   │   └── success.html          # Página de éxito
+│   ├── static/js/                # JavaScript
+│   │   └── uc-mapping.js         # Autocompletado UC
+│   ├── models.py                 # Modelos Django-Oracle
+│   ├── views.py                  # Lógica de vistas
+│   ├── forms.py                  # Formularios Django
+│   ├── urls.py                   # URLs de la app
+│   └── admin.py                  # Configuración admin
+├── static/js/                    # Archivos estáticos globales
+│   └── uc-mapping.js
+├── staticfiles/                  # Archivos estáticos recolectados
+├── create_tables.sql             # Script SQL para tablas
+├── create_user.sql              # Script SQL para usuario
+├── requirement.txt              # Dependencias Python
+└── manage.py                    # Script principal Django
 ```
 
 ## 🔄 Flujo de Trabajo
@@ -203,65 +233,37 @@ forms/
 ### Estructura Extensible
 
 El sistema utiliza un patrón modular que permite:
+
 - Agregar nuevos tipos de formularios
 - Extender campos existentes
 - Integrar nuevas validaciones
 - Personalizar flujos de trabajo
-3. **Agregar elementos**: Los elementos aparecen instantáneamente en la tabla
-4. **Colaboración**: Múltiples usuarios pueden trabajar simultáneamente
-
-## 📁 Estructura del Proyecto
-
-formPreview V2/
-├── dess/                      # Configuración Django
-│   ├── settings.py           # Configuración principal
-│   ├── asgi.py              # Configuración ASGI/WebSockets
-│   └── urls.py              # URLs principales
-├── forms/                    # Aplicación principal
-│   ├── models.py            # Modelos de datos
-│   ├── views.py             # Vistas y APIs
-│   ├── consumers.py         # Consumers WebSocket
-│   ├── routing.py           # Rutas WebSocket
-│   ├── urls.py              # URLs de la app
-│   └── templates/forms/
-│       └── form.html        # Interface principal
-├── .env                     # Variables de entorno
-├── requirement.txt          # Dependencias
-└── manage.py                # Archivo Principal
-
-## 🔧 APIs Disponibles
-
-### REST API
-
-- `GET /api/formularios/` - Listar formularios
-- `POST /api/formularios/` - Crear formulario
-- `GET /api/formularios/{id}/` - Obtener formulario
-- `PUT /api/formularios/{id}/` - Actualizar formulario
-- `DELETE /api/formularios/{id}/` - Eliminar formulario
-
-### WebSocket Endpoints
-
-- `ws://localhost:8000/ws/form/{form_id}/` - Conexión a formulario específico
-- `ws://localhost:8000/ws/form-data/` - Datos globales en tiempo real
 
 ## 🐛 Resolución de Problemas
-
-### WebSocket no conecta
-
-- Verificar que Redis esté ejecutándose (producción)
-- Comprobar configuración ASGI
-- Revisar logs del servidor
 
 ### Error de conexión a Oracle
 
 - Verificar credenciales en `.env`
 - Comprobar que Oracle esté ejecutándose
-- Ejecutar `python manage.py migrate`
+- Ejecutar `python manage.py diagnose_oracle`
+
+### Problemas con tablas Oracle
+
+- Recrear tablas: `python manage.py create_oracle_tables --drop`
+- Verificar permisos del usuario `FORM_PIR`
+- Revisar logs de Oracle
 
 ### Problemas de dependencias
 
-- Ejecutar `python test_sistema.py` para diagnóstico
 - Reinstalar dependencias: `pip install -r requirement.txt`
+- Verificar instalación del cliente Oracle
+- Comprobar compatibilidad de versiones
+
+### Errores de formulario
+
+- Verificar validaciones en `forms.py`
+- Revisar JavaScript en navegador
+- Comprobar CSRF token
 
 ## 🤝 Contribución
 
@@ -273,6 +275,8 @@ formPreview V2/
 
 ## 📄 Licencia
 
-Este proyecto es privado, solo se sube para llevar trazabilidad general y está destinado para uso interno de CIM&DESS.
+Este proyecto es privado, destinado para uso interno de CIM&DESS.
 
-**Desarrollado con ❤️ para DESS - 2025**
+---
+
+Desarrollado con ❤️ para DESS - 2025
