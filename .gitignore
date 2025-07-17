@@ -6,8 +6,6 @@ __pycache__/
 local_settings.py
 
 media/
-staticfiles/
-
 # Environment variables
 .env
 .venv

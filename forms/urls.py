@@ -1,19 +1,26 @@
 from django.urls import path
-from .views import FormularioView, FormularioAPIView, FormularioListView, submit_form
+from . import views
+from django.contrib.auth import views as auth_views
+
+app_name = 'forms'
 
 urlpatterns = [
-    # Vista principal del formulario
-    path('', FormularioView.as_view(), name='form'),
-    path('forms/', FormularioView.as_view(), name='form_alt'),
-    path('forms/<int:form_id>/', FormularioView.as_view(), name='form_detail'),
+    # Rutas principales
+    path('', views.home, name='home'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('lista/', views.lista_formularios, name='lista'),
+    path('crear/', views.crear_formulario, name='crear_formulario'),
     
-    # Lista de formularios
-    path('list/', FormularioListView.as_view(), name='form_list'),
+    # Rutas específicas para administrador
+    path('panel/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('panel/usuarios/', views.admin_users_list, name='admin_users_list'),
+    path('panel/formularios/', views.admin_formularios_list, name='admin_formularios_list'),
     
-    # API REST para operaciones CRUD
-    path('api/form/', FormularioAPIView.as_view(), name='formulario_api'),
-    path('api/form/<int:form_id>/', FormularioAPIView.as_view(), name='formulario_api_detail'),
-    
-    # Endpoint para guardar formulario completo
-    path('submit/', submit_form, name='submit_form'),
+    # Rutas de autenticación
+    path('login/', auth_views.LoginView.as_view(
+        template_name='auth/login.html',
+        redirect_authenticated_user=True,
+        next_page='/dashboard/'
+    ), name='login'),
+    path('logout/', views.custom_logout, name='logout'),
 ]

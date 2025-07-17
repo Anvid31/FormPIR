@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Contratista - DESS{% endblock %}
+
+{% block content %}
+<!-- Header específico para Contratista -->
+<div class="header-semaforo-contratista mb-8">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">
+                    <i class="fas fa-tools mr-3"></i>
+                    Dashboard Contratista
+                </h1>
+                <p class="text-lg opacity-90">
+                    {% if user.equipo_contratista %}
+                        {{ user.get_equipo_contratista_display }} - {{ user.get_full_name }}
+                    {% else %}
+                        Equipo de Campo - {{ user.get_full_name }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="flex space-x-4">
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ stats.mis_formularios }}</div>
+                    <div class="text-sm opacity-80">Mis Formularios</div>
+                </div>
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ stats.pendientes }}</div>
+                    <div class="text-sm opacity-80">En Proceso</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Crear Nuevo Formulario -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-contratista mr-4">
+                <i class="fas fa-plus-circle text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Nuevo Formulario</h3>
+                <p class="text-sm text-gray-600">Crear un nuevo formulario de campo</p>
+            </div>
+        </div>
+        <a href="{% url 'forms:crear_formulario' %}" class="btn-semaforo btn-contratista w-full">
+            <i class="fas fa-plus mr-2"></i>
+            Crear Formulario
+        </a>
+    </div>
+
+    <!-- Mis Formularios Pendientes -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-interventor mr-4">
+                <i class="fas fa-clock text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Pendientes</h3>
+                <p class="text-sm text-gray-600">Formularios en proceso de trabajo</p>
+            </div>
+        </div>
+        <a href="?estado=contratista&mis_formularios=1" class="btn-semaforo btn-interventor w-full">
+            <i class="fas fa-list mr-2"></i>
+            Ver Pendientes ({{ stats.pendientes }})
+        </a>
+    </div>
+
+    <!-- Formularios Enviados -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-gestion mr-4">
+                <i class="fas fa-paper-plane text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Enviados</h3>
+                <p class="text-sm text-gray-600">Formularios en revisión</p>
+            </div>
+        </div>
+        <a href="?estado=interventor&mis_formularios=1" class="btn-semaforo btn-gestion_actualizando w-full">
+            <i class="fas fa-search mr-2"></i>
+            Ver Enviados ({{ stats.en_revision }})
+        </a>
+    </div>
+</div>
+
+<!-- Progreso del Equipo -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-line mr-2"></i>
+        Progreso del Equipo
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Formularios en Trabajo -->
+        <div class="progress-item text-center">
+            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-contratista rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-contratista">{{ stats.en_trabajo }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">En Trabajo</div>
+            <div class="text-xs text-gray-500">Equipo Contratista</div>
+        </div>
+
+        <!-- En Revisión -->
+        <div class="progress-item text-center">
+            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-interventor rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-interventor">{{ stats.en_revision }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">En Revisión</div>
+            <div class="text-xs text-gray-500">Ejecutor/Interventor</div>
+        </div>
+
+        <!-- Actualizando -->
+        <div class="progress-item text-center">
+            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-gestion rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-gestion">{{ stats.actualizando }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">Actualizando</div>
+            <div class="text-xs text-gray-500">Gestión de Información</div>
+        </div>
+
+        <!-- Completados -->
+        <div class="progress-item text-center">
+            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-completado rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-completado">{{ stats.completados }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">Completados</div>
+            <div class="text-xs text-gray-500">Gestión Actualizada</div>
+        </div>
+    </div>
+
+    <!-- Barra de progreso general -->
+    <div class="mt-6">
+        <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Progreso General del Equipo</span>
+            <span>{{ stats.porcentaje_completado }}% Completado</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-3">
+            <div class="bg-gradient-to-r from-orange-400 via-blue-400 to-green-400 h-3 rounded-full transition-all duration-500" 
+                 data-width="{{ stats.porcentaje_completado }}"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Últimos Formularios -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-history mr-2"></i>
+                Mis Últimos Formularios
+            </h3>
+            <a href="?mis_formularios=1" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                Ver todos mis formularios <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-semaforo overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Formulario
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trabajo/Proyecto
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Última Actualización
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for formulario in mis_formularios_recientes %}
+                <tr class="table-row-{{ formulario.estado_actual }} hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="estado-icon mr-3">
+                                <i class="{{ formulario.get_estado_icon }}"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    F{{ formulario.id|stringformat:"06d" }}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    {{ formulario.created_at|date:"d/m/Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">{{ formulario.trabajo|default:"Sin descripción" }}</div>
+                        {% if formulario.circuito %}
+                        <div class="text-sm text-gray-500">{{ formulario.circuito }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge badge-estado {{ formulario.get_estado_color_class }}">
+                            <i class="{{ formulario.get_estado_icon }} mr-1"></i>
+                            {{ formulario.get_estado_actual_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ formulario.updated_at|date:"d/m/Y H:i" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex justify-end space-x-2">
+                            <!-- Ver Detalles -->
+                            <a href="#" onclick="alert('Función en desarrollo')" 
+                               class="text-blue-600 hover:text-blue-900" 
+                               title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            
+                            <!-- Editar (solo si está en estado contratista) -->
+                            {% if formulario.estado_actual == 'contratista' %}
+                            <a href="#" onclick="alert('Función en desarrollo')" 
+                               class="text-green-600 hover:text-green-900" 
+                               title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            
+                            <!-- Enviar a revisión -->
+                            <button data-formulario-id="{{ formulario.id }}" 
+                                    class="text-blue-600 hover:text-blue-900 enviar-revision-btn" 
+                                    title="Enviar a revisión">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                        <div class="text-gray-500">
+                            <i class="fas fa-plus-circle text-4xl mb-4 text-semaforo-contratista"></i>
+                            <p class="text-lg">No tienes formularios aún</p>
+                            <p class="text-sm mb-4">Crea tu primer formulario para comenzar a trabajar</p>
+                            <a href="{% url 'forms:crear_formulario' %}" class="btn-semaforo btn-contratista">
+                                <i class="fas fa-plus mr-2"></i>
+                                Crear Primer Formulario
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Ayuda y Consejos -->
+<div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
+        Consejos para el Trabajo de Campo
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="tip-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Completar toda la información:</strong> Asegúrate de llenar todos los campos requeridos antes de enviar a revisión.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="tip-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-camera text-blue-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Documentar con fotos:</strong> Adjunta fotografías claras y de calidad para respaldar la información.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="tip-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-map-marker-alt text-red-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Verificar ubicación:</strong> Confirma que las coordenadas GPS y dirección sean precisas.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="tip-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-save text-purple-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Guardar frecuentemente:</strong> Guarda tu progreso regularmente para evitar perder información.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Configurar event listeners cuando la página esté cargada
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar el ancho de la barra de progreso
+    var progressBar = document.querySelector('[data-width]');
+    if (progressBar) {
+        var width = progressBar.getAttribute('data-width');
+        progressBar.style.width = width + '%';
+    }
+    
+    // Configurar event listeners para los botones de enviar a revisión
+    var enviarBtns = document.querySelectorAll('.enviar-revision-btn');
+    enviarBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var formularioId = this.getAttribute('data-formulario-id');
+            enviarRevision(formularioId);
+        });
+    });
+});
+
+function enviarRevision(formularioId) {
+    if (confirm('¿Estás seguro de que quieres enviar este formulario a revisión?\n\nUna vez enviado, no podrás editarlo hasta que sea devuelto por el interventor.')) {
+        fetch('/api/formulario/' + formularioId + '/cambiar-estado/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                nuevo_estado: 'interventor',
+                comentario: 'Formulario enviado a revisión desde dashboard contratista'
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                var alertDiv = document.createElement('div');
+                alertDiv.className = 'fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50';
+                alertDiv.innerHTML = '<div class="flex">' +
+                    '<div class="py-1">' +
+                        '<i class="fas fa-check-circle mr-2"></i>' +
+                        'Formulario enviado a revisión correctamente' +
+                    '</div>' +
+                    '<div class="ml-auto pl-3">' +
+                        '<button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-green-700 hover:text-green-900">' +
+                            '<i class="fas fa-times"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</div>';
+                document.body.appendChild(alertDiv);
+                
+                // Remover alerta después de 5 segundos
+                setTimeout(function() {
+                    if (alertDiv.parentElement) {
+                        alertDiv.remove();
+                    }
+                }, 5000);
+                
+                // Recargar la página para actualizar los estados
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('Error al enviar el formulario a revisión');
+        });
+    }
+}
+
+// Actualizar estadísticas cada 30 segundos
+setInterval(function() {
+    fetch('/api/estadisticas-contratista/')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            // Actualizar contadores de forma segura
+            var progressElements = document.querySelectorAll('.progress-circle span');
+            if (progressElements.length >= 4) {
+                progressElements[0].textContent = data.en_trabajo || '0';
+                progressElements[1].textContent = data.en_revision || '0';
+                progressElements[2].textContent = data.actualizando || '0';
+                progressElements[3].textContent = data.completados || '0';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error actualizando estadísticas:', error);
+        });
+}, 30000);
+</script>
+{% endblock %}

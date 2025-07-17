@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Administrador - DESS{% endblock %}
+
+{% block content %}
+<!-- Header específico para Administrador -->
+<div class="header-semaforo-gestion mb-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">
+                    <i class="fas fa-user-cog mr-3"></i>
+                    Dashboard Administrador
+                </h1>
+                <p class="text-lg opacity-90">
+                    Gestión del Sistema - {{ user.get_full_name }}
+                </p>
+            </div>
+            <div class="flex space-x-4">
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ total_formularios }}</div>
+                    <div class="text-sm opacity-80">Total Formularios</div>
+                </div>
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ total_usuarios }}</div>
+                    <div class="text-sm opacity-80">Usuarios Activos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones de Administración -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Gestión de Usuarios -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-gestion mr-4">
+                <i class="fas fa-users text-3xl text-blue-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Gestión Usuarios</h3>
+                <p class="text-sm text-gray-600">Crear y administrar usuarios</p>
+            </div>
+        </div>
+        <a href="{% url 'forms:admin_users_list' %}" class="btn-semaforo btn-gestion w-full">
+            <i class="fas fa-user-cog mr-2"></i>
+            Gestionar Usuarios
+        </a>
+    </div>
+
+    <!-- Monitoreo de Formularios -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-contratista mr-4">
+                <i class="fas fa-file-alt text-3xl text-green-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Formularios</h3>
+                <p class="text-sm text-gray-600">Monitorear todos los formularios</p>
+            </div>
+        </div>
+        <a href="{% url 'forms:admin_formularios_list' %}" class="btn-semaforo btn-contratista w-full">
+            <i class="fas fa-search mr-2"></i>
+            Ver Formularios
+        </a>
+    </div>
+
+    <!-- Admin Django -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-interventor mr-4">
+                <i class="fas fa-cogs text-3xl text-purple-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Configuración</h3>
+                <p class="text-sm text-gray-600">Panel de administración</p>
+            </div>
+        </div>
+        <a href="/admin/" class="btn-semaforo btn-interventor w-full">
+            <i class="fas fa-cog mr-2"></i>
+            Admin Django
+        </a>
+    </div>
+
+    <!-- Crear Usuario Rápido -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-planeacion mr-4">
+                <i class="fas fa-user-plus text-3xl text-orange-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Nuevo Usuario</h3>
+                <p class="text-sm text-gray-600">Crear usuario rápidamente</p>
+            </div>
+        </div>
+        <a href="/admin/forms/customuser/add/" class="btn-semaforo btn-planeacion w-full">
+            <i class="fas fa-plus mr-2"></i>
+            Crear Usuario
+        </a>
+    </div>
+</div>
+
+<!-- Estadísticas del Sistema -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-pie mr-2"></i>
+        Estadísticas del Sistema
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Formularios por Estado -->
+        <div class="stats-item text-center">
+            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-contratista rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-contratista">{{ stats.contratista|default:0 }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">En Trabajo</div>
+            <div class="text-xs text-gray-500">Contratista</div>
+        </div>
+
+        <div class="stats-item text-center">
+            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-interventor rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-interventor">{{ stats.interventor|default:0 }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">En Revisión</div>
+            <div class="text-xs text-gray-500">Interventor</div>
+        </div>
+
+        <div class="stats-item text-center">
+            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-gestion rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-gestion">{{ stats.gestion|default:0 }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">En Gestión</div>
+            <div class="text-xs text-gray-500">Gestión</div>
+        </div>
+
+        <div class="stats-item text-center">
+            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-completado rounded-full w-16 h-16 flex items-center justify-center">
+                <span class="text-lg font-bold text-semaforo-completado">{{ stats.finalizado|default:0 }}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-900">Finalizados</div>
+            <div class="text-xs text-gray-500">Completados</div>
+        </div>
+    </div>
+</div>
+
+<!-- Usuarios Recientes -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-users mr-2"></i>
+                Usuarios del Sistema
+            </h3>
+            <a href="/admin/forms/customuser/" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                Gestionar todos los usuarios <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-semaforo overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Usuario
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Rol
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Último Acceso
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for usuario in usuarios_recientes %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <i class="fas fa-user text-gray-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ usuario.get_full_name|default:usuario.username }}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    {{ usuario.email }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {{ usuario.get_rol_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if usuario.is_active %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                Activo
+                            </span>
+                        {% else %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                Inactivo
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ usuario.fecha_ultimo_acceso|date:"d/m/Y H:i"|default:"Nunca" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="/admin/forms/customuser/{{ usuario.id }}/change/" class="text-blue-600 hover:text-blue-900" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                        <div class="text-gray-500">
+                            <i class="fas fa-users text-4xl mb-4"></i>
+                            <p class="text-lg">No hay usuarios registrados</p>
+                            <p class="text-sm mb-4">Crea el primer usuario del sistema</p>
+                            <a href="/admin/forms/customuser/add/" class="btn-semaforo btn-gestion">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Crear Usuario
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Información del Sistema -->
+<div class="mt-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+        Información del Sistema
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="info-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-database text-green-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Base de Datos:</strong> 
+                        {% if tables_exist %}
+                            <span class="text-green-600">Oracle XE - Conectado</span>
+                        {% else %}
+                            <span class="text-red-600">Configuración Pendiente</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="info-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-shield-alt text-blue-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Autenticación:</strong> Backend Oracle Personalizado
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="info-item">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-code text-purple-500 mt-1"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        <strong>Versión:</strong> Django 5.2.3 - DESS FormPIR v2.0
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funciones específicas para administrador
+function refreshStats() {
+    fetch('/api/estadisticas-admin/')
+        .then(response => response.json())
+        .then(data => {
+            // Actualizar estadísticas si están disponibles
+            console.log('Estadísticas actualizadas:', data);
+        })
+        .catch(error => console.error('Error actualizando estadísticas:', error));
+}
+
+// Actualizar estadísticas cada minuto
+setInterval(refreshStats, 60000);
+</script>
+{% endblock %}

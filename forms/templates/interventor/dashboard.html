@@ -1,0 +1,538 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Interventor - DESS{% endblock %}
+
+{% block content %}
+<!-- Header específico para Interventor -->
+<div class="header-semaforo-interventor mb-8">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">
+                    <i class="fas fa-search mr-3"></i>
+                    Dashboard Interventor
+                </h1>
+                <p class="text-lg opacity-90">
+                    Ejecutor/Interventor - {{ user.get_full_name }}
+                </p>
+                <p class="text-sm opacity-75">
+                    Revisión y validación de formularios de campo
+                </p>
+            </div>
+            <div class="flex space-x-4">
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ stats.pendientes_revision }}</div>
+                    <div class="text-sm opacity-80">Pendientes</div>
+                </div>
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ stats.revisados_hoy }}</div>
+                    <div class="text-sm opacity-80">Revisados Hoy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas para Interventor -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Formularios Pendientes de Revisión -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 border-semaforo-interventor">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-interventor mr-4">
+                <i class="fas fa-clipboard-check text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Pendientes de Revisión</h3>
+                <p class="text-sm text-gray-600">Formularios esperando validación</p>
+            </div>
+        </div>
+        <a href="?estado=interventor" class="btn-semaforo btn-interventor w-full">
+            <i class="fas fa-eye mr-2"></i>
+            Revisar Formularios ({{ stats.pendientes_revision }})
+        </a>
+    </div>
+
+    <!-- Formularios Urgentes -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 border-red-400">
+        <div class="flex items-center mb-4">
+            <div class="text-red-500 mr-4">
+                <i class="fas fa-exclamation-triangle text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Urgentes</h3>
+                <p class="text-sm text-gray-600">Formularios con más de 24h</p>
+            </div>
+        </div>
+        <a href="?estado=interventor&urgente=1" class="btn-semaforo bg-red-500 text-white hover:bg-red-600 w-full">
+            <i class="fas fa-clock mr-2"></i>
+            Ver Urgentes ({{ stats.urgentes }})
+        </a>
+    </div>
+
+    <!-- Estadísticas de Revisión -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 border-semaforo-gestion">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-gestion mr-4">
+                <i class="fas fa-chart-line text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Productividad</h3>
+                <p class="text-sm text-gray-600">Formularios procesados</p>
+            </div>
+        </div>
+        <a href="#estadisticas-detalle" class="btn-semaforo btn-gestion_actualizando w-full">
+            <i class="fas fa-chart-bar mr-2"></i>
+            Ver Estadísticas
+        </a>
+    </div>
+</div>
+
+<!-- Panel de Revisión Rápida -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-tachometer-alt mr-2"></i>
+        Panel de Revisión Rápida
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- Tiempo Promedio de Revisión -->
+        <div class="metric-card text-center p-4 bg-blue-50 rounded-lg">
+            <div class="text-2xl font-bold text-blue-600 mb-1">{{ stats.tiempo_promedio }}min</div>
+            <div class="text-sm text-gray-600">Tiempo Promedio</div>
+        </div>
+
+        <!-- Tasa de Aprobación -->
+        <div class="metric-card text-center p-4 bg-green-50 rounded-lg">
+            <div class="text-2xl font-bold text-green-600 mb-1">{{ stats.tasa_aprobacion }}%</div>
+            <div class="text-sm text-gray-600">Tasa de Aprobación</div>
+        </div>
+
+        <!-- Rechazados -->
+        <div class="metric-card text-center p-4 bg-red-50 rounded-lg">
+            <div class="text-2xl font-bold text-red-600 mb-1">{{ stats.rechazados_hoy }}</div>
+            <div class="text-sm text-gray-600">Rechazados Hoy</div>
+        </div>
+
+        <!-- Aprobados -->
+        <div class="metric-card text-center p-4 bg-purple-50 rounded-lg">
+            <div class="text-2xl font-bold text-purple-600 mb-1">{{ stats.aprobados_hoy }}</div>
+            <div class="text-sm text-gray-600">Aprobados Hoy</div>
+        </div>
+    </div>
+
+    <!-- Filtros Rápidos -->
+    <div class="flex flex-wrap gap-2">
+        <a href="?estado=interventor" class="filter-tag bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200">
+            <i class="fas fa-clock mr-1"></i>
+            Todos Pendientes
+        </a>
+        <a href="?estado=interventor&equipo=celsia" class="filter-tag bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm hover:bg-green-200">
+            <i class="fas fa-users mr-1"></i>
+            Equipo Celsia
+        </a>
+        <a href="?estado=interventor&equipo=edeq" class="filter-tag bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200">
+            <i class="fas fa-users mr-1"></i>
+            Equipo EDEQ
+        </a>
+        <a href="?estado=interventor&fecha=hoy" class="filter-tag bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm hover:bg-purple-200">
+            <i class="fas fa-calendar-day mr-1"></i>
+            Creados Hoy
+        </a>
+        <a href="?estado=interventor&fotos=sin_fotos" class="filter-tag bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm hover:bg-red-200">
+            <i class="fas fa-camera mr-1"></i>
+            Sin Fotografías
+        </a>
+    </div>
+</div>
+
+<!-- Formularios por Revisar -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-list-check mr-2"></i>
+                Formularios Pendientes de Revisión
+            </h3>
+            <div class="flex items-center space-x-2">
+                <select id="ordenar-por" class="form-control text-sm">
+                    <option value="created_at">Más Antiguos Primero</option>
+                    <option value="-created_at">Más Recientes Primero</option>
+                    <option value="municipio">Por Municipio</option>
+                    <option value="creado_por__equipo_contratista">Por Equipo</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-semaforo overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Formulario
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Contratista
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trabajo/Ubicación
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tiempo en Revisión
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Completitud
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones de Revisión
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for formulario in formularios_pendientes %}
+                <tr class="hover:bg-blue-50 transition-colors" data-formulario-id="{{ formulario.id }}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="mr-3">
+                                {% if formulario.get_tiempo_en_revision > 24 %}
+                                <i class="fas fa-exclamation-triangle text-red-500" title="Más de 24 horas"></i>
+                                {% else %}
+                                <i class="fas fa-clock text-blue-500"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    F{{ formulario.id|stringformat:"06d" }}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    {{ formulario.created_at|date:"d/m/Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">{{ formulario.creado_por.get_full_name }}</div>
+                        <div class="text-sm text-gray-500">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ formulario.creado_por.get_equipo_contratista_display }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">{{ formulario.trabajo|default:"Sin descripción" }}</div>
+                        <div class="text-sm text-gray-500">{{ formulario.municipio|default:"--" }}, {{ formulario.regional|default:"--" }}</div>
+                        {% if formulario.circuito %}
+                        <div class="text-xs text-gray-400">{{ formulario.circuito }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ formulario.get_tiempo_en_revision }}h</div>
+                        <div class="text-xs text-gray-500">
+                            {% if formulario.get_tiempo_en_revision > 24 %}
+                            <span class="text-red-600 font-medium">Urgente</span>
+                            {% elif formulario.get_tiempo_en_revision > 12 %}
+                            <span class="text-yellow-600">Atención</span>
+                            {% else %}
+                            <span class="text-green-600">En Tiempo</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                                     style="width: {{ formulario.get_porcentaje_completitud }}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-600">{{ formulario.get_porcentaje_completitud }}%</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            {% if formulario.tiene_fotografias %}
+                            <i class="fas fa-camera text-green-500 mr-1"></i>
+                            {% else %}
+                            <i class="fas fa-camera text-red-500 mr-1"></i>
+                            {% endif %}
+                            {{ formulario.get_numero_fotografias }} fotos
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex justify-end space-x-1">
+                            <!-- Revisión Rápida -->
+                            <button onclick="abrirRevisionRapida({{ formulario.id }})" 
+                                    class="btn-mini bg-blue-500 text-white hover:bg-blue-600 px-2 py-1 rounded text-xs"
+                                    title="Revisión Rápida">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            
+                            <!-- Aprobar -->
+                            <button onclick="aprobarFormulario({{ formulario.id }})" 
+                                    class="btn-mini bg-green-500 text-white hover:bg-green-600 px-2 py-1 rounded text-xs"
+                                    title="Aprobar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            
+                            <!-- Rechazar -->
+                            <button onclick="rechazarFormulario({{ formulario.id }})" 
+                                    class="btn-mini bg-red-500 text-white hover:bg-red-600 px-2 py-1 rounded text-xs"
+                                    title="Rechazar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            
+                            <!-- Ver Detalles -->
+                            <a href="{% url 'detalle_formulario' formulario.id %}" 
+                               class="btn-mini bg-gray-500 text-white hover:bg-gray-600 px-2 py-1 rounded text-xs"
+                               title="Ver Detalles Completos">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center">
+                        <div class="text-gray-500">
+                            <i class="fas fa-check-circle text-4xl mb-4 text-green-500"></i>
+                            <p class="text-lg">¡Excelente trabajo!</p>
+                            <p class="text-sm">No hay formularios pendientes de revisión</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de Revisión Rápida -->
+<div id="modal-revision-rapida" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Revisión Rápida del Formulario</h3>
+                <button onclick="cerrarRevisionRapida()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="contenido-revision-rapida" class="space-y-4">
+                <!-- El contenido se carga dinámicamente -->
+            </div>
+            
+            <div class="flex justify-end space-x-2 mt-6 pt-4 border-t">
+                <button onclick="cerrarRevisionRapida()" class="btn-semaforo bg-gray-500 text-white hover:bg-gray-600">
+                    Cerrar
+                </button>
+                <button onclick="aprobarDesdeModal()" class="btn-semaforo bg-green-500 text-white hover:bg-green-600">
+                    <i class="fas fa-check mr-2"></i>
+                    Aprobar
+                </button>
+                <button onclick="rechazarDesdeModal()" class="btn-semaforo bg-red-500 text-white hover:bg-red-600">
+                    <i class="fas fa-times mr-2"></i>
+                    Rechazar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Rechazo con Comentarios -->
+<div id="modal-rechazo" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Rechazar Formulario</h3>
+            <form id="form-rechazo">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Motivo del rechazo *</label>
+                    <select id="motivo-rechazo" class="form-control w-full mb-2" required>
+                        <option value="">Seleccionar motivo...</option>
+                        <option value="informacion_incompleta">Información incompleta</option>
+                        <option value="fotografias_faltantes">Fotografías faltantes o de mala calidad</option>
+                        <option value="coordenadas_incorrectas">Coordenadas GPS incorrectas</option>
+                        <option value="datos_inconsistentes">Datos inconsistentes</option>
+                        <option value="documentos_faltantes">Documentos de soporte faltantes</option>
+                        <option value="otro">Otro motivo</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Comentarios adicionales</label>
+                    <textarea id="comentarios-rechazo" rows="4" class="form-control w-full" placeholder="Especifica qué debe corregir el contratista..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="cerrarModalRechazo()" class="btn-semaforo bg-gray-500 text-white hover:bg-gray-600">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-semaforo bg-red-500 text-white hover:bg-red-600">
+                        <i class="fas fa-times mr-2"></i>
+                        Confirmar Rechazo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let formularioActualRevision = null;
+
+function abrirRevisionRapida(formularioId) {
+    formularioActualRevision = formularioId;
+    
+    // Mostrar modal
+    document.getElementById('modal-revision-rapida').classList.remove('hidden');
+    
+    // Cargar contenido del formulario
+    fetch(`/api/formulario/${formularioId}/revision-rapida/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('contenido-revision-rapida').innerHTML = data.html;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('contenido-revision-rapida').innerHTML = 
+                '<div class="text-red-600">Error cargando la información del formulario</div>';
+        });
+}
+
+function cerrarRevisionRapida() {
+    document.getElementById('modal-revision-rapida').classList.add('hidden');
+    formularioActualRevision = null;
+}
+
+function aprobarFormulario(formularioId) {
+    if (confirm('¿Estás seguro de que quieres aprobar este formulario?\n\nSe enviará al área de Gestión de Información para actualización.')) {
+        cambiarEstadoFormulario(formularioId, 'gestion_actualizando', 'Formulario aprobado por interventor');
+    }
+}
+
+function aprobarDesdeModal() {
+    if (formularioActualRevision) {
+        aprobarFormulario(formularioActualRevision);
+        cerrarRevisionRapida();
+    }
+}
+
+function rechazarFormulario(formularioId) {
+    formularioActualRevision = formularioId;
+    document.getElementById('modal-rechazo').classList.remove('hidden');
+}
+
+function rechazarDesdeModal() {
+    if (formularioActualRevision) {
+        rechazarFormulario(formularioActualRevision);
+        cerrarRevisionRapida();
+    }
+}
+
+function cerrarModalRechazo() {
+    document.getElementById('modal-rechazo').classList.add('hidden');
+    formularioActualRevision = null;
+    document.getElementById('form-rechazo').reset();
+}
+
+document.getElementById('form-rechazo').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const motivo = document.getElementById('motivo-rechazo').value;
+    const comentarios = document.getElementById('comentarios-rechazo').value;
+    
+    if (!motivo) {
+        alert('Por favor selecciona un motivo de rechazo');
+        return;
+    }
+    
+    const comentarioCompleto = `Motivo: ${motivo}${comentarios ? '\n\nComentarios: ' + comentarios : ''}`;
+    
+    cambiarEstadoFormulario(formularioActualRevision, 'contratista', comentarioCompleto);
+    cerrarModalRechazo();
+});
+
+function cambiarEstadoFormulario(formularioId, nuevoEstado, comentario) {
+    fetch(`/api/formulario/${formularioId}/cambiar-estado/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            nuevo_estado: nuevoEstado,
+            comentario: comentario
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            const mensaje = nuevoEstado === 'gestion_actualizando' ? 'Formulario aprobado' : 'Formulario rechazado';
+            const color = nuevoEstado === 'gestion_actualizando' ? 'green' : 'red';
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `fixed top-4 right-4 bg-${color}-100 border border-${color}-400 text-${color}-700 px-4 py-3 rounded shadow-lg z-50`;
+            alertDiv.innerHTML = `
+                <div class="flex">
+                    <div class="py-1">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        ${mensaje} correctamente
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-${color}-700 hover:text-${color}-900">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Remover la fila de la tabla
+            const fila = document.querySelector(`tr[data-formulario-id="${formularioId}"]`);
+            if (fila) {
+                fila.style.transition = 'opacity 0.5s';
+                fila.style.opacity = '0';
+                setTimeout(() => fila.remove(), 500);
+            }
+            
+            // Remover alerta después de 5 segundos
+            setTimeout(() => {
+                if (alertDiv.parentElement) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+            
+            // Actualizar contadores
+            actualizarContadores();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cambiar el estado del formulario');
+    });
+}
+
+function actualizarContadores() {
+    fetch('/api/estadisticas-interventor/')
+        .then(response => response.json())
+        .then(data => {
+            // Actualizar contadores en el header
+            const pendientesEl = document.querySelector('.bg-white\\/20:first-child .text-2xl');
+            const revisadosEl = document.querySelector('.bg-white\\/20:last-child .text-2xl');
+            
+            if (pendientesEl) pendientesEl.textContent = data.pendientes_revision;
+            if (revisadosEl) revisadosEl.textContent = data.revisados_hoy;
+        })
+        .catch(error => console.error('Error actualizando contadores:', error));
+}
+
+// Ordenar tabla
+document.getElementById('ordenar-por').addEventListener('change', function() {
+    const url = new URL(window.location);
+    url.searchParams.set('ordenar', this.value);
+    window.location.href = url.toString();
+});
+
+// Actualizar contadores cada 30 segundos
+setInterval(actualizarContadores, 30000);
+</script>
+{% endblock %}

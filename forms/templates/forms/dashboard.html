@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema DESS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'forms:dashboard' %}">
+                <i class="fas fa-traffic-light"></i> Sistema Semáforo DESS
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> {{ user.get_full_name|default:user.username }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><span class="dropdown-item-text">Rol: {{ user.get_rol_display }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>
+                        <i class="fas fa-tachometer-alt"></i> Dashboard 
+                        <small class="text-muted">{{ user.get_rol_display }}</small>
+                    </h1>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Tarjetas de estadísticas -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-file-alt"></i> Total Formularios
+                                </h5>
+                                <h2>{{ total_formularios }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-check"></i> Completados
+                                </h5>
+                                <h2>0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-clock"></i> En Proceso
+                                </h5>
+                                <h2>{{ total_formularios }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-user"></i> Mi Rol
+                                </h5>
+                                <p class="mb-0">{{ user.get_rol_display }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones rápidas -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-bolt"></i> Acciones Rápidas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% if user.rol == 'contratista' %}
+                                        <div class="col-md-4">
+                                            <a href="{% url 'forms:crear_formulario' %}" class="btn btn-primary btn-lg w-100 mb-2">
+                                                <i class="fas fa-plus"></i><br>Crear Formulario
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                    <div class="col-md-4">
+                                        <a href="{% url 'forms:lista' %}" class="btn btn-info btn-lg w-100 mb-2">
+                                            <i class="fas fa-list"></i><br>Ver Formularios
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="#" class="btn btn-success btn-lg w-100 mb-2">
+                                            <i class="fas fa-chart-bar"></i><br>Reportes
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información del usuario -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-circle"></i> Mi Información</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Usuario:</strong> {{ user.username }}</p>
+                                <p><strong>Nombre:</strong> {{ user.get_full_name|default:"No especificado" }}</p>
+                                <p><strong>Email:</strong> {{ user.email|default:"No especificado" }}</p>
+                                <p><strong>Rol:</strong> {{ user.get_rol_display }}</p>
+                                {% if user.regional_asignada %}
+                                    <p><strong>Regional:</strong> {{ user.regional_asignada }}</p>
+                                {% endif %}
+                                {% if user.departamento_asignado %}
+                                    <p><strong>Departamento:</strong> {{ user.departamento_asignado }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-info-circle"></i> Estado del Sistema</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i> 
+                                    Sistema operativo y funcionando correctamente
+                                </div>
+                                <p><strong>Base de datos:</strong> Oracle XE conectada</p>
+                                <p><strong>Última actualización:</strong> {{ user.fecha_ultimo_acceso|date:"d/m/Y H:i" }}</p>
+                                <p><strong>Versión:</strong> FormPIR v2.0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

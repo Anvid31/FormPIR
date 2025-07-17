@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Formulario - DESS{% endblock %}
+
+{% block extra_js %}
+<!-- Módulos JavaScript del Formulario -->
+<script src="{% static 'forms/js/mappings.js' %}"></script>
+<script src="{% static 'forms/js/validation.js' %}"></script>
+<script src="{% static 'forms/js/file-upload.js' %}"></script>
+<script src="{% static 'forms/js/navigation.js' %}"></script>
+<script src="{% static 'forms/js/form-core.js' %}"></script>
+
+<!-- CSS Específico del Formulario -->
+<link href="{% static 'forms/css/form-styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header del Formulario -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-plus-circle text-blue-600 mr-3"></i>
+                        Crear Nuevo Formulario
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Complete la información del proyecto paso a paso</p>
+                </div>
+                
+                <!-- Botones de Acción -->
+                <div class="flex space-x-3">
+                    <button type="button" 
+                            id="loadDraftBtn"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-folder-open mr-2"></i>
+                        Cargar Borrador
+                    </button>
+                    
+                    <button type="button" 
+                            id="saveDraftBtn"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Borrador
+                    </button>
+                    
+                    <button type="button" 
+                            id="resetFormBtn"
+                            class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <i class="fas fa-trash-alt mr-2"></i>
+                        Limpiar Todo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegación por Pasos -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <nav class="flex items-center justify-between">
+                <ol class="flex items-center space-x-8">
+                    <!-- Paso 1: Datos Generales -->
+                    <li class="nav-item cursor-pointer" data-step="generales">
+                        <div class="flex items-center">
+                            <div class="nav-circle flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-gray-300 text-gray-500 text-sm font-medium">
+                                1
+                            </div>
+                            <div class="ml-3">
+                                <p class="nav-label text-sm font-medium text-gray-500">Datos Generales</p>
+                                <p class="text-xs text-gray-400">Información básica del proyecto</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Línea de progreso -->
+                    <div class="progress-line h-0.5 w-16 bg-gray-300"></div>
+                    
+                    <!-- Paso 2: Estructuras -->
+                    <li class="nav-item cursor-pointer" data-step="estructuras">
+                        <div class="flex items-center">
+                            <div class="nav-circle flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-gray-300 text-gray-500 text-sm font-medium">
+                                2
+                            </div>
+                            <div class="ml-3">
+                                <p class="nav-label text-sm font-medium text-gray-500">Estructuras</p>
+                                <p class="text-xs text-gray-400">Información de estructuras</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Línea de progreso -->
+                    <div class="progress-line h-0.5 w-16 bg-gray-300"></div>
+                    
+                    <!-- Paso 3: Conductores -->
+                    <li class="nav-item cursor-pointer" data-step="conductores">
+                        <div class="flex items-center">
+                            <div class="nav-circle flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-gray-300 text-gray-500 text-sm font-medium">
+                                3
+                            </div>
+                            <div class="ml-3">
+                                <p class="nav-label text-sm font-medium text-gray-500">Conductores</p>
+                                <p class="text-xs text-gray-400">Configuración de conductores</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Línea de progreso -->
+                    <div class="progress-line h-0.5 w-16 bg-gray-300"></div>
+                    
+                    <!-- Paso 4: Documentos -->
+                    <li class="nav-item cursor-pointer" data-step="documentos">
+                        <div class="flex items-center">
+                            <div class="nav-circle flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-gray-300 text-gray-500 text-sm font-medium">
+                                4
+                            </div>
+                            <div class="ml-3">
+                                <p class="nav-label text-sm font-medium text-gray-500">Documentos</p>
+                                <p class="text-xs text-gray-400">Archivos y documentación</p>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal del Formulario -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form method="post" 
+              id="formPreview" 
+              enctype="multipart/form-data" 
+              action="{% url 'forms:crear_formulario' %}"
+              class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Contenido Dinámico por Pasos -->
+            <div id="form-content">
+                <!-- Paso 1: Datos Generales -->
+                <div data-form-section="generales">
+                    {% include 'forms/form_sections/generales.html' %}
+                </div>
+
+                <!-- Paso 2: Estructuras -->
+                <div data-form-section="estructuras" style="display: none;">
+                    {% include 'forms/form_sections/estructuras.html' %}
+                </div>
+
+                <!-- Paso 3: Conductores -->
+                <div data-form-section="conductores" style="display: none;">
+                    {% include 'forms/form_sections/conductores.html' %}
+                </div>
+
+                <!-- Paso 4: Documentos -->
+                <div data-form-section="documentos" style="display: none;">
+                    {% include 'forms/form_sections/documentos.html' %}
+                </div>
+            </div>
+
+            <!-- Botones de Navegación -->
+            <div class="flex justify-between items-center pt-8 border-t border-gray-200">
+                <button type="button" 
+                        id="prevStepBtn"
+                        class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Anterior
+                </button>
+
+                <div class="flex space-x-4">
+                    <button type="button" 
+                            id="nextStepBtn"
+                            class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Siguiente
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+
+                    <button type="submit" 
+                            id="submitFormBtn"
+                            class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            style="display: none;">
+                        <i class="fas fa-check mr-2"></i>
+                        Enviar Formulario
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script de Inicialización -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar todos los módulos
+    console.log('🚀 Inicializando formulario modular...');
+    
+    // Inicializar mapeos de datos
+    if (typeof initializeMappings === 'function') {
+        initializeMappings();
+    }
+    
+    // Inicializar validaciones
+    if (typeof setupRealTimeValidation === 'function') {
+        setupRealTimeValidation();
+    }
+    
+    // Inicializar drag & drop de archivos
+    if (typeof initializeFileDropZones === 'function') {
+        initializeFileDropZones();
+    }
+    
+    // Inicializar navegación
+    if (typeof initializeNavigation === 'function') {
+        initializeNavigation();
+    }
+    
+    // Inicializar núcleo del formulario
+    if (typeof initializeFormCore === 'function') {
+        initializeFormCore();
+    }
+    
+    console.log('✅ Formulario modular inicializado completamente');
+});
+</script>
+{% endblock %}

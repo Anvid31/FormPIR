@@ -1,0 +1,653 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Gestión - DESS{% endblock %}
+
+{% block content %}
+<!-- Header específico para Gestión de Información -->
+<div class="header-semaforo-gestion mb-8">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">
+                    <i class="fas fa-database mr-3"></i>
+                    Dashboard Gestión de Información
+                </h1>
+                <p class="text-lg opacity-90">
+                    Actualización y gestión de datos - {{ user.get_full_name }}
+                </p>
+                <p class="text-sm opacity-75">
+                    Procesamiento y actualización de información del sistema
+                </p>
+            </div>
+            <div class="flex space-x-4">
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ stats.pendientes_actualizacion }}</div>
+                    <div class="text-sm opacity-80">Por Actualizar</div>
+                </div>
+                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
+                    <div class="text-2xl font-bold">{{ stats.actualizados_hoy }}</div>
+                    <div class="text-sm opacity-80">Actualizados Hoy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas para Gestión -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Formularios para Actualizar -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 border-semaforo-gestion">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-gestion mr-4">
+                <i class="fas fa-sync-alt text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Por Actualizar</h3>
+                <p class="text-sm text-gray-600">Formularios aprobados para actualización</p>
+            </div>
+        </div>
+        <a href="?estado=gestion_actualizando" class="btn-semaforo btn-gestion_actualizando w-full">
+            <i class="fas fa-sync-alt mr-2"></i>
+            Procesar Formularios ({{ stats.pendientes_actualizacion }})
+        </a>
+    </div>
+
+    <!-- Procesamiento por Lotes -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 border-purple-400">
+        <div class="flex items-center mb-4">
+            <div class="text-purple-500 mr-4">
+                <i class="fas fa-layer-group text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Procesamiento por Lotes</h3>
+                <p class="text-sm text-gray-600">Actualización masiva de datos</p>
+            </div>
+        </div>
+        <button onclick="abrirProcesamientoLotes()" class="btn-semaforo bg-purple-500 text-white hover:bg-purple-600 w-full">
+            <i class="fas fa-layer-group mr-2"></i>
+            Procesar por Lotes
+        </button>
+    </div>
+
+    <!-- Estadísticas de Actualización -->
+    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 border-semaforo-completado">
+        <div class="flex items-center mb-4">
+            <div class="icon-semaforo-completado mr-4">
+                <i class="fas fa-chart-pie text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Reportes</h3>
+                <p class="text-sm text-gray-600">Estadísticas de actualización</p>
+            </div>
+        </div>
+        <a href="#reportes-actualizacion" class="btn-semaforo btn-gestion_actualizado w-full">
+            <i class="fas fa-chart-bar mr-2"></i>
+            Ver Reportes
+        </a>
+    </div>
+</div>
+
+<!-- Panel de Control de Actualización -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-cogs mr-2"></i>
+        Panel de Control de Actualización
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- Promedio de Tiempo de Actualización -->
+        <div class="metric-card text-center p-4 bg-blue-50 rounded-lg">
+            <div class="text-2xl font-bold text-blue-600 mb-1">{{ stats.tiempo_promedio_actualizacion }}min</div>
+            <div class="text-sm text-gray-600">Tiempo Promedio</div>
+        </div>
+
+        <!-- Tasa de Éxito -->
+        <div class="metric-card text-center p-4 bg-green-50 rounded-lg">
+            <div class="text-2xl font-bold text-green-600 mb-1">{{ stats.tasa_exito }}%</div>
+            <div class="text-sm text-gray-600">Tasa de Éxito</div>
+        </div>
+
+        <!-- Errores Detectados -->
+        <div class="metric-card text-center p-4 bg-red-50 rounded-lg">
+            <div class="text-2xl font-bold text-red-600 mb-1">{{ stats.errores_detectados }}</div>
+            <div class="text-sm text-gray-600">Errores Detectados</div>
+        </div>
+
+        <!-- Actualizaciones Completadas -->
+        <div class="metric-card text-center p-4 bg-purple-50 rounded-lg">
+            <div class="text-2xl font-bold text-purple-600 mb-1">{{ stats.completadas_hoy }}</div>
+            <div class="text-sm text-gray-600">Completadas Hoy</div>
+        </div>
+    </div>
+
+    <!-- Herramientas de Gestión -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Validación de Datos -->
+        <div class="tool-card bg-gray-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-2">
+                <i class="fas fa-check-double mr-2 text-green-500"></i>
+                Validación de Datos
+            </h4>
+            <p class="text-sm text-gray-600 mb-3">Verificar consistencia de la información</p>
+            <button onclick="ejecutarValidacion()" class="btn-semaforo btn-gestion_actualizando text-sm w-full">
+                Ejecutar Validación
+            </button>
+        </div>
+
+        <!-- Sincronización con Oracle -->
+        <div class="tool-card bg-gray-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-2">
+                <i class="fas fa-sync mr-2 text-blue-500"></i>
+                Sincronización Oracle
+            </h4>
+            <p class="text-sm text-gray-600 mb-3">Sincronizar con base de datos Oracle</p>
+            <button onclick="sincronizarOracle()" class="btn-semaforo bg-blue-500 text-white hover:bg-blue-600 text-sm w-full">
+                Sincronizar Ahora
+            </button>
+        </div>
+
+        <!-- Backup de Datos -->
+        <div class="tool-card bg-gray-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-2">
+                <i class="fas fa-shield-alt mr-2 text-purple-500"></i>
+                Backup de Datos
+            </h4>
+            <p class="text-sm text-gray-600 mb-3">Respaldar información actualizada</p>
+            <button onclick="crearBackup()" class="btn-semaforo bg-purple-500 text-white hover:bg-purple-600 text-sm w-full">
+                Crear Backup
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Cola de Procesamiento -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-tasks mr-2"></i>
+                Cola de Procesamiento
+            </h3>
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">Actualización automática:</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="auto-refresh" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-semaforo overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <input type="checkbox" id="select-all" class="form-check-input">
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Formulario
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Información
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Prioridad
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tiempo en Cola
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado de Validación
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for formulario in formularios_cola %}
+                <tr class="hover:bg-orange-50 transition-colors" data-formulario-id="{{ formulario.id }}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" class="form-check-input formulario-checkbox" value="{{ formulario.id }}">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="mr-3">
+                                {% if formulario.get_prioridad == 'alta' %}
+                                <i class="fas fa-exclamation-triangle text-red-500" title="Prioridad Alta"></i>
+                                {% elif formulario.get_prioridad == 'media' %}
+                                <i class="fas fa-clock text-yellow-500" title="Prioridad Media"></i>
+                                {% else %}
+                                <i class="fas fa-circle text-green-500" title="Prioridad Normal"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    F{{ formulario.id|stringformat:"06d" }}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    Aprobado: {{ formulario.get_fecha_aprobacion|date:"d/m/Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">{{ formulario.trabajo|default:"Sin descripción" }}</div>
+                        <div class="text-sm text-gray-500">
+                            {{ formulario.municipio|default:"--" }}, {{ formulario.regional|default:"--" }}
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            Contratista: {{ formulario.creado_por.get_equipo_contratista_display }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            {% if formulario.get_prioridad == 'alta' %}bg-red-100 text-red-800{% elif formulario.get_prioridad == 'media' %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">
+                            {{ formulario.get_prioridad|capfirst }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ formulario.get_tiempo_en_cola }}h</div>
+                        <div class="text-xs text-gray-500">
+                            {% if formulario.get_tiempo_en_cola > 48 %}
+                            <span class="text-red-600 font-medium">Crítico</span>
+                            {% elif formulario.get_tiempo_en_cola > 24 %}
+                            <span class="text-yellow-600">Atención</span>
+                            {% else %}
+                            <span class="text-green-600">En Tiempo</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 rounded-full {% if formulario.validacion_datos %}bg-green-500{% else %}bg-red-500{% endif %}" 
+                                 title="{% if formulario.validacion_datos %}Datos validados{% else %}Datos sin validar{% endif %}"></div>
+                            <div class="w-4 h-4 rounded-full {% if formulario.validacion_coordenadas %}bg-green-500{% else %}bg-red-500{% endif %}" 
+                                 title="{% if formulario.validacion_coordenadas %}Coordenadas validadas{% else %}Coordenadas sin validar{% endif %}"></div>
+                            <div class="w-4 h-4 rounded-full {% if formulario.validacion_fotografias %}bg-green-500{% else %}bg-red-500{% endif %}" 
+                                 title="{% if formulario.validacion_fotografias %}Fotografías validadas{% else %}Fotografías sin validar{% endif %}"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            {{ formulario.get_porcentaje_validacion }}% validado
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex justify-end space-x-1">
+                            <!-- Procesar Individual -->
+                            <button onclick="procesarFormulario({{ formulario.id }})" 
+                                    class="btn-mini bg-orange-500 text-white hover:bg-orange-600 px-2 py-1 rounded text-xs"
+                                    title="Procesar">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            
+                            <!-- Validar Datos -->
+                            <button onclick="validarDatos({{ formulario.id }})" 
+                                    class="btn-mini bg-blue-500 text-white hover:bg-blue-600 px-2 py-1 rounded text-xs"
+                                    title="Validar Datos">
+                                <i class="fas fa-check-double"></i>
+                            </button>
+                            
+                            <!-- Ver Detalles -->
+                            <a href="{% url 'detalle_formulario' formulario.id %}" 
+                               class="btn-mini bg-gray-500 text-white hover:bg-gray-600 px-2 py-1 rounded text-xs"
+                               title="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            
+                            <!-- Marcar como Completado -->
+                            <button onclick="marcarCompletado({{ formulario.id }})" 
+                                    class="btn-mini bg-green-500 text-white hover:bg-green-600 px-2 py-1 rounded text-xs"
+                                    title="Marcar como Completado">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <div class="text-gray-500">
+                            <i class="fas fa-check-circle text-4xl mb-4 text-green-500"></i>
+                            <p class="text-lg">¡Cola vacía!</p>
+                            <p class="text-sm">No hay formularios pendientes de actualización</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Acciones por Lotes -->
+    {% if formularios_cola %}
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-700">Con seleccionados:</span>
+                <button onclick="procesarSeleccionados()" class="btn-semaforo btn-gestion_actualizando text-sm">
+                    <i class="fas fa-play mr-1"></i>
+                    Procesar
+                </button>
+                <button onclick="validarSeleccionados()" class="btn-semaforo bg-blue-500 text-white hover:bg-blue-600 text-sm">
+                    <i class="fas fa-check-double mr-1"></i>
+                    Validar
+                </button>
+                <button onclick="completarSeleccionados()" class="btn-semaforo bg-green-500 text-white hover:bg-green-600 text-sm">
+                    <i class="fas fa-check-circle mr-1"></i>
+                    Completar
+                </button>
+            </div>
+            <div class="text-sm text-gray-500">
+                <span id="count-selected">0</span> formularios seleccionados
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Reportes de Actualización -->
+<div id="reportes-actualizacion" class="bg-white rounded-lg shadow-sm p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-line mr-2"></i>
+        Reportes de Actualización
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Gráfico de Rendimiento Diario -->
+        <div class="chart-container">
+            <h4 class="font-medium text-gray-900 mb-3">Rendimiento Diario</h4>
+            <div class="bg-gray-100 rounded p-4 h-64 flex items-center justify-center">
+                <div class="text-center text-gray-500">
+                    <i class="fas fa-chart-bar text-4xl mb-2"></i>
+                    <p>Gráfico de rendimiento diario</p>
+                    <p class="text-sm">(Implementar con Chart.js)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de Validaciones -->
+        <div class="chart-container">
+            <h4 class="font-medium text-gray-900 mb-3">Estado de Validaciones</h4>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center p-3 bg-green-50 rounded">
+                    <span class="text-sm font-medium text-green-800">Validaciones Completas</span>
+                    <span class="text-lg font-bold text-green-600">{{ stats.validaciones_completas }}</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-yellow-50 rounded">
+                    <span class="text-sm font-medium text-yellow-800">Validaciones Parciales</span>
+                    <span class="text-lg font-bold text-yellow-600">{{ stats.validaciones_parciales }}</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-red-50 rounded">
+                    <span class="text-sm font-medium text-red-800">Errores de Validación</span>
+                    <span class="text-lg font-bold text-red-600">{{ stats.errores_validacion }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Procesamiento por Lotes -->
+<div id="modal-procesamiento-lotes" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Procesamiento por Lotes</h3>
+                <button onclick="cerrarProcesamientoLotes()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Criterios de Selección</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="criterio-prioridad-alta" class="form-check-input mr-2">
+                                <span class="text-sm">Solo prioridad alta</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="criterio-validados" class="form-check-input mr-2">
+                                <span class="text-sm">Solo validados</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Número máximo de formularios</label>
+                    <input type="number" id="max-formularios" value="50" min="1" max="100" class="form-control">
+                </div>
+                
+                <div id="preview-lote" class="bg-gray-50 p-4 rounded">
+                    <p class="text-sm text-gray-600">Se procesarán <span id="count-lote">0</span> formularios</p>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-2 mt-6 pt-4 border-t">
+                <button onclick="cerrarProcesamientoLotes()" class="btn-semaforo bg-gray-500 text-white hover:bg-gray-600">
+                    Cancelar
+                </button>
+                <button onclick="ejecutarProcesamientoLotes()" class="btn-semaforo btn-gestion_actualizando">
+                    <i class="fas fa-play mr-2"></i>
+                    Ejecutar Procesamiento
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funciones principales
+function abrirProcesamientoLotes() {
+    document.getElementById('modal-procesamiento-lotes').classList.remove('hidden');
+    actualizarPreviewLote();
+}
+
+function cerrarProcesamientoLotes() {
+    document.getElementById('modal-procesamiento-lotes').classList.add('hidden');
+}
+
+function procesarFormulario(formularioId) {
+    if (confirm('¿Procesar este formulario? Se marcará como actualizado en el sistema.')) {
+        cambiarEstadoFormulario(formularioId, 'gestion_actualizado', 'Formulario procesado por gestión de información');
+    }
+}
+
+function marcarCompletado(formularioId) {
+    if (confirm('¿Marcar este formulario como completado? Esta acción es irreversible.')) {
+        cambiarEstadoFormulario(formularioId, 'gestion_actualizado', 'Formulario completado por gestión de información');
+    }
+}
+
+function validarDatos(formularioId) {
+    // Aquí se implementaría la validación de datos
+    fetch(`/api/formulario/${formularioId}/validar-datos/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarMensaje('Validación completada', 'success');
+            // Actualizar indicadores de validación en la fila
+            const fila = document.querySelector(`tr[data-formulario-id="${formularioId}"]`);
+            // Actualizar círculos de validación según resultado
+        } else {
+            mostrarMensaje('Error en la validación: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensaje('Error al validar datos', 'error');
+    });
+}
+
+function cambiarEstadoFormulario(formularioId, nuevoEstado, comentario) {
+    fetch(`/api/formulario/${formularioId}/cambiar-estado/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            nuevo_estado: nuevoEstado,
+            comentario: comentario
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarMensaje('Formulario procesado correctamente', 'success');
+            
+            // Remover la fila de la tabla
+            const fila = document.querySelector(`tr[data-formulario-id="${formularioId}"]`);
+            if (fila) {
+                fila.style.transition = 'opacity 0.5s';
+                fila.style.opacity = '0';
+                setTimeout(() => fila.remove(), 500);
+            }
+            
+            // Actualizar contadores
+            actualizarContadores();
+        } else {
+            mostrarMensaje('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensaje('Error al procesar el formulario', 'error');
+    });
+}
+
+// Funciones de selección múltiple
+document.getElementById('select-all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.formulario-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+    actualizarContadorSeleccionados();
+});
+
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('formulario-checkbox')) {
+        actualizarContadorSeleccionados();
+    }
+});
+
+function actualizarContadorSeleccionados() {
+    const checkboxes = document.querySelectorAll('.formulario-checkbox:checked');
+    document.getElementById('count-selected').textContent = checkboxes.length;
+}
+
+function procesarSeleccionados() {
+    const seleccionados = Array.from(document.querySelectorAll('.formulario-checkbox:checked')).map(cb => cb.value);
+    if (seleccionados.length === 0) {
+        alert('Selecciona al menos un formulario');
+        return;
+    }
+    
+    if (confirm(`¿Procesar ${seleccionados.length} formularios seleccionados?`)) {
+        // Implementar procesamiento por lotes
+        procesarFormulariosPorLotes(seleccionados);
+    }
+}
+
+function validarSeleccionados() {
+    const seleccionados = Array.from(document.querySelectorAll('.formulario-checkbox:checked')).map(cb => cb.value);
+    if (seleccionados.length === 0) {
+        alert('Selecciona al menos un formulario');
+        return;
+    }
+    
+    // Implementar validación por lotes
+    validarFormulariosPorLotes(seleccionados);
+}
+
+function completarSeleccionados() {
+    const seleccionados = Array.from(document.querySelectorAll('.formulario-checkbox:checked')).map(cb => cb.value);
+    if (seleccionados.length === 0) {
+        alert('Selecciona al menos un formulario');
+        return;
+    }
+    
+    if (confirm(`¿Marcar como completados ${seleccionados.length} formularios seleccionados? Esta acción es irreversible.`)) {
+        // Implementar completado por lotes
+        completarFormulariosPorLotes(seleccionados);
+    }
+}
+
+// Funciones de herramientas
+function ejecutarValidacion() {
+    mostrarMensaje('Ejecutando validación general...', 'info');
+    // Implementar validación general
+}
+
+function sincronizarOracle() {
+    mostrarMensaje('Sincronizando con Oracle...', 'info');
+    // Implementar sincronización con Oracle
+}
+
+function crearBackup() {
+    mostrarMensaje('Creando backup de datos...', 'info');
+    // Implementar creación de backup
+}
+
+function mostrarMensaje(mensaje, tipo) {
+    const colores = {
+        success: 'green',
+        error: 'red',
+        info: 'blue',
+        warning: 'yellow'
+    };
+    
+    const color = colores[tipo] || 'blue';
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `fixed top-4 right-4 bg-${color}-100 border border-${color}-400 text-${color}-700 px-4 py-3 rounded shadow-lg z-50`;
+    alertDiv.innerHTML = `
+        <div class="flex">
+            <div class="py-1">${mensaje}</div>
+            <div class="ml-auto pl-3">
+                <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-${color}-700 hover:text-${color}-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentElement) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+function actualizarContadores() {
+    fetch('/api/estadisticas-gestion/')
+        .then(response => response.json())
+        .then(data => {
+            // Actualizar contadores en el header
+            // Implementar actualización de contadores
+        })
+        .catch(error => console.error('Error actualizando contadores:', error));
+}
+
+// Auto-refresh si está activado
+setInterval(function() {
+    if (document.getElementById('auto-refresh').checked) {
+        actualizarContadores();
+    }
+}, 30000);
+</script>
+{% endblock %}

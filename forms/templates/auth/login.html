@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESS - Iniciar Sesión</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: "Inter", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            margin: 20px;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .login-body {
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #111827;
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 150ms ease-in-out;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            z-index: 1;
+        }
+        
+        .input-icon .form-input {
+            padding-left: 2.5rem;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .forgot-password a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-building text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold mb-2">Sistema DESS</h1>
+            <p class="text-blue-100 text-sm">Portal de Formularios PIR</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="login-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+            
+            <form method="post" action="{% url 'forms:login' %}">
+                {% csrf_token %}
+                
+                <!-- Usuario -->
+                <div class="form-group">
+                    <label for="id_username" class="form-label">
+                        <i class="fas fa-user mr-2"></i>Usuario
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-user"></i>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            id="id_username"
+                            class="form-input" 
+                            placeholder="Ingresa tu usuario"
+                            required
+                            autocomplete="username"
+                            value="{{ form.username.value|default:'' }}"
+                        >
+                    </div>
+                    {% if form.username.errors %}
+                        <div class="text-red-500 text-sm mt-1">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Contraseña -->
+                <div class="form-group">
+                    <label for="id_password" class="form-label">
+                        <i class="fas fa-lock mr-2"></i>Contraseña
+                    </label>
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="id_password"
+                            class="form-input" 
+                            placeholder="Ingresa tu contraseña"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="text-red-500 text-sm mt-1">
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Recordar sesión -->
+                <div class="form-group">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="remember_me" class="mr-2 rounded border-gray-300">
+                        <span class="text-sm text-gray-600">Recordar mi sesión</span>
+                    </label>
+                </div>
+                
+                <!-- Botón de login -->
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Iniciar Sesión
+                </button>
+                
+                <!-- Campo oculto para redirección -->
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+            </form>
+            
+            <!-- Enlaces adicionales -->
+            <div class="forgot-password">
+                <a href="#" onclick="alert('Contacta al administrador del sistema')">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-focus en el campo de usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('id_username').focus();
+        });
+        
+        // Efecto visual en los inputs
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+</body>
+</html>

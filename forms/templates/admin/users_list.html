@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Usuarios - Admin DESS{% endblock %}
+
+{% block content %}
+<!-- Header específico para Gestión de Usuarios -->
+<div class="header-semaforo-gestion mb-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">
+                    <i class="fas fa-users mr-3"></i>
+                    Gestión de Usuarios
+                </h1>
+                <p class="text-lg opacity-90">
+                    Administración y control de usuarios del sistema
+                </p>
+            </div>
+            <div class="flex space-x-4">
+                <a href="{% url 'forms:admin_dashboard' %}" class="bg-white/20 rounded-lg p-4 backdrop-blur-sm hover:bg-white/30 transition-all">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas rápidas -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-users text-3xl text-blue-600"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-2xl font-bold text-gray-900">{{ usuarios.count }}</div>
+                <div class="text-sm text-gray-600">Total Usuarios</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-user-check text-3xl text-green-600"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-2xl font-bold text-gray-900">{{ usuarios|length }}</div>
+                <div class="text-sm text-gray-600">Usuarios Activos</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-crown text-3xl text-purple-600"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-2xl font-bold text-gray-900">
+                    {% for user in usuarios %}{% if user.rol == 'admin' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                </div>
+                <div class="text-sm text-gray-600">Administradores</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-tools text-3xl text-orange-600"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-2xl font-bold text-gray-900">
+                    {% for user in usuarios %}{% if user.rol == 'contratista' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
+                </div>
+                <div class="text-sm text-gray-600">Contratistas</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones de gestión -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-cog mr-2"></i>
+            Acciones de Gestión
+        </h3>
+        <a href="/admin/forms/customuser/add/" class="btn-semaforo btn-gestion">
+            <i class="fas fa-user-plus mr-2"></i>
+            Crear Nuevo Usuario
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="/admin/forms/customuser/" class="action-card bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center">
+                <i class="fas fa-edit text-blue-600 text-xl mr-3"></i>
+                <div>
+                    <div class="font-medium text-gray-900">Editar Usuarios</div>
+                    <div class="text-sm text-gray-600">Modificar información y permisos</div>
+                </div>
+            </div>
+        </a>
+        
+        <a href="/admin/auth/group/" class="action-card bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center">
+                <i class="fas fa-users-cog text-green-600 text-xl mr-3"></i>
+                <div>
+                    <div class="font-medium text-gray-900">Gestionar Grupos</div>
+                    <div class="text-sm text-gray-600">Configurar grupos y permisos</div>
+                </div>
+            </div>
+        </a>
+        
+        <a href="{% url 'forms:admin_formularios_list' %}" class="action-card bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+            <div class="flex items-center">
+                <i class="fas fa-file-alt text-purple-600 text-xl mr-3"></i>
+                <div>
+                    <div class="font-medium text-gray-900">Ver Formularios</div>
+                    <div class="text-sm text-gray-600">Monitorear todos los formularios</div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Lista de usuarios -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-list mr-2"></i>
+            Lista Completa de Usuarios
+        </h3>
+    </div>
+
+    <div class="table-semaforo overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Usuario
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Rol
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Equipo/Regional
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Último Acceso
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Permisos
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for usuario in usuarios %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                                    {{ usuario.first_name|first|default:usuario.username|first|upper }}
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ usuario.get_full_name|default:usuario.username }}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    {{ usuario.email }}
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    ID: {{ usuario.id }} | {{ usuario.username }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge badge-estado badge-{{ usuario.rol }}">
+                            {{ usuario.get_rol_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">
+                            {% if usuario.equipo_contratista %}
+                                {{ usuario.equipo_contratista }}
+                            {% else %}
+                                <span class="text-gray-400">Sin equipo</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            {% if usuario.regional_asignada %}
+                                {{ usuario.regional_asignada }}
+                            {% else %}
+                                <span class="text-gray-400">Sin regional</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            {% if usuario.departamento_asignado %}
+                                {{ usuario.departamento_asignado }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if usuario.is_active %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Activo
+                            </span>
+                        {% else %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-times-circle mr-1"></i>
+                                Inactivo
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {% if usuario.fecha_ultimo_acceso %}
+                            {{ usuario.fecha_ultimo_acceso|date:"d/m/Y H:i" }}
+                        {% else %}
+                            <span class="text-gray-400">Nunca</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex flex-col gap-1">
+                            {% if usuario.is_superuser %}
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    <i class="fas fa-crown mr-1"></i>
+                                    Superusuario
+                                </span>
+                            {% endif %}
+                            {% if usuario.is_staff %}
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    <i class="fas fa-user-cog mr-1"></i>
+                                    Staff
+                                </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex justify-end space-x-2">
+                            <!-- Ver perfil -->
+                            <a href="/admin/forms/customuser/{{ usuario.id }}/change/" 
+                               class="text-blue-600 hover:text-blue-900" 
+                               title="Editar usuario">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            
+                            <!-- Cambiar contraseña -->
+                            <a href="/admin/forms/customuser/{{ usuario.id }}/password/" 
+                               class="text-green-600 hover:text-green-900" 
+                               title="Cambiar contraseña">
+                                <i class="fas fa-key"></i>
+                            </a>
+                            
+                            <!-- Historial -->
+                            <a href="/admin/forms/customuser/{{ usuario.id }}/history/" 
+                               class="text-purple-600 hover:text-purple-900" 
+                               title="Ver historial">
+                                <i class="fas fa-history"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <div class="text-gray-500">
+                            <i class="fas fa-users text-4xl mb-4"></i>
+                            <p class="text-lg">No hay usuarios registrados</p>
+                            <p class="text-sm mb-4">Crea el primer usuario del sistema</p>
+                            <a href="/admin/forms/customuser/add/" class="btn-semaforo btn-gestion">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Crear Usuario
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funciones específicas para gestión de usuarios
+function refreshUserStats() {
+    // Auto-refresh cada 30 segundos
+    setTimeout(() => {
+        location.reload();
+    }, 30000);
+}
+
+// Inicializar
+refreshUserStats();
+</script>
+{% endblock %}

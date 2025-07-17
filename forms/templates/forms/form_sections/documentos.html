@@ -1,0 +1,416 @@
+<!-- Sección: Archivos y Documentación -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+            <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+            Archivos y Documentación
+        </h3>
+        <p class="text-sm text-gray-600 mt-1">Suba los archivos técnicos y documentación requerida del proyecto</p>
+    </div>
+
+    <div class="p-6 space-y-6">
+        <!-- Archivos Técnicos Requeridos -->
+        <div class="border-b border-gray-200 pb-6">
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-clipboard-list text-red-600 mr-2"></i>
+                Archivos Técnicos Requeridos
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Archivo CAD -->
+                <div class="form-group">
+                    <label for="archivo_cad" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-drafting-compass text-gray-400 mr-1"></i>
+                        Archivo CAD (DWG/DXF) *
+                    </label>
+                    
+                    <div id="archivo_cad_dropzone" 
+                         class="file-drop-zone border-2 border-dashed border-red-300 rounded-lg p-6 text-center cursor-pointer hover:border-red-500 hover:bg-red-50 transition-colors">
+                        <input type="file" 
+                               id="archivo_cad" 
+                               name="archivo_cad" 
+                               accept=".dwg,.dxf"
+                               required
+                               class="hidden"
+                               data-max-size="10485760">
+                        
+                        <div class="file-drop-content">
+                            <i class="fas fa-drafting-compass text-4xl text-red-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">
+                                Archivo de Diseño CAD
+                            </p>
+                            <p class="text-sm text-gray-500 mb-4">
+                                Formatos: DWG, DXF | Máximo 10MB
+                            </p>
+                            <div class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Seleccionar Archivo CAD
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="archivo_cad_preview" class="file-preview mt-4"></div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <strong>Requerido:</strong> Planos técnicos del proyecto en formato CAD
+                    </div>
+                    <div class="error-message hidden text-red-600 text-sm mt-1"></div>
+                </div>
+
+                <!-- Archivo KMZ -->
+                <div class="form-group">
+                    <label for="archivo_kmz" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-globe text-gray-400 mr-1"></i>
+                        Archivo KMZ/KML *
+                    </label>
+                    
+                    <div id="archivo_kmz_dropzone" 
+                         class="file-drop-zone border-2 border-dashed border-red-300 rounded-lg p-6 text-center cursor-pointer hover:border-red-500 hover:bg-red-50 transition-colors">
+                        <input type="file" 
+                               id="archivo_kmz" 
+                               name="archivo_kmz" 
+                               accept=".kmz,.kml"
+                               required
+                               class="hidden"
+                               data-max-size="10485760">
+                        
+                        <div class="file-drop-content">
+                            <i class="fas fa-globe text-4xl text-red-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">
+                                Geolocalización del Proyecto
+                            </p>
+                            <p class="text-sm text-gray-500 mb-4">
+                                Formatos: KMZ, KML | Máximo 10MB
+                            </p>
+                            <div class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Seleccionar Archivo KMZ
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="archivo_kmz_preview" class="file-preview mt-4"></div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <strong>Requerido:</strong> Ubicación geográfica exacta del proyecto
+                    </div>
+                    <div class="error-message hidden text-red-600 text-sm mt-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Archivos Opcionales -->
+        <div class="border-b border-gray-200 pb-6">
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-paperclip text-blue-600 mr-2"></i>
+                Archivos Adicionales (Opcionales)
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Memoria de Cálculo -->
+                <div class="form-group">
+                    <label for="memoria_calculo" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-calculator text-gray-400 mr-1"></i>
+                        Memoria de Cálculo
+                    </label>
+                    
+                    <div id="memoria_calculo_dropzone" 
+                         class="file-drop-zone border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <input type="file" 
+                               id="memoria_calculo" 
+                               name="memoria_calculo" 
+                               accept=".pdf,.doc,.docx,.xls,.xlsx"
+                               class="hidden"
+                               data-max-size="10485760">
+                        
+                        <div class="file-drop-content">
+                            <i class="fas fa-calculator text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">
+                                Cálculos Técnicos
+                            </p>
+                            <p class="text-sm text-gray-500 mb-4">
+                                PDF, Word, Excel | Máximo 10MB
+                            </p>
+                            <div class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Seleccionar Archivo
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="memoria_calculo_preview" class="file-preview mt-4"></div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Cálculos eléctricos, mecánicos, de cargas, etc.
+                    </div>
+                </div>
+
+                <!-- Especificaciones Técnicas -->
+                <div class="form-group">
+                    <label for="especificaciones" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-list-alt text-gray-400 mr-1"></i>
+                        Especificaciones Técnicas
+                    </label>
+                    
+                    <div id="especificaciones_dropzone" 
+                         class="file-drop-zone border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <input type="file" 
+                               id="especificaciones" 
+                               name="especificaciones" 
+                               accept=".pdf,.doc,.docx"
+                               class="hidden"
+                               data-max-size="10485760">
+                        
+                        <div class="file-drop-content">
+                            <i class="fas fa-list-alt text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">
+                                Especificaciones del Proyecto
+                            </p>
+                            <p class="text-sm text-gray-500 mb-4">
+                                PDF, Word | Máximo 10MB
+                            </p>
+                            <div class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Seleccionar Archivo
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="especificaciones_preview" class="file-preview mt-4"></div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Documento con especificaciones técnicas detalladas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archivos de Catálogos/Manuales -->
+            <div class="mt-6">
+                <div class="form-group">
+                    <label for="catalogos" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-book text-gray-400 mr-1"></i>
+                        Catálogos y Manuales
+                    </label>
+                    
+                    <div id="catalogos_dropzone" 
+                         class="file-drop-zone border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <input type="file" 
+                               id="catalogos" 
+                               name="catalogos" 
+                               multiple
+                               accept=".pdf,.jpg,.jpeg,.png"
+                               class="hidden"
+                               data-max-size="5242880">
+                        
+                        <div class="file-drop-content">
+                            <i class="fas fa-book text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-lg font-medium text-gray-700 mb-2">
+                                Documentación de Equipos
+                            </p>
+                            <p class="text-sm text-gray-500 mb-4">
+                                PDF, JPG, PNG | Máximo 5MB por archivo | Múltiples archivos permitidos
+                            </p>
+                            <div class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Seleccionar Archivos
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="catalogos_preview" class="file-preview mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Catálogos de equipos, manuales de instalación, fichas técnicas
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones Finales -->
+        <div class="border-b border-gray-200 pb-6">
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-comment-alt text-green-600 mr-2"></i>
+                Observaciones y Comentarios Finales
+            </h4>
+
+            <div class="form-group">
+                <label for="observaciones_finales" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-edit text-gray-400 mr-1"></i>
+                    Comentarios Adicionales
+                </label>
+                <textarea id="observaciones_finales" 
+                          name="observaciones_finales" 
+                          rows="4"
+                          class="form-control w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Observaciones generales del proyecto, requerimientos especiales, condiciones particulares de instalación, etc."></textarea>
+                <div class="text-xs text-gray-500 mt-1">
+                    Información adicional relevante para el proyecto que no se haya incluido en secciones anteriores
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist de Verificación -->
+        <div class="border-b border-gray-200 pb-6">
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-tasks text-purple-600 mr-2"></i>
+                Verificación Final
+            </h4>
+
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="check_datos_completos" 
+                           name="verificaciones" 
+                           value="datos_completos"
+                           class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="check_datos_completos" class="ml-3 text-sm text-gray-700">
+                        <span class="font-medium">Datos Completos:</span> 
+                        He verificado que toda la información técnica está completa y es correcta
+                    </label>
+                </div>
+
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="check_archivos_validos" 
+                           name="verificaciones" 
+                           value="archivos_validos"
+                           class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="check_archivos_validos" class="ml-3 text-sm text-gray-700">
+                        <span class="font-medium">Archivos Válidos:</span> 
+                        Los archivos subidos corresponden al proyecto y están en los formatos correctos
+                    </label>
+                </div>
+
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="check_coordenadas_verificadas" 
+                           name="verificaciones" 
+                           value="coordenadas_verificadas"
+                           class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="check_coordenadas_verificadas" class="ml-3 text-sm text-gray-700">
+                        <span class="font-medium">Coordenadas Verificadas:</span> 
+                        He confirmado que las coordenadas geográficas son correctas y corresponden a la ubicación real
+                    </label>
+                </div>
+
+                <div class="flex items-start">
+                    <input type="checkbox" 
+                           id="check_normativa_cumplida" 
+                           name="verificaciones" 
+                           value="normativa_cumplida"
+                           class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="check_normativa_cumplida" class="ml-3 text-sm text-gray-700">
+                        <span class="font-medium">Normativa Cumplida:</span> 
+                        El proyecto cumple con todas las normativas técnicas y de seguridad aplicables
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de Archivos Subidos -->
+        <div id="archivos_resumen" class="bg-gray-50 rounded-lg p-4">
+            <h5 class="text-sm font-medium text-gray-900 mb-3 flex items-center">
+                <i class="fas fa-file-archive text-gray-600 mr-2"></i>
+                Resumen de Archivos Subidos
+            </h5>
+            <div id="archivos_lista" class="space-y-2 text-sm text-gray-600">
+                <p class="text-gray-500 italic">No se han subido archivos aún</p>
+            </div>
+        </div>
+
+        <!-- Indicador de Progreso Final -->
+        <div class="border-t border-gray-200 pt-4">
+            <div class="flex items-center justify-between text-sm text-gray-600">
+                <span class="flex items-center">
+                    <i class="fas fa-tasks mr-2"></i>
+                    Paso 4 de 4: Documentos
+                </span>
+                <span class="flex items-center">
+                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-2">
+                        <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                    100% Completado
+                </span>
+            </div>
+        </div>
+
+        <!-- Mensaje de Finalización -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                <div>
+                    <h6 class="text-sm font-medium text-green-800">
+                        ¡Formulario Casi Completo!
+                    </h6>
+                    <p class="text-sm text-green-700 mt-1">
+                        Ha completado todos los pasos del formulario. Revise la información y proceda a enviar cuando esté listo.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script específico para documentos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para actualizar el resumen de archivos
+    function updateArchivosResumen() {
+        const archivosList = document.getElementById('archivos_lista');
+        if (!archivosList) return;
+
+        const archivos = [];
+        
+        // Verificar archivos requeridos
+        const cadFile = document.getElementById('archivo_cad')?.files[0];
+        const kmzFile = document.getElementById('archivo_kmz')?.files[0];
+        
+        if (cadFile) {
+            archivos.push(`<div class="flex items-center text-green-600">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span><strong>CAD:</strong> ${cadFile.name} (${(cadFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+            </div>`);
+        } else {
+            archivos.push(`<div class="flex items-center text-red-600">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span><strong>CAD:</strong> No subido (Requerido)</span>
+            </div>`);
+        }
+        
+        if (kmzFile) {
+            archivos.push(`<div class="flex items-center text-green-600">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span><strong>KMZ:</strong> ${kmzFile.name} (${(kmzFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+            </div>`);
+        } else {
+            archivos.push(`<div class="flex items-center text-red-600">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span><strong>KMZ:</strong> No subido (Requerido)</span>
+            </div>`);
+        }
+        
+        // Verificar archivos opcionales
+        const optionalFiles = ['memoria_calculo', 'especificaciones', 'catalogos'];
+        optionalFiles.forEach(fileId => {
+            const file = document.getElementById(fileId)?.files[0];
+            if (file) {
+                const name = fileId.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                archivos.push(`<div class="flex items-center text-blue-600">
+                    <i class="fas fa-file mr-2"></i>
+                    <span><strong>${name}:</strong> ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                </div>`);
+            }
+        });
+        
+        archivosList.innerHTML = archivos.length > 2 ? archivos.join('') : 
+            '<p class="text-gray-500 italic">Solo archivos requeridos pendientes</p>';
+    }
+    
+    // Escuchar cambios en los archivos
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', updateArchivosResumen);
+    });
+    
+    // Actualizar inicialmente
+    updateArchivosResumen();
+    
+    console.log('📄 Sección de documentos inicializada');
+});
+</script>

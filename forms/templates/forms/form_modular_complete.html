@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DESS - Sistema de Formularios</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'forms/css/form.css' %}" />
+  </head>
+  <body>
+    <!-- Header con fondo azul -->
+    <header class="bg-blue-600 text-white py-8 px-4 mb-8">
+      <div class="container mx-auto max-w-6xl">
+        <h1 class="text-3xl font-bold mb-2">Sistema de Formularios DESS</h1>
+        <p class="text-blue-100">Gestión de ADSD y Postes</p>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 max-w-6xl">
+      <!-- Navbar de navegación circular compacto -->
+      <div class="container mx-auto px-4 max-w-6xl mb-6">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <div
+            class="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0"
+          >
+            <!-- Paso 1: ESTRUCTURAS N1-N2-N3 -->
+            <div class="flex flex-col items-center group">
+              <div
+                class="nav-item active w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105"
+                data-step="estructuras"
+                onclick="navigateToStep('estructuras')"
+              >
+                <i class="fas fa-building text-white text-lg"></i>
+              </div>
+              <div
+                class="nav-step active px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
+              >
+                <div class="font-semibold">ESTRUCTURAS</div>
+                <div class="text-xs opacity-75">N1-N2-N3</div>
+              </div>
+            </div>
+
+            <!-- Línea de progreso 1 -->
+            <div class="hidden lg:block flex-1 mx-4">
+              <div
+                class="progress-line h-0.5 rounded-full bg-gray-300"
+                data-connection="estructuras-conductor_n1"
+              ></div>
+            </div>
+
+            <!-- Paso 2: CONDUCTOR N1 -->
+            <div class="flex flex-col items-center group">
+              <div
+                class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-yellow-400"
+                data-step="conductor_n1"
+                onclick="navigateToStep('conductor_n1')"
+              >
+                <i class="fas fa-bolt text-gray-600 text-lg"></i>
+              </div>
+              <div
+                class="nav-step px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
+              >
+                <div class="font-semibold">CONDUCTOR</div>
+                <div class="text-xs opacity-75">N1</div>
+              </div>
+            </div>
+
+            <!-- Línea de progreso 2 -->
+            <div class="hidden lg:block flex-1 mx-4">
+              <div
+                class="progress-line h-0.5 rounded-full bg-gray-300"
+                data-connection="conductor_n1-conductor_n2_n3"
+              ></div>
+            </div>
+
+            <!-- Paso 3: CONDUCTOR N2-N3 -->
+            <div class="flex flex-col items-center group">
+              <div
+                class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-orange-400"
+                data-step="conductor_n2_n3"
+                onclick="navigateToStep('conductor_n2_n3')"
+              >
+                <i class="fas fa-bolt text-gray-600 text-lg"></i>
+              </div>
+              <div
+                class="nav-step px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
+              >
+                <div class="font-semibold">CONDUCTOR</div>
+                <div class="text-xs opacity-75">N2-N3</div>
+              </div>
+            </div>
+
+            <!-- Línea de progreso 3 -->
+            <div class="hidden lg:block flex-1 mx-4">
+              <div
+                class="progress-line h-0.5 rounded-full bg-gray-300"
+                data-connection="conductor_n2_n3-equipos"
+              ></div>
+            </div>
+
+            <!-- Paso 4: EQUIPOS PROTECCIÓN -->
+            <div class="flex flex-col items-center group">
+              <div
+                class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-green-400"
+                data-step="equipos"
+                onclick="navigateToStep('equipos')"
+              >
+                <i class="fas fa-shield-alt text-gray-600 text-lg"></i>
+              </div>
+              <div
+                class="nav-step px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
+              >
+                <div class="font-semibold">EQUIPOS</div>
+                <div class="text-xs opacity-75">PROTECCIÓN</div>
+              </div>
+            </div>
+
+            <!-- Línea de progreso 4 -->
+            <div class="hidden lg:block flex-1 mx-4">
+              <div
+                class="progress-line h-0.5 rounded-full bg-gray-300"
+                data-connection="equipos-transformador"
+              ></div>
+            </div>
+
+            <!-- Paso 5: TRANSFORMADOR DISTRIBUCIÓN -->
+            <div class="flex flex-col items-center group">
+              <div
+                class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-purple-400"
+                data-step="transformador"
+                onclick="navigateToStep('transformador')"
+              >
+                <i class="fas fa-microchip text-gray-600 text-lg"></i>
+              </div>
+              <div
+                class="nav-step px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
+              >
+                <div class="font-semibold">TRANSFORMADOR</div>
+                <div class="text-xs opacity-75">DISTRIBUCIÓN</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario Principal -->
+      <form
+        id="mainForm"
+        method="post"
+        enctype="multipart/form-data"
+        action="{% url 'forms:crear_formulario' %}"
+      >
+        {% csrf_token %}
+
+        <!-- Sección: ESTRUCTURAS -->
+        <div id="section-estructuras" data-form-section="estructuras">
+          {% include 'forms/form_sections/estructuras_complete.html' %}
+        </div>
+
+        <!-- Sección: CONDUCTOR N1 -->
+        <div id="section-conductor_n1" data-form-section="conductor_n1" style="display: none">
+          {% include 'forms/form_sections/conductor_n1.html' %}
+        </div>
+
+        <!-- Sección: CONDUCTOR N2-N3 -->
+        <div id="section-conductor_n2_n3" data-form-section="conductor_n2_n3" style="display: none">
+          {% include 'forms/form_sections/conductor_n2_n3.html' %}
+        </div>
+
+        <!-- Sección: EQUIPOS -->
+        <div id="section-equipos" data-form-section="equipos" style="display: none">
+          {% include 'forms/form_sections/equipos.html' %}
+        </div>
+
+        <!-- Sección: TRANSFORMADOR -->
+        <div id="section-transformador" data-form-section="transformador" style="display: none">
+          {% include 'forms/form_sections/transformador.html' %}
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-center items-center gap-4 mt-8">
+          <!-- Botón Ver Formularios -->
+          <a
+            href="{% url 'forms:lista' %}"
+            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <i class="fas fa-list"></i>
+            Ver Formularios
+          </a>
+
+          <!-- Botón Enviar Formulario -->
+          <button
+            type="submit"
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <i class="fas fa-paper-plane"></i>
+            Enviar Formulario
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/uc-mapping.js' %}"></script>
+    <script src="{% static 'forms/js/data-mappings.js' %}"></script>
+    <script src="{% static 'forms/js/autocompletion.js' %}"></script>
+    <script src="{% static 'forms/js/form-navigation.js' %}"></script>
+    <script src="{% static 'forms/js/form-synchronization.js' %}"></script>
+    <script src="{% static 'forms/js/form-initialization.js' %}"></script>
+    <script src="{% static 'forms/js/form-modular-init.js' %}"></script>
+    
+    <!-- Validación del sistema UC -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Verificar que el mapping UC esté disponible
+        if (
+          typeof UC_MAPPING === "undefined" ||
+          typeof getUCFromStructure === "undefined"
+        ) {
+          console.error("Error: uc-mapping.js no se cargó correctamente");
+          alert(
+            "Error al cargar el sistema de códigos UC. Por favor recarga la página."
+          );
+          return;
+        }
+        
+        console.log("Sistema de códigos UC cargado correctamente");
+      });
+    </script>
+  </body>
+</html>
