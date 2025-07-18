@@ -1,5 +1,6 @@
 // Mapeo completo de UCs y sus descripciones
 const UC_MAPPING = {
+    // N1 - Nivel 1 (Existentes)
     'N1P1': 'Poste de concreto - 8 m - urbano - suspensión - red común',
     'N1P2': 'Poste de concreto - 10 m - urbano - suspensión - red común',
     'N1P3': 'Poste de concreto - 12 m - urbano - suspensión - red común',
@@ -95,7 +96,66 @@ const UC_MAPPING = {
     'N1P93': 'Poste de metálico - 12 m - rural - retención - red trenzada',
     'N1P94': 'Poste de fibra de vidrio - 8 m - rural - retención - red trenzada',
     'N1P95': 'Poste de fibra de vidrio - 10 m - rural - retención - red trenzada',
-    'N1P96': 'Poste de fibra de vidrio - 12 m - rural - retención - red trenzada'
+    'N1P96': 'Poste de fibra de vidrio - 12 m - rural - retención - red trenzada',
+
+    // Nuevas entradas N1P
+    'N1P61': 'Poste de concreto - 9 m - rural - suspensión - red trenzada',
+    'N1P62': 'Poste de concreto - 10 m - rural - suspensión - red trenzada', 
+    'N1P85': 'Poste de concreto - 9 m - rural - retención - red trenzada',
+    'N1P86': 'Poste de concreto - 10 m - rural - retención - red trenzada',
+
+    // N2 - Nivel 2 (Nuevos)
+    'N2L70': 'Poste de concreto de 12 m 510 kg - suspensión',
+    'N2L71': 'Poste de concreto de 12 m 1050 kg - retención',
+    'N2L72': 'Poste de concreto de 12 m 750 kg - retención',
+    'N2L73': 'Poste de PRFV de 12 m 510 kg - suspensión',
+    'N2L74': 'Poste de PRFV de 12 m 1050 kg - retención',
+    'N2L75': 'Poste de PRFV de 12 m 750 kg - retención',
+    'N2L138': 'Poste metálico de 12 m 510 kg suspensión',
+    'N2L139': 'Poste metálico de 12 m 510 kg retención',
+
+    // N3 - Nivel 3 (Actualizados)
+    'N3L60': 'Poste de concreto de 14 m 1050 kg Poste simple Circuito sencillo suspensión',
+    'N3L61': 'Poste de concreto de 14 m 1050 kg Poste simple Circuito sencillo retención',
+    'N3L62': 'Poste de concreto de 12 m 510 kg Poste simple Circuito doble suspensión',
+    'N3L63': 'Poste de concreto de 14 m 1050 kg Poste simple Circuito doble retención',
+    'N3L64': 'Poste de concreto de 14 m 1050 kg Postes en H Circuito sencillo suspensión',
+    'N3L65': 'Poste de concreto de 14 m 1050 kg Postes en H Circuito sencillo retención',
+    'N3L66': 'Poste de concreto de 14 m 750 kg Postes en H Circuito doble suspensión',
+    'N3L67': 'Poste de concreto de 16 m 1050 kg Postes en H Circuito doble retención',
+    'N3L68': 'Estructura concreto 27 m 2000 kg retención',
+    'N3L69': 'Estructura concreto 27 m 3000 kg suspensión',
+    'N3L70': 'Torrecilla Circuito sencillo suspensión',
+    'N3L71': 'Torrecilla Circuito sencillo retención',
+    'N3L72': 'Torrecilla Circuito doble suspensión',
+    'N3L73': 'Torrecilla Circuito doble retención',
+    'N3L74': 'Poste de PRFV de 14 m 1350 kg Poste simple Circuito sencillo suspensión',
+    'N3L75': 'Poste de PRFV de 14 m 1350 kg Poste simple Circuito sencillo retención',
+    'N3L76': 'Poste de PRFV de 14 m 1350 kg Poste simple Circuito doble suspensión',
+    'N3L77': 'Poste de PRFV de 16 m 1500 kg Poste simple Circuito doble retención',
+    'N3L78': 'Poste de PRFV de 14 m 1350 kg Postes en H Circuito sencillo suspensión',
+    'N3L79': 'Poste de PRFV de 14 m 1350 kg Postes en H Circuito sencillo retención',
+    'N3L80': 'Poste de PRFV de 12 m 1050 kg Postes en H Circuito doble suspensión',
+    'N3L81': 'Poste de PRFV de 14 m 1350 kg Postes en H Circuito doble retención',
+    'N3L125': 'Sistema de puesta a tierra diseño típico para torre',
+
+    // N4 - Nivel 4 (Nuevos)
+    'N4L60': 'Estructura concreto de 25 m línea aérea desnuda circuito sencillo suspensión',
+    'N4L61': 'Estructura concreto de 25 m línea aérea desnuda circuito sencillo retención',
+    'N4L62': 'Estructura concreto de 25 m línea aérea desnuda circuito doble suspensión',
+    'N4L63': 'Estructura concreto de 25 m línea aérea desnuda circuito doble retención',
+    'N4L64': 'Poste metálico de 27 m línea aérea desnuda circuito sencillo suspensión',
+    'N4L65': 'Poste metálico de 27 m línea aérea desnuda circuito sencillo retención',
+    'N4L66': 'Poste metálico de 27 m línea aérea desnuda circuito doble suspensión',
+    'N4L67': 'Poste metálico de 27 m línea aérea desnuda circuito doble retención',
+    'N4L68': 'Torre metálica línea aérea desnuda circuito sencillo suspensión',
+    'N4L69': 'Torre metálica línea aérea desnuda circuito sencillo retención',
+    'N4L70': 'Torre metálica línea aérea desnuda circuito doble suspensión',
+    'N4L71': 'Torre metálica línea aérea desnuda circuito doble retención',
+    'N4L72': 'Poste metálico de 29 m línea aérea compacta circuito sencillo suspensión',
+    'N4L73': 'Poste metálico de 29 m línea aérea compacta circuito sencillo retención',
+    'N4L74': 'Poste metálico de 29 m línea aérea compacta circuito doble suspensión',
+    'N4L75': 'Poste metálico de 29 m línea aérea compacta circuito doble retención'
 };
 
 // Función para obtener UC basado en parámetros de la estructura
@@ -156,6 +216,140 @@ function getUCFromStructure(material, altura, poblacion, disposicion, tipoRed) {
         
         console.log('¡UC encontrado!', uc, ':', descripcion);
         return uc;
+    }
+    
+    console.log('No se encontró UC para los parámetros dados');
+    return null;
+}
+
+// Función avanzada para obtener UC basado en múltiples parámetros
+function getUCFromAdvancedStructure(params) {
+    const { apoyo, material, altura, poblacion, disposicion, tipoRed, peso, configuracion, circuito, linea } = params;
+    
+    console.log('Búsqueda UC avanzada con parámetros:', params);
+    
+    // Buscar en el mapping usando diferentes estrategias según el tipo
+    for (const [uc, descripcion] of Object.entries(UC_MAPPING)) {
+        const desc = descripcion.toLowerCase();
+        
+        // Verificar nivel según el código UC
+        const nivel = uc.charAt(1); // N1, N2, N3, N4
+        
+        if (nivel === '1') {
+            // N1P - Lógica original para postes nivel 1
+            if (apoyo !== 'Poste') continue;
+            
+            const materialMapped = material === "Metálico" ? "metálico" : material.toLowerCase();
+            const poblacionMapped = poblacion === "Urbana" ? "urbano" : poblacion.toLowerCase();
+            const tipoRedMapped = tipoRed === "Común" ? "red común" : tipoRed === "Trenzada" ? "red trenzada" : "";
+            
+            if (!desc.includes(materialMapped)) continue;
+            if (!desc.includes(`${altura} m`)) continue;
+            if (!desc.includes(poblacionMapped)) continue;
+            if (!desc.includes(disposicion.toLowerCase())) continue;
+            if (!desc.includes(tipoRedMapped)) continue;
+            
+            return uc;
+            
+        } else if (nivel === '2') {
+            // N2L - Postes nivel 2 con peso
+            if (apoyo !== 'Poste') continue;
+            if (!material || !altura || !peso || !disposicion) continue;
+            
+            const materialMapped = material === "PRFV" ? "prfv" : material.toLowerCase();
+            
+            if (!desc.includes(materialMapped)) continue;
+            if (!desc.includes(`${altura} m`)) continue;
+            if (peso && !desc.includes(`${peso} kg`)) continue;
+            if (!desc.includes(disposicion.toLowerCase())) continue;
+            
+            return uc;
+            
+        } else if (nivel === '3') {
+            // N3L - Postes/Estructuras/Torrecillas nivel 3
+            if (!disposicion) continue;
+            
+            if (apoyo === 'Poste') {
+                if (!material || !altura || !configuracion || !circuito) continue;
+                
+                const materialMapped = material === "PRFV" ? "prfv" : material.toLowerCase();
+                
+                if (!desc.includes(materialMapped)) continue;
+                if (!desc.includes(`${altura} m`)) continue;
+                if (configuracion === "Simple" && !desc.includes("poste simple")) continue;
+                if (configuracion === "H" && !desc.includes("postes en h")) continue;
+                if (circuito === "Sencillo" && !desc.includes("circuito sencillo")) continue;
+                if (circuito === "Doble" && !desc.includes("circuito doble")) continue;
+                if (!desc.includes(disposicion.toLowerCase())) continue;
+                
+                return uc;
+                
+            } else if (apoyo === 'Estructura') {
+                if (!material || !altura || !peso) continue;
+                
+                if (!desc.includes("estructura")) continue;
+                if (!desc.includes(material.toLowerCase())) continue;
+                if (!desc.includes(`${altura} m`)) continue;
+                if (peso && !desc.includes(`${peso} kg`)) continue;
+                if (!desc.includes(disposicion.toLowerCase())) continue;
+                
+                return uc;
+                
+            } else if (apoyo === 'Torrecilla') {
+                if (!circuito) continue;
+                
+                if (!desc.includes("torrecilla")) continue;
+                if (circuito === "Sencillo" && !desc.includes("circuito sencillo")) continue;
+                if (circuito === "Doble" && !desc.includes("circuito doble")) continue;
+                if (!desc.includes(disposicion.toLowerCase())) continue;
+                
+                return uc;
+            }
+            
+        } else if (nivel === '4') {
+            // N4L - Postes/Estructuras/Torres nivel 4
+            if (!disposicion || !circuito) continue;
+            
+            if (apoyo === 'Poste') {
+                if (!material || !altura || !linea) continue;
+                
+                if (!desc.includes("poste")) continue;
+                if (!desc.includes(material.toLowerCase())) continue;
+                if (!desc.includes(`${altura} m`)) continue;
+                if (linea === "Desnuda" && !desc.includes("línea aérea desnuda")) continue;
+                if (linea === "Compacta" && !desc.includes("línea aérea compacta")) continue;
+                if (circuito === "Sencillo" && !desc.includes("circuito sencillo")) continue;
+                if (circuito === "Doble" && !desc.includes("circuito doble")) continue;
+                if (!desc.includes(disposicion.toLowerCase())) continue;
+                
+                return uc;
+                
+            } else if (apoyo === 'Estructura') {
+                if (!material || !altura || !linea) continue;
+                
+                if (!desc.includes("estructura")) continue;
+                if (!desc.includes(material.toLowerCase())) continue;
+                if (!desc.includes(`${altura} m`)) continue;
+                if (linea === "Desnuda" && !desc.includes("línea aérea desnuda")) continue;
+                if (circuito === "Sencillo" && !desc.includes("circuito sencillo")) continue;
+                if (circuito === "Doble" && !desc.includes("circuito doble")) continue;
+                if (!desc.includes(disposicion.toLowerCase())) continue;
+                
+                return uc;
+                
+            } else if (apoyo === 'Torre') {
+                if (!material || !linea) continue;
+                
+                if (!desc.includes("torre")) continue;
+                if (!desc.includes(material.toLowerCase())) continue;
+                if (linea === "Desnuda" && !desc.includes("línea aérea desnuda")) continue;
+                if (circuito === "Sencillo" && !desc.includes("circuito sencillo")) continue;
+                if (circuito === "Doble" && !desc.includes("circuito doble")) continue;
+                if (!desc.includes(disposicion.toLowerCase())) continue;
+                
+                return uc;
+            }
+        }
     }
     
     console.log('No se encontró UC para los parámetros dados');

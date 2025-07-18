@@ -219,9 +219,9 @@
       </label>
       <select id="nivel_tension" name="nivel_tension" class="form-select" required>
         <option value="">Seleccionar</option>
-        <option value="1">1 - Baja Tensión</option>
-        <option value="2">2 - Media Tensión</option>
-        <option value="3">3 - Alta Tensión</option>
+        <option value="1">Nivel De Tension 1</option>
+        <option value="2">Nivel De Tension 2</option>
+        <option value="3">Nivel De Tension 3</option>
       </select>
     </div>
 
@@ -533,6 +533,28 @@
   <!-- Estructura Nueva -->
   <div class="bg-emerald-50/50 rounded-lg border border-emerald-200 p-6 mb-6">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Campo APOYO (Nuevo campo principal) -->
+      <div class="form-group">
+        <label class="form-label required">
+          TIPO DE APOYO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Tipo de apoyo de la estructura: Poste (N1/N2), Estructura (N3/N4), Torrecilla (N3), Torre (N4).
+            </span>
+          </span>
+        </label>
+        <select id="apoyo_nueva" name="apoyo_nueva" class="form-select" required>
+          <option value="">Seleccionar apoyo</option>
+          <option value="Poste">Poste</option>
+          <option value="Estructura">Estructura</option>
+          <option value="Torrecilla">Torrecilla</option>
+          <option value="Torre">Torre</option>
+        </select>
+      </div>
+
+      <!-- Campo MATERIAL DE LA ESTRUCTURA -->
       <div class="form-group">
         <label class="form-label required">MATERIAL DE LA ESTRUCTURA</label>
         <select id="material_nueva" name="material_nueva" class="form-select" required>
@@ -541,17 +563,110 @@
           <option value="Madera">Madera</option>
           <option value="Metálico">Metálico</option>
           <option value="Fibra de vidrio">Fibra de vidrio</option>
+          <option value="PRFV">PRFV</option>
         </select>
       </div>
 
+      <!-- Campo ALTURA TOTAL -->
       <div class="form-group">
         <label class="form-label required">ALTURA TOTAL (m)</label>
         <select id="altura_nueva" name="altura_nueva" class="form-select" required>
           <option value="">Seleccionar altura</option>
+          <option value="8">8 m</option>
+          <option value="9">9 m</option>
+          <option value="10">10 m</option>
+          <option value="11">11 m</option>
+          <option value="12">12 m</option>
+          <option value="13">13 m</option>
+          <option value="14">14 m</option>
+          <option value="15">15 m</option>
+          <option value="16">16 m</option>
+          <option value="25">25 m</option>
+          <option value="27">27 m</option>
+          <option value="29">29 m</option>
         </select>
       </div>
 
-      <div class="form-group">
+      <!-- Campo PESO (Para niveles N2, N3, N4) -->
+      <div class="form-group" id="peso_group" style="display: none;">
+        <label class="form-label">
+          PESO (kg)
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Peso de la estructura en kilogramos. Aplica para estructuras de nivel 2, 3 y 4.
+            </span>
+          </span>
+        </label>
+        <select id="peso_nueva" name="peso_nueva" class="form-select">
+          <option value="">Seleccionar peso</option>
+          <option value="510">510 kg</option>
+          <option value="750">750 kg</option>
+          <option value="1050">1050 kg</option>
+          <option value="1350">1350 kg</option>
+          <option value="1500">1500 kg</option>
+          <option value="2000">2000 kg</option>
+          <option value="3000">3000 kg</option>
+          <option value="4000">4000 kg</option>
+        </select>
+      </div>
+
+      <!-- Campo CONFIGURACIÓN (Para niveles N3, N4) -->
+      <div class="form-group" id="configuracion_group" style="display: none;">
+        <label class="form-label">
+          CONFIGURACIÓN
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Configuración de los postes: Simple o en H (para estructuras N3).
+            </span>
+          </span>
+        </label>
+        <select id="configuracion_nueva" name="configuracion_nueva" class="form-select">
+          <option value="">Seleccionar configuración</option>
+          <option value="Simple">Poste simple</option>
+          <option value="H">Postes en H</option>
+        </select>
+      </div>
+
+      <!-- Campo TIPO DE CIRCUITO (Para niveles N3, N4) -->
+      <div class="form-group" id="circuito_group" style="display: none;">
+        <label class="form-label">
+          TIPO DE CIRCUITO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Tipo de circuito: Sencillo o Doble (para estructuras N3 y N4).
+            </span>
+          </span>
+        </label>
+        <select id="circuito_nueva" name="circuito_nueva" class="form-select">
+          <option value="">Seleccionar circuito</option>
+          <option value="Sencillo">Circuito sencillo</option>
+          <option value="Doble">Circuito doble</option>
+        </select>
+      </div>
+
+      <!-- Campo TIPO DE LÍNEA (Para nivel N4) -->
+      <div class="form-group" id="linea_group" style="display: none;">
+        <label class="form-label">
+          TIPO DE LÍNEA
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Tipo de línea aérea: Desnuda o Compacta (para estructuras N4).
+            </span>
+          </span>
+        </label>
+        <select id="linea_nueva" name="linea_nueva" class="form-select">
+          <option value="">Seleccionar línea</option>
+          <option value="Desnuda">Línea aérea desnuda</option>
+          <option value="Compacta">Línea aérea compacta</option>
+        </select>
+      </div>
+
+      <!-- Campos para N1 únicamente -->
+      <div class="form-group" id="poblacion_group">
         <label class="form-label required">POBLACIÓN</label>
         <select id="poblacion_nueva" name="poblacion_nueva" class="form-select" required>
           <option value="">Seleccionar población</option>
@@ -560,6 +675,16 @@
         </select>
       </div>
 
+      <div class="form-group" id="tipo_red_group">
+        <label class="form-label required">TIPO DE RED</label>
+        <select id="tipo_red_nueva" name="tipo_red_nueva" class="form-select" required>
+          <option value="">Seleccionar tipo</option>
+          <option value="Común">Común</option>
+          <option value="Trenzada">Trenzada</option>
+        </select>
+      </div>
+
+      <!-- Campo DISPOSICIÓN (Universal) -->
       <div class="form-group">
         <label class="form-label required">DISPOSICIÓN</label>
         <select id="disposicion_nueva" name="disposicion_nueva" class="form-select" required>
@@ -569,17 +694,17 @@
         </select>
       </div>
 
+      <!-- Campo UC (Universal) -->
       <div class="form-group">
-        <label class="form-label required">TIPO DE RED</label>
-        <select id="tipo_red_nueva" name="tipo_red_nueva" class="form-select" required>
-          <option value="">Seleccionar tipo</option>
-          <option value="Común">Común</option>
-          <option value="Trenzada">Trenzada</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">UC (Código Único)</label>
+        <label class="form-label">
+          UC (Código Único)
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Código único que se genera automáticamente según los parámetros seleccionados.
+            </span>
+          </span>
+        </label>
         <input
           type="text"
           id="uc_nueva"
