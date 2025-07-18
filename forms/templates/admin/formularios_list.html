@@ -1,264 +1,544 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Monitoreo de Formularios - Admin DESS{% endblock %}
+{% block title %}Gestión de Formularios - Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'forms/css/admin-dashboard.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+.formularios-management {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.management-header {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.management-header .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    border: none;
+    padding: 20px;
+}
+
+.stats-row {
+    margin-bottom: 25px;
+}
+
+.stat-mini {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.stat-mini .number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-mini .label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.stat-mini.total .number { color: #007bff; }
+.stat-mini.activos .number { color: #28a745; }
+.stat-mini.eliminados .number { color: #dc3545; }
+.stat-mini.contratista .number { color: #ffc107; }
+.stat-mini.interventor .number { color: #17a2b8; }
+.stat-mini.gestion .number { color: #fd7e14; }
+.stat-mini.finalizado .number { color: #28a745; }
+
+.filters-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.table-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.table-responsive {
+    border-radius: 0 0 15px 15px;
+}
+
+.formularios-table {
+    margin-bottom: 0;
+}
+
+.formularios-table th {
+    background: #f8f9fa;
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.formularios-table td {
+    padding: 15px;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.estado-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.estado-contratista { background: #fff3cd; color: #856404; }
+.estado-interventor { background: #d1ecf1; color: #0c5460; }
+.estado-gestion { background: #f8d7da; color: #721c24; }
+.estado-finalizado { background: #d4edda; color: #155724; }
+
+.btn-action {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 0.8rem;
+    margin: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-estado { background: #007bff; color: white; }
+.btn-estado:hover { background: #0056b3; }
+
+.btn-eliminar { background: #dc3545; color: white; }
+.btn-eliminar:hover { background: #c82333; }
+
+.btn-restaurar { background: #28a745; color: white; }
+.btn-restaurar:hover { background: #1e7e34; }
+
+.formulario-id {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.status-inactive {
+    opacity: 0.6;
+    background: #f8f9fa;
+}
+
+.filters-form {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.back-link {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.back-link:hover {
+    opacity: 1;
+    color: white;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Header específico para Monitoreo de Formularios -->
-<div class="header-semaforo-gestion mb-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">
-                    <i class="fas fa-file-alt mr-3"></i>
-                    Monitoreo de Formularios
-                </h1>
-                <p class="text-lg opacity-90">
-                    Vista completa de todos los formularios del sistema
-                </p>
-            </div>
-            <div class="flex space-x-4">
-                <a href="{% url 'forms:admin_dashboard' %}" class="bg-white/20 rounded-lg p-4 backdrop-blur-sm hover:bg-white/30 transition-all">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Volver al Dashboard
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Filtros y estadísticas -->
-<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">
-            <i class="fas fa-filter mr-2"></i>
-            Filtros y Estadísticas
-        </h3>
-    </div>
-    
-    <!-- Filtros -->
-    <form method="GET" class="mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-                <select name="estado" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                    <option value="">Todos los estados</option>
-                    <option value="contratista" {% if estado_filter == 'contratista' %}selected{% endif %}>Contratista</option>
-                    <option value="interventor" {% if estado_filter == 'interventor' %}selected{% endif %}>Interventor</option>
-                    <option value="gestion" {% if estado_filter == 'gestion' %}selected{% endif %}>Gestión</option>
-                    <option value="finalizado" {% if estado_filter == 'finalizado' %}selected{% endif %}>Finalizado</option>
-                </select>
-            </div>
-            <div class="flex items-end">
-                <button type="submit" class="btn-semaforo btn-gestion">
-                    <i class="fas fa-search mr-2"></i>
-                    Filtrar
-                </button>
-            </div>
-        </div>
-    </form>
-    
-    <!-- Estadísticas rápidas -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="text-center">
-            <div class="text-2xl font-bold text-orange-600">
-                {{ formularios|length }}
-            </div>
-            <div class="text-sm text-gray-600">Total Mostrados</div>
-        </div>
-        <div class="text-center">
-            <div class="text-2xl font-bold text-yellow-600">
-                {% for f in formularios %}{% if f.estado_actual == 'contratista' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
-            </div>
-            <div class="text-sm text-gray-600">En Trabajo</div>
-        </div>
-        <div class="text-center">
-            <div class="text-2xl font-bold text-blue-600">
-                {% for f in formularios %}{% if f.estado_actual == 'interventor' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
-            </div>
-            <div class="text-sm text-gray-600">En Revisión</div>
-        </div>
-        <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">
-                {% for f in formularios %}{% if f.estado_actual == 'finalizado' %}{{ forloop.counter0|add:1 }}{% endif %}{% endfor %}
-            </div>
-            <div class="text-sm text-gray-600">Finalizados</div>
-        </div>
-    </div>
-</div>
-
-<!-- Lista de formularios -->
-<div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900">
-            <i class="fas fa-list mr-2"></i>
-            Todos los Formularios del Sistema
-        </h3>
-    </div>
-
-    <div class="table-semaforo overflow-x-auto">
-        <table class="min-w-full">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        ID / Fecha
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Trabajo/Ubicación
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Creado Por
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Estado Actual
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Última Actualización
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Acciones
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for formulario in formularios %}
-                <tr class="table-row-{{ formulario.estado_actual }} hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="estado-icon mr-3">
-                                <i class="fas fa-file-alt text-2xl text-gray-400"></i>
-                            </div>
+<div class="formularios-management">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card management-header">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <div class="text-sm font-medium text-gray-900">
-                                    F{{ formulario.id|stringformat:"06d" }}
-                                </div>
-                                <div class="text-sm text-gray-500">
-                                    {{ formulario.created_at|date:"d/m/Y H:i" }}
-                                </div>
+                                <h3 class="mb-2">📋 Gestión de Formularios</h3>
+                                <p class="mb-0 opacity-75">Administración completa del sistema de formularios</p>
                             </div>
+                            <a href="{% url 'forms:admin_dashboard' %}" class="back-link">
+                                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                            </a>
                         </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-900 font-medium">
-                            {{ formulario.trabajo|default:"Sin descripción"|truncatechars:40 }}
-                        </div>
-                        <div class="text-sm text-gray-500">
-                            {% if formulario.municipio %}{{ formulario.municipio }}{% endif %}
-                            {% if formulario.regional %} - {{ formulario.regional }}{% endif %}
-                        </div>
-                        <div class="text-xs text-gray-400">
-                            {% if formulario.circuito %}{{ formulario.circuito }}{% endif %}
-                            {% if formulario.alimentador %} | {{ formulario.alimentador }}{% endif %}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        {% if formulario.creado_por %}
-                            <div class="text-sm text-gray-900">
-                                {{ formulario.creado_por.get_full_name|default:formulario.creado_por.username }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas Mini -->
+        <div class="row stats-row">
+            <div class="col-md-3 col-6">
+                <div class="stat-mini total">
+                    <div class="number">{{ stats.total }}</div>
+                    <div class="label">Total</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-mini activos">
+                    <div class="number">{{ stats.activos }}</div>
+                    <div class="label">Activos</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-mini eliminados">
+                    <div class="number">{{ stats.eliminados }}</div>
+                    <div class="label">Eliminados</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-mini contratista">
+                    <div class="number">{{ stats.contratista }}</div>
+                    <div class="label">Contratista</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card filters-card">
+                    <div class="card-body">
+                        <form method="GET" class="filters-form">
+                            <div class="filter-group">
+                                <label for="search" class="form-label">Buscar</label>
+                                <input type="text" id="search" name="search" class="form-control" 
+                                       placeholder="ID, trabajo, municipio..." value="{{ search_query }}">
                             </div>
-                            <div class="text-xs text-gray-500">
-                                {{ formulario.creado_por.get_rol_display }}
+                            <div class="filter-group">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select id="estado" name="estado" class="form-select">
+                                    <option value="">Todos los estados</option>
+                                    {% for valor, nombre in estados %}
+                                        <option value="{{ valor }}" {% if estado_filter == valor %}selected{% endif %}>
+                                            {{ nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                            {% if formulario.creado_por.equipo_contratista %}
-                            <div class="text-xs text-gray-400">
-                                {{ formulario.creado_por.equipo_contratista }}
+                            <div class="filter-group">
+                                <label for="activo" class="form-label">Estado del Formulario</label>
+                                <select id="activo" name="activo" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="1" {% if activo_filter == '1' %}selected{% endif %}>Solo Activos</option>
+                                    <option value="0" {% if activo_filter == '0' %}selected{% endif %}>Solo Eliminados</option>
+                                </select>
                             </div>
-                            {% endif %}
+                            <div class="filter-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                                <a href="{% url 'forms:admin_formularios_list' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Limpiar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Formularios -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list"></i> 
+                            Lista de Formularios 
+                            <span class="badge bg-primary">{{ formularios.count }}</span>
+                        </h5>
+                    </div>
+                    <div class="table-responsive">
+                        {% if formularios %}
+                        <table class="table formularios-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Información General</th>
+                                    <th>Estructuras</th>
+                                    <th>Proyecto</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for formulario in formularios %}
+                                <tr {% if not formulario.activo %}class="status-inactive"{% endif %}>
+                                    <td>
+                                        <div class="formulario-id">#{{ formulario.id }}</div>
+                                        <small class="text-muted">{{ formulario.get_numero_formulario }}</small>
+                                    </td>
+                                    <td>
+                                        <div><strong>{{ formulario.trabajo|default:"Sin trabajo"|truncatechars:40 }}</strong></div>
+                                        <small class="text-muted">{{ formulario.municipio|default:"Sin municipio" }}</small><br>
+                                        <small class="text-muted">{{ formulario.regional|default:"Sin regional" }}</small>
+                                    </td>
+                                    <td>
+                                        <div>{{ formulario.alimentador|default:"N/A" }}</div>
+                                        <small class="text-muted">{{ formulario.circuito|default:"Sin circuito" }}</small>
+                                    </td>
+                                    <td>
+                                        <div>{{ formulario.nivel_tension|default:"N/A" }}</div>
+                                        <small class="text-muted">{{ formulario.barrio_vereda|default:"Sin barrio" }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="estado-badge estado-{{ formulario.estado_actual }}">
+                                            {{ formulario.get_estado_actual_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div>{{ formulario.created_at|date:"d/m/Y" }}</div>
+                                        <small class="text-muted">{{ formulario.created_at|time:"H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if formulario.activo %}
+                                            <!-- Cambiar Estado -->
+                                            <div class="dropdown d-inline">
+                                                <button class="btn-action btn-estado dropdown-toggle" type="button" 
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    {% for valor, nombre in estados %}
+                                                        {% if valor != formulario.estado_actual %}
+                                                        <li>
+                                                            <a class="dropdown-item cambiar-estado" href="#" 
+                                                               data-formulario-id="{{ formulario.id }}" 
+                                                               data-nuevo-estado="{{ valor }}">
+                                                                {{ nombre }}
+                                                            </a>
+                                                        </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+
+                                            <!-- Eliminar -->
+                                            <button class="btn-action btn-eliminar eliminar-formulario" 
+                                                    data-formulario-id="{{ formulario.id }}"
+                                                    title="Eliminar formulario">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        {% else %}
+                                            <!-- Restaurar -->
+                                            <button class="btn-action btn-restaurar restaurar-formulario" 
+                                                    data-formulario-id="{{ formulario.id }}"
+                                                    title="Restaurar formulario">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                         {% else %}
-                            <span class="text-gray-400">Usuario eliminado</span>
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5>No se encontraron formularios</h5>
+                            <p class="text-muted">Intenta cambiar los filtros de búsqueda</p>
+                        </div>
                         {% endif %}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="badge badge-estado badge-{{ formulario.estado_actual }}">
-                            <i class="fas fa-circle mr-1"></i>
-                            {{ formulario.get_estado_actual_display }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ formulario.updated_at|date:"d/m/Y H:i" }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div class="flex justify-end space-x-2">
-                            <!-- Ver detalles -->
-                            <a href="/admin/forms/formularioglobal/{{ formulario.id }}/change/" 
-                               class="text-blue-600 hover:text-blue-900" 
-                               title="Ver/Editar detalles">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            
-                            <!-- Historial -->
-                            <a href="/admin/forms/formularioglobal/{{ formulario.id }}/history/" 
-                               class="text-purple-600 hover:text-purple-900" 
-                               title="Ver historial">
-                                <i class="fas fa-history"></i>
-                            </a>
-                            
-                            <!-- Eliminar (solo para admins) -->
-                            <a href="/admin/forms/formularioglobal/{{ formulario.id }}/delete/" 
-                               class="text-red-600 hover:text-red-900" 
-                               title="Eliminar formulario"
-                               onclick="return confirm('¿Estás seguro de que quieres eliminar este formulario?')">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="px-6 py-12 text-center">
-                        <div class="text-gray-500">
-                            <i class="fas fa-file-alt text-4xl mb-4"></i>
-                            <p class="text-lg">No hay formularios en el sistema</p>
-                            {% if estado_filter %}
-                            <p class="text-sm mb-4">No se encontraron formularios con el filtro "{{ estado_filter }}"</p>
-                            <a href="{% url 'forms:admin_formularios_list' %}" class="text-blue-600 hover:text-blue-800">
-                                Ver todos los formularios
-                            </a>
-                            {% else %}
-                            <p class="text-sm">Los formularios aparecerán aquí cuando los usuarios los creen</p>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Información adicional -->
-<div class="mt-8 bg-blue-50 rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        <i class="fas fa-info-circle mr-2 text-blue-500"></i>
-        Información del Monitoreo
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="info-item">
-            <p class="text-sm text-gray-700">
-                <strong>Estados del flujo:</strong> Contratista → Interventor → Gestión → Finalizado
-            </p>
-        </div>
-        <div class="info-item">
-            <p class="text-sm text-gray-700">
-                <strong>Actualización:</strong> Los datos se actualizan en tiempo real
-            </p>
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAction">Confirmar</button>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Auto-refresh cada 2 minutos para datos en tiempo real
-setInterval(function() {
-    if (!document.hidden) {
-        location.reload();
-    }
-}, 120000);
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    let currentAction = null;
 
-// Indicar cuando la página se actualiza automáticamente
-window.addEventListener('beforeunload', function() {
-    document.body.style.opacity = '0.7';
+    // Cambiar estado
+    document.querySelectorAll('.cambiar-estado').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const formularioId = this.dataset.formularioId;
+            const nuevoEstado = this.dataset.nuevoEstado;
+            const estadoNombre = this.textContent.trim();
+            
+            document.getElementById('confirmModalLabel').textContent = 'Cambiar Estado';
+            document.getElementById('confirmModalBody').innerHTML = 
+                `¿Estás seguro de que quieres cambiar el estado del formulario #${formularioId} a "${estadoNombre}"?`;
+            
+            currentAction = () => cambiarEstado(formularioId, nuevoEstado);
+            confirmModal.show();
+        });
+    });
+
+    // Eliminar formulario
+    document.querySelectorAll('.eliminar-formulario').forEach(button => {
+        button.addEventListener('click', function() {
+            const formularioId = this.dataset.formularioId;
+            
+            document.getElementById('confirmModalLabel').textContent = 'Eliminar Formulario';
+            document.getElementById('confirmModalBody').innerHTML = 
+                `¿Estás seguro de que quieres eliminar el formulario #${formularioId}?<br>
+                <small class="text-muted">Esta acción realizará una eliminación lógica. El formulario puede ser restaurado posteriormente.</small>`;
+            
+            currentAction = () => eliminarFormulario(formularioId);
+            confirmModal.show();
+        });
+    });
+
+    // Restaurar formulario
+    document.querySelectorAll('.restaurar-formulario').forEach(button => {
+        button.addEventListener('click', function() {
+            const formularioId = this.dataset.formularioId;
+            
+            document.getElementById('confirmModalLabel').textContent = 'Restaurar Formulario';
+            document.getElementById('confirmModalBody').innerHTML = 
+                `¿Estás seguro de que quieres restaurar el formulario #${formularioId}?`;
+            
+            currentAction = () => restaurarFormulario(formularioId);
+            confirmModal.show();
+        });
+    });
+
+    // Confirmar acción
+    document.getElementById('confirmAction').addEventListener('click', function() {
+        if (currentAction) {
+            currentAction();
+            confirmModal.hide();
+        }
+    });
+
+    // Funciones de acción
+    function cambiarEstado(formularioId, nuevoEstado) {
+        fetch(`{% url 'forms:admin_cambiar_estado_formulario' 0 %}`.replace('0', formularioId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `nuevo_estado=${nuevoEstado}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cambiar el estado');
+        });
+    }
+
+    function eliminarFormulario(formularioId) {
+        fetch(`{% url 'forms:admin_eliminar_formulario' 0 %}`.replace('0', formularioId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al eliminar formulario');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar formulario');
+        });
+    }
+
+    function restaurarFormulario(formularioId) {
+        fetch(`{% url 'forms:admin_restaurar_formulario' 0 %}`.replace('0', formularioId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al restaurar formulario');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al restaurar formulario');
+        });
+    }
+
+    // Obtener CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 });
 </script>
 {% endblock %}

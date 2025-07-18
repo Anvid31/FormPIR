@@ -51,6 +51,9 @@ class FormularioGlobal(models.Model):
     estado_actual = models.CharField(max_length=30, choices=ESTADO_CHOICES, default='contratista')
     creado_por = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     
+    # Eliminación lógica
+    activo = models.BooleanField(default=True, help_text="1=Activo, 0=Eliminado")
+    
     # Timestamps
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
