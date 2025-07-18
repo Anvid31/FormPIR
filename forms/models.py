@@ -67,5 +67,18 @@ class FormularioGlobal(models.Model):
     
     def get_numero_formulario(self):
         return f"F{self.id:06d}"
+    
+    def get_estados_validos(self):
+        """Obtiene los estados válidos según el flujo del semáforo"""
+        flujo_estados = {
+            'contratista': ['interventor'],  # Solo puede avanzar a interventor
+            'interventor': ['contratista', 'gestion'],  # Puede regresar a contratista o avanzar a gestión
+            'gestion': ['interventor', 'finalizado'],  # Puede regresar a interventor o finalizar
+            'finalizado': ['gestion'],  # Solo puede regresar a gestión
+        }
+        estados_validos = flujo_estados.get(self.estado_actual, [])
+        
+        # Convertir a formato compatible con choices
+        return [(estado, dict(self.ESTADO_CHOICES)[estado]) for estado in estados_validos]
 
 

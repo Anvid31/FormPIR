@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Usuarios - FormPIR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'forms/css/admin-dashboard.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card dashboard-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="dashboard-title">👥 Gestión de Usuarios</h3>
+                            <p class="dashboard-subtitle">Administración de usuarios del sistema</p>
+                        </div>
+                        <div>
+                            <a href="{% url 'forms:admin_dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h5 class="content-title">🔍 Filtros</h5>
+                    </div>
+                    <div class="content-body">
+                        <form method="GET" class="row g-3">
+                            {% csrf_token %}
+                            <div class="col-md-3">
+                                <label class="form-label">Buscar por nombre/usuario:</label>
+                                <input type="text" class="form-control" name="search" value="{{ request.GET.search }}" placeholder="Nombre o username">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Estado:</label>
+                                <select class="form-select" name="activo">
+                                    <option value="">Todos</option>
+                                    <option value="1" {% if request.GET.activo == '1' %}selected{% endif %}>Activos</option>
+                                    <option value="0" {% if request.GET.activo == '0' %}selected{% endif %}>Inactivos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Rol:</label>
+                                <select class="form-select" name="rol">
+                                    <option value="">Todos</option>
+                                    <option value="Administrador" {% if request.GET.rol == 'Administrador' %}selected{% endif %}>Administrador</option>
+                                    <option value="Contratista" {% if request.GET.rol == 'Contratista' %}selected{% endif %}>Contratista</option>
+                                    <option value="Ejecutor/Interventor" {% if request.GET.rol == 'Ejecutor/Interventor' %}selected{% endif %}>Ejecutor/Interventor</option>
+                                    <option value="Gestión" {% if request.GET.rol == 'Gestión' %}selected{% endif %}>Gestión</option>
+                                    <option value="Planeación" {% if request.GET.rol == 'Planeación' %}selected{% endif %}>Planeación</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Buscar
+                                    </button>
+                                    <a href="{% url 'forms:admin_users_list' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times"></i> Limpiar
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Usuarios -->
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header d-flex justify-content-between align-items-center">
+                        <h5 class="content-title">📋 Lista de Usuarios ({{ usuarios.count }})</h5>
+                        <div>
+                            <a href="/admin/forms/customuser/add/" class="btn btn-success">
+                                <i class="fas fa-plus"></i> Nuevo Usuario
+                            </a>
+                        </div>
+                    </div>
+                    <div class="content-body">
+                        {% if usuarios %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th><i class="fas fa-user"></i> Usuario</th>
+                                        <th><i class="fas fa-envelope"></i> Email</th>
+                                        <th><i class="fas fa-user-tag"></i> Rol</th>
+                                        <th><i class="fas fa-toggle-on"></i> Estado</th>
+                                        <th><i class="fas fa-calendar"></i> Fecha Registro</th>
+                                        <th><i class="fas fa-clock"></i> Último Acceso</th>
+                                        <th><i class="fas fa-cogs"></i> Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for usuario in usuarios %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="user-avatar me-2">
+                                                    <i class="fas fa-user-circle text-secondary"></i>
+                                                </div>
+                                                <div>
+                                                    <strong>{{ usuario.get_full_name|default:usuario.username }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">@{{ usuario.username }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-envelope text-muted me-1"></i>
+                                            {{ usuario.email|default:"Sin email" }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-user-tag me-1"></i>
+                                                {{ usuario.rol|default:"Sin rol" }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if usuario.is_active %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle me-1"></i>
+                                                    Activo
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>
+                                                    Inactivo
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-calendar-plus text-muted me-1"></i>
+                                            {{ usuario.date_joined|date:"d/m/Y H:i" }}
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-clock text-muted me-1"></i>
+                                            {% if usuario.last_login %}
+                                                {{ usuario.last_login|date:"d/m/Y H:i" }}
+                                            {% else %}
+                                                <span class="text-muted">Nunca</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="/admin/forms/customuser/{{ usuario.id }}/change/" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   title="Editar usuario">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% if usuario.is_active %}
+                                                    <button class="btn btn-sm btn-outline-warning toggle-user-btn" 
+                                                            data-user-id="{{ usuario.id }}"
+                                                            data-action="deactivate"
+                                                            title="Desactivar usuario">
+                                                        <i class="fas fa-user-slash"></i>
+                                                    </button>
+                                                {% else %}
+                                                    <button class="btn btn-sm btn-outline-success toggle-user-btn" 
+                                                            data-user-id="{{ usuario.id }}"
+                                                            data-action="activate"
+                                                            title="Activar usuario">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                {% endif %}
+                                                <a href="/admin/forms/customuser/{{ usuario.id }}/delete/" 
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   title="Eliminar usuario"
+                                                   onclick="return confirm('¿Está seguro de eliminar este usuario?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No se encontraron usuarios</h5>
+                            <p class="text-muted">No hay usuarios que coincidan con los criterios de búsqueda.</p>
+                            <a href="/admin/forms/customuser/add/" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear primer usuario
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas por Rol -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h5 class="content-title">📊 Estadísticas por Rol</h5>
+                    </div>
+                    <div class="content-body">
+                        <div class="row">
+                            {% for rol, cantidad in usuarios_por_rol.items %}
+                            <div class="col-md-2 mb-3">
+                                <div class="role-stat-card">
+                                    <div class="role-stat-content">
+                                        <h4 class="role-stat-number">{{ cantidad }}</h4>
+                                        <p class="role-stat-label">{{ rol|title }}</p>
+                                    </div>
+                                    <div class="role-stat-icon">
+                                        {% if rol == 'Administrador' %}
+                                            <i class="fas fa-crown"></i>
+                                        {% elif rol == 'Contratista' %}
+                                            <i class="fas fa-briefcase"></i>
+                                        {% elif rol == 'Ejecutor/Interventor' %}
+                                            <i class="fas fa-eye"></i>
+                                        {% elif rol == 'Gestión' %}
+                                            <i class="fas fa-cogs"></i>
+                                        {% elif rol == 'Planeación' %}
+                                            <i class="fas fa-chart-line"></i>
+                                        {% else %}
+                                            <i class="fas fa-user"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para confirmar acciones -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmButton">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'forms/js/admin-dashboard.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listeners para botones de toggle estado de usuario
+    document.querySelectorAll('.toggle-user-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            const action = this.dataset.action;
+            const activate = action === 'activate';
+            
+            toggleUserStatus(userId, activate);
+        });
+    });
+});
+
+function toggleUserStatus(userId, activate) {
+    const action = activate ? 'activar' : 'desactivar';
+    const message = `¿Está seguro de ${action} este usuario?`;
+    
+    if (confirm(message)) {
+        // Aquí puedes agregar la lógica AJAX para cambiar el estado
+        fetch(`/admin/users/${userId}/toggle/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'is_active': activate
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al cambiar el estado del usuario');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al procesar la solicitud');
+        });
+    }
+}
+</script>
+{% endblock %}

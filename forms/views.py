@@ -49,18 +49,11 @@ def contratista_dashboard(request):
         # Estadísticas específicas del contratista
         stats = {
             'mis_formularios': mis_formularios.count(),
-            'en_trabajo': mis_formularios.filter(estado_actual='contratista').count(),
-            'en_revision': mis_formularios.filter(estado_actual='interventor').count(),
-            'actualizando': mis_formularios.filter(estado_actual='gestion').count(),
-            'completados': mis_formularios.filter(estado_actual='finalizado').count(),
             'pendientes': mis_formularios.filter(estado_actual='contratista').count(),
+            'enviados': mis_formularios.filter(estado_actual='interventor').count(),
+            'devueltos': mis_formularios.filter(estado_actual='devuelto').count(),
+            'completados': mis_formularios.filter(estado_actual='finalizado').count(),
         }
-        
-        # Calcular porcentaje de completados
-        if stats['mis_formularios'] > 0:
-            stats['porcentaje_completado'] = round((stats['completados'] / stats['mis_formularios']) * 100, 1)
-        else:
-            stats['porcentaje_completado'] = 0
         
         # Formularios recientes del contratista
         mis_formularios_recientes = mis_formularios.order_by('-updated_at')[:10]
@@ -77,12 +70,10 @@ def contratista_dashboard(request):
             'user': user,
             'stats': {
                 'mis_formularios': 0,
-                'en_trabajo': 0,
-                'en_revision': 0,
-                'actualizando': 0,
-                'completados': 0,
                 'pendientes': 0,
-                'porcentaje_completado': 0
+                'enviados': 0,
+                'devueltos': 0,
+                'completados': 0,
             },
             'mis_formularios_recientes': [],
             'tables_exist': False,
@@ -239,7 +230,37 @@ def admin_dashboard(request):
 def admin_users_list(request):
     """Lista de usuarios para administrador"""
     usuarios = CustomUser.objects.all().order_by('rol', 'username')
-    return render(request, 'admin/users_list.html', {'usuarios': usuarios})
+    
+    # Filtros opcionales
+    search_query = request.GET.get('search')
+    activo_filter = request.GET.get('activo')
+    rol_filter = request.GET.get('rol')
+    
+    if search_query:
+        usuarios = usuarios.filter(
+            Q(username__icontains=search_query) | 
+            Q(first_name__icontains=search_query) | 
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query)
+        )
+    
+    if activo_filter:
+        usuarios = usuarios.filter(is_active=(activo_filter == '1'))
+    
+    if rol_filter:
+        usuarios = usuarios.filter(rol=rol_filter)
+    
+    # Estadísticas por rol
+    usuarios_por_rol = {}
+    for rol in ['Administrador', 'Contratista', 'Ejecutor/Interventor', 'Gestión', 'Planeación']:
+        usuarios_por_rol[rol] = CustomUser.objects.filter(rol=rol).count()
+    
+    context = {
+        'usuarios': usuarios,
+        'usuarios_por_rol': usuarios_por_rol,
+    }
+    
+    return render(request, 'admin/users_list.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -301,7 +322,16 @@ def admin_cambiar_estado_formulario(request, formulario_id):
     if nuevo_estado not in estados_validos:
         return JsonResponse({'success': False, 'error': 'Estado no válido'})
     
-    # Validar flujo del semáforo (opcional - admin puede saltar estados)
+    # Validar flujo del semáforo - solo permitir transiciones válidas
+    estados_validos_flujo = [estado[0] for estado in formulario.get_estados_validos()]
+    if nuevo_estado not in estados_validos_flujo:
+        estado_actual_display = dict(FormularioGlobal.ESTADO_CHOICES)[formulario.estado_actual]
+        nuevo_estado_display = dict(FormularioGlobal.ESTADO_CHOICES)[nuevo_estado]
+        return JsonResponse({
+            'success': False, 
+            'error': f'Transición no válida: No se puede cambiar de "{estado_actual_display}" a "{nuevo_estado_display}". Revise el flujo de estados.'
+        })
+    
     estado_anterior = formulario.estado_actual
     
     # Cambiar estado
@@ -371,10 +401,20 @@ def custom_logout(request):
     return redirect('forms:login')
 
 def register_view(request):
-    """Vista básica de registro - por ahora solo muestra mensaje"""
-    if request.method == 'POST':
-        # Por ahora solo mensaje
-        messages.info(request, 'Sistema de registro en desarrollo. Contacte al administrador.')
-        return redirect('forms:login')
+    """Vista de registro de usuarios"""
+    from .forms import CustomUserCreationForm
     
-    return render(request, 'forms/register.html', {'form': None})
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 
+                f'Usuario {user.username} registrado exitosamente. '
+                'Su cuenta será activada por un administrador pronto.')
+            return redirect('forms:login')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
+    else:
+        form = CustomUserCreationForm()
+    
+    return render(request, 'forms/register.html', {'form': form})

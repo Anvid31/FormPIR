@@ -44,7 +44,7 @@
                 <i class="fas fa-plus-circle text-3xl"></i>
             </div>
             <div>
-                <h3 class="text-lg font-semibold text-gray-900">Nuevo Formulario</h3>
+                <h3 class="text-lg font-semibold text-gray-900">Crear Nuevo Formulario</h3>
                 <p class="text-sm text-gray-600">Crear un nuevo formulario de campo</p>
             </div>
         </div>
@@ -54,14 +54,14 @@
         </a>
     </div>
 
-    <!-- Mis Formularios Pendientes -->
+    <!-- Formularios Pendientes -->
     <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center mb-4">
             <div class="icon-semaforo-interventor mr-4">
                 <i class="fas fa-clock text-3xl"></i>
             </div>
             <div>
-                <h3 class="text-lg font-semibold text-gray-900">Pendientes</h3>
+                <h3 class="text-lg font-semibold text-gray-900">Formularios Pendientes</h3>
                 <p class="text-sm text-gray-600">Formularios en proceso de trabajo</p>
             </div>
         </div>
@@ -71,79 +71,21 @@
         </a>
     </div>
 
-    <!-- Formularios Enviados -->
+    <!-- Formularios Devueltos -->
     <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center mb-4">
             <div class="icon-semaforo-gestion mr-4">
-                <i class="fas fa-paper-plane text-3xl"></i>
+                <i class="fas fa-undo text-3xl"></i>
             </div>
             <div>
-                <h3 class="text-lg font-semibold text-gray-900">Enviados</h3>
-                <p class="text-sm text-gray-600">Formularios en revisión</p>
+                <h3 class="text-lg font-semibold text-gray-900">Formularios Devueltos</h3>
+                <p class="text-sm text-gray-600">Formularios que requieren correcciones</p>
             </div>
         </div>
-        <a href="?estado=interventor&mis_formularios=1" class="btn-semaforo btn-gestion_actualizando w-full">
-            <i class="fas fa-search mr-2"></i>
-            Ver Enviados ({{ stats.en_revision }})
+        <a href="?estado=devuelto&mis_formularios=1" class="btn-semaforo btn-gestion_actualizando w-full">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            Ver Devueltos ({{ stats.devueltos }})
         </a>
-    </div>
-</div>
-
-<!-- Progreso del Equipo -->
-<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        <i class="fas fa-chart-line mr-2"></i>
-        Progreso del Equipo
-    </h3>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Formularios en Trabajo -->
-        <div class="progress-item text-center">
-            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-contratista rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-contratista">{{ stats.en_trabajo }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">En Trabajo</div>
-            <div class="text-xs text-gray-500">Equipo Contratista</div>
-        </div>
-
-        <!-- En Revisión -->
-        <div class="progress-item text-center">
-            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-interventor rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-interventor">{{ stats.en_revision }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">En Revisión</div>
-            <div class="text-xs text-gray-500">Ejecutor/Interventor</div>
-        </div>
-
-        <!-- Actualizando -->
-        <div class="progress-item text-center">
-            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-gestion rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-gestion">{{ stats.actualizando }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">Actualizando</div>
-            <div class="text-xs text-gray-500">Gestión de Información</div>
-        </div>
-
-        <!-- Completados -->
-        <div class="progress-item text-center">
-            <div class="progress-circle mx-auto mb-2 border-4 border-semaforo-completado rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-completado">{{ stats.completados }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">Completados</div>
-            <div class="text-xs text-gray-500">Gestión Actualizada</div>
-        </div>
-    </div>
-
-    <!-- Barra de progreso general -->
-    <div class="mt-6">
-        <div class="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Progreso General del Equipo</span>
-            <span>{{ stats.porcentaje_completado }}% Completado</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-3">
-            <div class="bg-gradient-to-r from-orange-400 via-blue-400 to-green-400 h-3 rounded-full transition-all duration-500" 
-                 data-width="{{ stats.porcentaje_completado }}"></div>
-        </div>
     </div>
 </div>
 

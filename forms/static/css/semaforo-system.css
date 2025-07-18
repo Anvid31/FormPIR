@@ -693,12 +693,3 @@
 .border-semaforo-completado {
     border-color: var(--color-gestion-actualizado) !important;
 }
-
-/* Progreso específico */
-.progress-circle {
-    transition: all 0.3s ease;
-}
-
-.progress-circle:hover {
-    transform: scale(1.05);
-}
