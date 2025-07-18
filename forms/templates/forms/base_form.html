@@ -10,6 +10,8 @@
 <script src="{% static 'forms/js/file-upload.js' %}"></script>
 <script src="{% static 'forms/js/navigation.js' %}"></script>
 <script src="{% static 'forms/js/form-core.js' %}"></script>
+<script src="{% static 'js/uc-mapping.js' %}"></script>
+<script src="{% static 'forms/js/autocompletion.js' %}"></script>
 
 <!-- CSS Específico del Formulario -->
 <link href="{% static 'forms/css/form-styles.css' %}" rel="stylesheet">
@@ -213,6 +215,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof initializeNavigation === 'function') {
         initializeNavigation();
     }
+    
+    // Forzar que solo se muestre la sección de estructuras
+    setTimeout(() => {
+        const allSections = document.querySelectorAll("[data-form-section]");
+        allSections.forEach((section) => {
+            section.style.display = "none";
+        });
+        
+        const estructurasSection = document.querySelector("[data-form-section='estructuras']");
+        if (estructurasSection) {
+            estructurasSection.style.display = "block";
+            console.log("✅ Solo sección de estructuras visible");
+        }
+    }, 100);
     
     // Inicializar núcleo del formulario
     if (typeof initializeFormCore === 'function') {

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test UC System Avanzado</title>
+    <script src="static/js/uc-mapping.js"></script>
+    <script src="staticfiles/js/autocompletion.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input { padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; width: 200px; }
+        button { padding: 10px 20px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        .result { background: #f0f8ff; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test Sistema UC Multi-Nivel</h1>
+    <p>Prueba del sistema de autocompletado UC para estructuras N1-N4</p>
+    
+    <div id="test-form">
+        <div class="form-group">
+            <label>Nivel de Tensión:</label>
+            <select id="nivel_tension">
+                <option value="">Seleccionar</option>
+                <option value="1">N1P - Baja Tensión</option>
+                <option value="2">N2L - Media Tensión</option>
+                <option value="3">N3L - Alta Tensión</option>
+                <option value="4">N4L - Extra Alta Tensión</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Apoyo:</label>
+            <select id="apoyo_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Poste">Poste</option>
+                <option value="Estructura">Estructura</option>
+                <option value="Torrecilla">Torrecilla</option>
+                <option value="Torre">Torre</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Material:</label>
+            <select id="material_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Concreto">Concreto</option>
+                <option value="Metálico">Metálico</option>
+                <option value="PRFV">PRFV</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Altura:</label>
+            <select id="altura_nueva">
+                <option value="">Seleccionar</option>
+                <option value="8">8 m</option>
+                <option value="10">10 m</option>
+                <option value="12">12 m</option>
+                <option value="14">14 m</option>
+                <option value="15">15 m</option>
+            </select>
+        </div>
+        
+        <div class="form-group hidden" id="peso_group">
+            <label>Peso (kg):</label>
+            <select id="peso_nueva">
+                <option value="">Seleccionar</option>
+                <option value="300">300 kg</option>
+                <option value="500">500 kg</option>
+                <option value="750">750 kg</option>
+                <option value="1000">1000 kg</option>
+            </select>
+        </div>
+        
+        <div class="form-group hidden" id="configuracion_group">
+            <label>Configuración:</label>
+            <select id="configuracion_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Simple">Simple</option>
+                <option value="H">H</option>
+            </select>
+        </div>
+        
+        <div class="form-group hidden" id="circuito_group">
+            <label>Circuito:</label>
+            <select id="circuito_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Sencillo">Sencillo</option>
+                <option value="Doble">Doble</option>
+            </select>
+        </div>
+        
+        <div class="form-group hidden" id="linea_group">
+            <label>Línea:</label>
+            <select id="linea_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Desnuda">Desnuda</option>
+                <option value="Compacta">Compacta</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="poblacion_group">
+            <label>Población:</label>
+            <select id="poblacion_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Urbana">Urbana</option>
+                <option value="Rural">Rural</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="tipo_red_group">
+            <label>Tipo de Red:</label>
+            <select id="tipo_red_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Común">Común</option>
+                <option value="Trenzada">Trenzada</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Disposición:</label>
+            <select id="disposicion_nueva">
+                <option value="">Seleccionar</option>
+                <option value="Triangular">Triangular</option>
+                <option value="Vertical">Vertical</option>
+                <option value="Horizontal">Horizontal</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>UC Resultado:</label>
+            <input type="text" id="uc_nueva" placeholder="UC se autocompletará" readonly style="background: #f0f8ff;">
+        </div>
+        
+        <button onclick="runUCTests()">🧪 Ejecutar Pruebas UC</button>
+        <button onclick="clearForm()">🗑️ Limpiar Formulario</button>
+        
+        <div id="test_results" class="result" style="display:none;"></div>
+    </div>
+    
+    <script>
+        // Configurar variable global
+        window.ucSelect = document.getElementById('uc_nueva');
+        
+        // Tests predefinidos (actualizados con nuevas UCs)
+        const testCases = [
+            {
+                name: "N1P86 - Poste concreto 10m rural retención red trenzada",
+                params: {
+                    nivel: "1",
+                    apoyo: "Poste",
+                    material: "Concreto",
+                    altura: "10",
+                    poblacion: "Rural",
+                    disposicion: "Retención",
+                    tipoRed: "Trenzada"
+                },
+                expected: "N1P86"
+            },
+            {
+                name: "N2L139 - Poste metálico 12m 510kg retención",
+                params: {
+                    nivel: "2",
+                    apoyo: "Poste",
+                    material: "Metálico",
+                    altura: "12",
+                    peso: "510",
+                    disposicion: "Retención"
+                },
+                expected: "N2L139"
+            },
+            {
+                name: "N3L63 - Poste concreto 14m 1050kg simple doble retención",
+                params: {
+                    nivel: "3",
+                    apoyo: "Poste",
+                    material: "Concreto",
+                    altura: "14",
+                    peso: "1050",
+                    configuracion: "Simple",
+                    circuito: "Doble",
+                    disposicion: "Retención"
+                },
+                expected: "N3L63"
+            },
+            {
+                name: "N3L81 - Poste PRFV 14m 1350kg H doble retención",
+                params: {
+                    nivel: "3",
+                    apoyo: "Poste",
+                    material: "PRFV",
+                    altura: "14",
+                    peso: "1350",
+                    configuracion: "H",
+                    circuito: "Doble",
+                    disposicion: "Retención"
+                },
+                expected: "N3L81"
+            }
+        ];
+        
+        function setFormValues(params) {
+            if (params.nivel) document.getElementById('nivel_tension').value = params.nivel;
+            if (params.apoyo) document.getElementById('apoyo_nueva').value = params.apoyo;
+            if (params.material) document.getElementById('material_nueva').value = params.material;
+            if (params.altura) document.getElementById('altura_nueva').value = params.altura;
+            if (params.peso) document.getElementById('peso_nueva').value = params.peso;
+            if (params.configuracion) document.getElementById('configuracion_nueva').value = params.configuracion;
+            if (params.circuito) document.getElementById('circuito_nueva').value = params.circuito;
+            if (params.linea) document.getElementById('linea_nueva').value = params.linea;
+            if (params.poblacion) document.getElementById('poblacion_nueva').value = params.poblacion;
+            if (params.disposicion) document.getElementById('disposicion_nueva').value = params.disposicion;
+            if (params.tipoRed) document.getElementById('tipo_red_nueva').value = params.tipoRed;
+        }
+        
+        function clearForm() {
+            document.querySelectorAll('select, input').forEach(field => {
+                if (field.id !== 'uc_nueva') field.value = '';
+            });
+            document.getElementById('uc_nueva').value = '';
+            document.getElementById('test_results').style.display = 'none';
+        }
+        
+        function runUCTests() {
+            const results = [];
+            let passed = 0;
+            
+            testCases.forEach(testCase => {
+                clearForm();
+                setFormValues(testCase.params);
+                
+                // Simular eventos de cambio
+                if (typeof updateApoyoOptions === 'function') updateApoyoOptions();
+                if (typeof toggleStructureFields === 'function') toggleStructureFields();
+                
+                // Probar búsqueda UC
+                const result = getUCFromAdvancedStructure({
+                    apoyo: testCase.params.apoyo,
+                    material: testCase.params.material,
+                    altura: testCase.params.altura,
+                    poblacion: testCase.params.poblacion,
+                    disposicion: testCase.params.disposicion,
+                    tipoRed: testCase.params.tipoRed,
+                    peso: testCase.params.peso,
+                    configuracion: testCase.params.configuracion,
+                    circuito: testCase.params.circuito,
+                    linea: testCase.params.linea
+                });
+                
+                const success = result === testCase.expected;
+                if (success) passed++;
+                
+                results.push({
+                    name: testCase.name,
+                    expected: testCase.expected,
+                    actual: result || 'No encontrado',
+                    success: success
+                });
+            });
+            
+            // Mostrar resultados
+            const resultsDiv = document.getElementById('test_results');
+            resultsDiv.className = passed === testCases.length ? 'result success' : 'result error';
+            resultsDiv.innerHTML = `
+                <h3>📊 Resultados de las Pruebas: ${passed}/${testCases.length} exitosas</h3>
+                ${results.map(r => `
+                    <div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${r.success ? 'green' : 'red'};">
+                        <strong>${r.success ? '✅' : '❌'} ${r.name}</strong><br>
+                        Esperado: <code>${r.expected}</code><br>
+                        Obtenido: <code>${r.actual}</code>
+                    </div>
+                `).join('')}
+            `;
+            resultsDiv.style.display = 'block';
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Test UC System cargado');
+            
+            const nivelTension = document.getElementById('nivel_tension');
+            const apoyo = document.getElementById('apoyo_nueva');
+            
+            if (nivelTension) {
+                nivelTension.addEventListener('change', function() {
+                    console.log('📊 Nivel tensión cambió:', this.value);
+                    if (typeof updateApoyoOptions === 'function') {
+                        updateApoyoOptions();
+                    }
+                    if (typeof toggleStructureFields === 'function') {
+                        toggleStructureFields();
+                    }
+                });
+            }
+            
+            if (apoyo) {
+                apoyo.addEventListener('change', function() {
+                    console.log('🏗️ Apoyo cambió:', this.value);
+                    if (typeof toggleStructureFields === 'function') {
+                        toggleStructureFields();
+                    }
+                });
+            }
+            
+            // Ejecutar pruebas automáticamente después de 1 segundo
+            setTimeout(runUCTests, 1000);
+        });
+    </script>
+</body>
+</html>
