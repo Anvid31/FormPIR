@@ -1,658 +1,857 @@
-<!-- Sección: Información del Proyecto - Equipos -->
-<div class="bg-white rounded-lg shadow-sm p-8 mb-8">
-  <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
-    <i class="fas fa-project-diagram mr-2"></i>
-    Información del Proyecto
-  </h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="form-group">
-      <label class="form-label required">
-        NOMBRE DEL PROYECTO
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Selecciona el proyecto específico para estos equipos. Los proyectos disponibles dependen del contrato seleccionado.
-          </span>
-        </span>
-      </label>
-      <select id="equipos_nombre_proyecto" name="equipos_nombre_proyecto" class="form-select" required>
-        <option value="">Seleccionar proyecto</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">
-        BANCO DEL PROYECTO
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Código del banco asociado al proyecto. Se autocompletará automáticamente cuando selecciones un proyecto.
-          </span>
-        </span>
-      </label>
-      <input
-        type="text"
-        id="equipos_banco_proyecto"
-        name="equipos_banco_proyecto"
-        class="form-input bg-gray-50"
-        placeholder="Se autocompletará según el proyecto"
-        readonly
-      />
-    </div>
-    <div class="form-group">
-      <label class="form-label required">
-        CONTRATO
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Contrato específico del proyecto. Determina qué municipios estarán disponibles según la regional asignada.
-          </span>
-        </span>
-      </label>
-      <select id="equipos_contrato" name="equipos_contrato" class="form-select" required>
-        <option value="">Seleccionar contrato</option>
-        <option value="CNRT-2023-001">CNRT-2023-001</option>
-        <option value="CNRT-2023-002">CNRT-2023-002</option>
-        <option value="CNRT-2023-003">CNRT-2023-003</option>
-        <option value="CNRT-2023-004">CNRT-2023-004</option>
-        <option value="CNRT-2023-005">CNRT-2023-005</option>
-      </select>
-    </div>
-  </div>
-</div>
-        class="form-input bg-gray-50"
-        placeholder="Se sincronizará desde la sección estructuras"
-        readonly
-        required
-      />
-    </div>
-  </div>
-</div>
+<div id="form-total">
+  <!-- Sección: Información del Proyecto - Conductores -->
+  <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-project-diagram mr-2"></i>
+      Información del Proyecto
+    </h2>
 
-<!-- Sección: Documentos y Archivos - Equipos -->
-<div class="bg-white rounded-lg shadow-sm p-8 mb-8">
-  <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
-    <i class="fas fa-file-alt mr-2"></i>
-    Documentos y Archivos
-  </h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <!-- AutoCAD -->
-    <div class="space-y-4">
-      <label class="form-label required">
-        Archivo AutoCAD
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Archivo de diseño técnico en formato AutoCAD (.dwg, .dxf, .dws). Debe contener el plano de los equipos. Tamaño máximo: 50MB.
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="form-group">
+        <label class="form-label required">
+          NOMBRE DEL PROYECTO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Selecciona el proyecto específico al que pertenece esta
+              estructura. El proyecto determina el banco y los contratos
+              disponibles.
+            </span>
           </span>
-        </span>
-      </label>
-      <div class="file-drop-zone border-blue-300 hover:border-blue-500 hover:bg-blue-50/50">
-        <input
-          type="file"
-          id="equipos_archivo_cad"
-          name="equipos_archivo_cad"
-          class="hidden"
-          accept=".dwg,.dxf,.dws"
-          required
-        />
-        <div class="text-center">
-          <i class="fas fa-drafting-compass text-2xl text-blue-400 mb-2"></i>
-          <p class="text-sm text-gray-600">Cargar archivo AutoCAD</p>
-          <p class="text-xs text-gray-500 mt-1">.dwg, .dxf, .dws (máx. 50MB)</p>
-        </div>
-      </div>
-      <!-- Preview AutoCAD -->
-      <div id="equipos_cad_preview" class="hidden">
-        <div class="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <i class="fas fa-file-alt text-gray-400 text-xl mr-3"></i>
-          <div class="flex-grow">
-            <p class="text-sm font-medium text-gray-900" id="equipos_cad_filename">archivo.dwg</p>
-            <p class="text-xs text-gray-500" id="equipos_cad_filesize">2.5 MB</p>
-          </div>
-          <button
-            type="button"
-            onclick="removeFile('equipos_archivo_cad')"
-            class="text-red-500 hover:text-red-700"
+        </label>
+        <select id="nombre" name="nombre" class="form-select" required>
+          <option value="">Seleccionar proyecto</option>
+          <option value="Automatización de redes distribución CENS">
+            Automatización de redes distribución CENS
+          </option>
+          <option value="Compra de bien futuro">Compra de bien futuro</option>
+          <option value="Electrificación Rural CENS">
+            Electrificación Rural CENS
+          </option>
+          <option value="Expansión redes de distribución CENS">
+            Expansión redes de distribución CENS
+          </option>
+          <option value="Gestión y control pérdidas de energía - CENS">
+            Gestión y control pérdidas de energía - CENS
+          </option>
+          <option value="Mantenimiento redes de distribución">
+            Mantenimiento redes de distribución
+          </option>
+          <option value="Mantenimiento redes de distribución - MIT">
+            Mantenimiento redes de distribución - MIT
+          </option>
+          <option
+            value="Normalización subestación Sevilla 115/34.5 kV e interconexión a 115 kV"
           >
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- KMZ -->
-    <div class="space-y-4">
-      <label class="form-label required">
-        Archivo KMZ
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Archivo de geolocalización en formato KMZ de Google Earth. Debe contener las coordenadas exactas de los equipos. Tamaño máximo: 10MB.
-          </span>
-        </span>
-      </label>
-      <div class="file-drop-zone border-blue-300 hover:border-blue-500 hover:bg-blue-50/50">
-        <input
-          type="file"
-          id="equipos_archivo_kmz"
-          name="equipos_archivo_kmz"
-          class="hidden"
-          accept=".kmz,.kml"
-          required
-        />
-        <div class="text-center">
-          <i class="fas fa-globe text-2xl text-green-400 mb-2"></i>
-          <p class="text-sm text-gray-600">Cargar archivo KMZ</p>
-          <p class="text-xs text-gray-500 mt-1">.kmz, .kml (máx. 10MB)</p>
-        </div>
-      </div>
-      <!-- Preview KMZ -->
-      <div id="equipos_kmz_preview" class="hidden">
-        <div class="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <i class="fas fa-globe text-gray-400 text-xl mr-3"></i>
-          <div class="flex-grow">
-            <p class="text-sm font-medium text-gray-900" id="equipos_kmz_filename">ubicacion.kmz</p>
-            <p class="text-xs text-gray-500" id="equipos_kmz_filesize">0.8 MB</p>
-          </div>
-          <button
-            type="button"
-            onclick="removeFile('equipos_archivo_kmz')"
-            class="text-red-500 hover:text-red-700"
+            Normalización subestación Sevilla 115/34.5 kV e interconexión a 115
+            kV
+          </option>
+          <option value="Nueva línea INSC77 - Guaduas 34.5 kV">
+            Nueva línea INSC77 - Guaduas 34.5 kV
+          </option>
+          <option value="Nuevo Alimentador Gabarra">
+            Nuevo Alimentador Gabarra
+          </option>
+          <option value="Reconfiguración Planta Zulia 13.8kV">
+            Reconfiguración Planta Zulia 13.8kV
+          </option>
+          <option value="Reposición redes de distribución CENS">
+            Reposición redes de distribución CENS
+          </option>
+          <option value="Reposición transformadores distribución CENS">
+            Reposición transformadores distribución CENS
+          </option>
+          <option value="Repotenciación de líneas CENS 115 kV">
+            Repotenciación de líneas CENS 115 kV
+          </option>
+          <option value="Reposición subestaciones y líneas CENS">
+            Reposición subestaciones y líneas CENS
+          </option>
+          <option
+            value="Expansión y normalización de subestaciones media tensión."
           >
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Sección: Información Técnica - Equipos -->
-<div class="bg-white rounded-lg shadow-sm p-8 mb-8" id="equipos_seccion-informacion-tecnica">
-  <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
-    <i class="fas fa-bolt mr-2"></i>
-    Información Técnica
-  </h2>
-  
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="form-group">
-      <label class="form-label required">
-        FECHA DE INSTALACION
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Fecha en la que se instaló. No puede ser posterior a la fecha actual.
-          </span>
-        </span>
-      </label>
-      <input
-        type="date"
-        id="equipos_fecha"
-        name="equipos_fecha"
-        class="form-input"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">
-        NIVEL DE TENSIÓN
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Nivel de tensión eléctrica: 1-Baja Tensión (hasta 1kV), 2-Media Tensión (1-35kV), 3-Alta Tensión (mayor a 35kV).
-          </span>
-        </span>
-      </label>
-      <select id="equipos_nivel_tension" name="equipos_nivel_tension" class="form-select" required>
-        <option value="">Seleccionar</option>
-        <option value="1">1 - Baja Tensión</option>
-        <option value="2">2 - Media Tensión</option>
-        <option value="3">3 - Alta Tensión</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">
-        TIPO DE INVERSION
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Tipo de inversión: I y III requieren estructura retirada, II y IV son instalaciones nuevas sin retirar estructura existente.
-          </span>
-        </span>
-      </label>
-      <div class="flex flex-wrap items-center gap-4">
-        <select id="equipos_t_inv" name="equipos_t_inv" class="form-select flex-shrink-0" required>
-          <option value="">Seleccionar</option>
-          <option value="I">I</option>
-          <option value="II">II</option>
-          <option value="III">III</option>
-          <option value="IV">IV</option>
+            Expansión y normalización de subestaciones media tensión.
+          </option>
+          <option value="Nueva subestación La Playa 34.5/13.8 kV">
+            Nueva subestación La Playa 34.5/13.8 kV
+          </option>
+          <option value="Gestión de Activos CENS">
+            Gestión de Activos CENS
+          </option>
+          <option value="Activos de Uso propiedad de Terceros">
+            Activos de Uso propiedad de Terceros
+          </option>
         </select>
-        
-        <!-- Montaje Integral Checkbox -->
-        <div id="equipos_montaje_integral_container" class="flex items-center gap-2" style="display: none;">
-          <input 
-            type="checkbox" 
-            id="equipos_montaje_integral_checkbox" 
-            name="equipos_montaje_integral" 
-            class="form-checkbox"
-            onchange="toggleMontajeIntegral('equipos')"
-          />
-          <label for="equipos_montaje_integral_checkbox" class="text-sm font-medium text-gray-700">
-            Montaje Integral
-          </label>
-        </div>
-        
-        <!-- Desmantelado Checkbox -->
-        <div id="equipos_desmantelado_container" class="flex items-center gap-2" style="display: none;">
-          <input 
-            type="checkbox" 
-            id="equipos_desmantelado_checkbox" 
-            name="equipos_desmantelado" 
-            class="form-checkbox"
-            onchange="toggleDesmantelado('equipos')"
-          />
-          <label for="equipos_desmantelado_checkbox" class="text-sm font-medium text-gray-700">
-            Desmantelado
-          </label>
-        </div>
       </div>
-      
-      <!-- Help text for Desmantelado -->
-      <div id="equipos_desmantelado_help" class="mt-2 text-sm text-gray-600" style="display: none;">
-        <i class="fas fa-info-circle text-blue-500"></i>
-        Modo desmantelado activo: Se deshabilitarán los campos de coordenadas y se habilitará el campo de estructura retirada.
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label required">
-        MUNICIPIO
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Municipio donde se instalará la estructura. Los municipios disponibles dependen de la regional seleccionada.
+      <div class="form-group">
+        <label class="form-label">
+          BANCO DEL PROYECTO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Código del banco asociado al proyecto. Se autocompletará
+              automáticamente cuando selecciones un proyecto.
+            </span>
           </span>
-        </span>
-      </label>
-      <select id="equipos_municipio" name="equipos_municipio" class="form-select" required>
-        <option value="">Seleccionar municipio</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">
-        DEPARTAMENTO
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Departamento donde se encuentra el municipio seleccionado. Se autocompletará según el municipio.
-          </span>
-        </span>
-      </label>
-      <input
-        type="text"
-        id="equipos_departamento"
-        name="equipos_departamento"
-        class="form-input bg-gray-50"
-        placeholder="Se autocompletará según el municipio"
-        readonly
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">
-        REGIONAL
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Regional responsable del proyecto. Se autocompletará según el contrato o municipio seleccionado.
-          </span>
-        </span>
-      </label>
-      <input 
-        type="text" 
-        id="equipos_regional" 
-        name="equipos_regional" 
-        class="form-input bg-gray-100 text-gray-500 cursor-not-allowed" 
-        placeholder="Se autocompletará según contrato o municipio"
-        readonly
-        required>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">DIRECCIÓN</label>
-      <input
-        type="text"
-        id="equipos_direccion"
-        name="equipos_direccion"
-        class="form-input"
-        placeholder="Dirección completa"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">
-        CIRCUITO
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Circuito eléctrico (alimentador) al que se conecta la estructura. Se actualiza automáticamente según el municipio seleccionado.
-          </span>
-        </span>
-      </label>
-      <select id="equipos_alimentador" name="equipos_alimentador" class="form-select" required>
-        <option value="">Seleccionar</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">
-        ESTRUCTURA RETIRADA
-        <span class="tooltip">
-          <i class="fas fa-question-circle help-icon"></i>
-          <span class="tooltip-content">
-            Código de la estructura que se retira. Solo se habilita para tipos de inversión I y III. Debe empezar con "Z" seguido de números.
-          </span>
-        </span>
-      </label>
-      <div class="space-y-3">
+        </label>
         <input
           type="text"
-          id="equipos_estructura_retirada_campo"
-          name="equipos_estructura_retirada_campo"
-          class="form-input bg-yellow-50"
-          placeholder="Z10000"
-          disabled
+          id="banco_proyecto"
+          name="banco_proyecto"
+          class="form-input bg-gray-50"
+          placeholder="Se autocompletará según el proyecto"
+          readonly
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          CONTRATO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Contrato específico del proyecto. Determina qué municipios estarán
+              disponibles según la regional asignada.
+            </span>
+          </span>
+        </label>
+        <select id="contrato" name="contrato" class="form-select" required>
+          <option value="">Seleccionar contrato</option>
+          <!-- Las opciones se cargarán dinámicamente según el proyecto seleccionado -->
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Documentos y Archivos - Conductores -->
+  <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-file-alt mr-2"></i>
+      Documentos y Archivos
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- AutoCAD -->
+      <div class="space-y-4">
+        <label class="form-label required">
+          ARCHIVO AUTOCAD
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Archivo de diseño técnico en formato AutoCAD (.dwg, .dxf, .dws).
+              Debe contener el plano de la estructura. Tamaño máximo: 10MB.
+            </span>
+          </span>
+        </label>
+        <div class="flex items-center justify-center w-full">
+          <label
+            for="archivo_cad"
+            class="flex flex-col items-center justify-center w-full h-40 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 dark:border-blue-600 dark:hover:border-blue-500"
+          >
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg
+                class="w-8 h-8 mb-4 text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 16"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                />
+              </svg>
+              <p class="mb-2 text-sm text-blue-600">
+                <span class="font-semibold">Click to upload</span> or drag and
+                drop
+              </p>
+              <p class="text-xs text-blue-500">DWG, DXF, DWS • Máximo 10MB</p>
+            </div>
+            <input
+              id="archivo_cad"
+              name="archivo_cad"
+              type="file"
+              accept=".dwg,.dxf,.dws"
+              class="hidden"
+              required
+            />
+          </label>
+        </div>
+        <!-- Preview AutoCAD -->
+        <div id="cad_preview" class="hidden">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+                <span
+                  class="text-sm font-medium text-gray-700"
+                  id="cad_filename"
+                ></span>
+              </div>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-800"
+                onclick="removeFile('archivo_cad')"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KMZ -->
+      <div class="space-y-4">
+        <label class="form-label required">
+          ARCHIVO KMZ (.kmz)
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Sube el archivo de ubicación geográfica de los conductores.
+              Formato aceptado: .kmz (máximo 10MB)
+            </span>
+          </span>
+        </label>
+        <div class="flex items-center justify-center w-full">
+          <label
+            for="archivo_kmz"
+            class="flex flex-col items-center justify-center w-full h-40 border-2 border-green-300 border-dashed rounded-lg cursor-pointer bg-green-50 hover:bg-green-100 dark:border-green-600 dark:hover:border-green-500"
+          >
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg
+                class="w-8 h-8 mb-4 text-green-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 16"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                />
+              </svg>
+              <p class="mb-2 text-sm text-green-600">
+                <span class="font-semibold">Click to upload</span> or drag and
+                drop
+              </p>
+              <p class="text-xs text-green-500">KMZ • Máximo 10MB</p>
+            </div>
+            <input
+              id="archivo_kmz"
+              name="archivo_kmz"
+              type="file"
+              accept=".kmz"
+              class="hidden"
+              required
+            />
+          </label>
+        </div>
+        <!-- Preview KMZ -->
+        <div id="kmz_preview" class="hidden">
+          <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <i class="fas fa-map-marked-alt text-green-600 mr-2"></i>
+                <span
+                  class="text-sm font-medium text-gray-700"
+                  id="kmz_filename"
+                ></span>
+              </div>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-800"
+                onclick="removeFile('archivo_kmz')"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Información Técnica -->
+  <div
+    class="bg-white rounded-lg shadow-sm p-8 mb-8"
+    id="seccion-informacion-tecnica"
+  >
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-bolt mr-2"></i>
+      Información Técnica
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="form-group">
+        <label class="form-label required">
+          FECHA DE INSTALACION
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Fecha en la que se instaló. No puede ser posterior a la fecha
+              actual.
+            </span>
+          </span>
+        </label>
+        <input
+          type="date"
+          id="fecha"
+          name="fecha"
+          class="form-input"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          NIVEL DE TENSIÓN
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Nivel de tensión eléctrica: 1-Baja Tensión (hasta 1kV), 2-Media
+              Tensión (1-35kV), 3-Alta Tensión (mayor a 35kV).
+            </span>
+          </span>
+        </label>
+        <select
+          id="nivel_tension"
+          name="nivel_tension"
+          class="form-select"
+          required
+        >
+          <option value="">Seleccionar</option>
+          <option value="1">Nivel De Tension 1</option>
+          <option value="2">Nivel De Tension 2</option>
+          <option value="3">Nivel De Tension 3</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          TIPO DE INVERSION
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Tipo de inversión: I y III requieren estructura retirada, II y IV
+              son instalaciones nuevas sin retirar estructura existente.
+            </span>
+          </span>
+        </label>
+        <div class="flex items-start gap-4">
+          <div class="flex-1">
+            <select id="t_inv" name="t_inv" class="form-select" required>
+              <option value="">Seleccionar</option>
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV">IV</option>
+            </select>
+          </div>
+
+          <!-- Checkbox Montaje Integral -->
+          <div
+            class="flex items-center space-x-2"
+            id="montaje_integral_container"
+            style="display: none"
+          >
+            <input
+              type="checkbox"
+              id="montaje_integral_checkbox"
+              name="montaje_integral"
+              class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+              onchange="toggleMontajeIntegral()"
+            />
+            <label
+              for="montaje_integral_checkbox"
+              class="text-sm text-orange-700 flex items-center gap-1"
+            >
+              <i class="fas fa-tools text-xs"></i>
+              Montaje Integral
+            </label>
+          </div>
+
+          <!-- Checkbox Desmantelado -->
+          <div
+            class="flex items-center space-x-2"
+            id="desmantelado_container"
+            style="display: none"
+          >
+            <input
+              type="checkbox"
+              id="desmantelado_checkbox"
+              name="desmantelado"
+              class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+              onchange="toggleDesmantelado()"
+            />
+            <label
+              for="desmantelado_checkbox"
+              class="text-sm text-red-700 flex items-center gap-1"
+            >
+              <i class="fas fa-exclamation-triangle text-xs"></i>
+              Desmantelado
+            </label>
+          </div>
+        </div>
+
+        <!-- Textos de ayuda -->
+        <div class="flex gap-4 mt-1">
+          <div class="flex-1"></div>
+          <div
+            class="text-xs text-gray-500 text-center"
+            id="montaje_integral_help"
+            style="display: none"
+          >
+            Deshabilita UC
+          </div>
+          <div
+            class="text-xs text-gray-500 text-center"
+            id="desmantelado_help"
+            style="display: none"
+          >
+            Solo estructura retirada
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          MUNICIPIO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Municipio donde se instalará la estructura. Los municipios
+              disponibles dependen de la regional seleccionada.
+            </span>
+          </span>
+        </label>
+        <select id="municipio" name="municipio" class="form-select" required>
+          <option value="">Seleccionar municipio</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          DEPARTAMENTO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Departamento donde se encuentra el municipio seleccionado. Se
+              autocompletará según el municipio.
+            </span>
+          </span>
+        </label>
+        <input
+          type="text"
+          id="departamento"
+          name="departamento"
+          class="form-input bg-gray-50"
+          placeholder="Se autocompletará según el municipio"
+          readonly
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          REGIONAL
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Regional responsable del proyecto. Se autocompletará según el
+              contrato o municipio seleccionado.
+            </span>
+          </span>
+        </label>
+        <input
+          type="text"
+          id="regional"
+          name="regional"
+          class="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+          placeholder="Se autocompletará según contrato o municipio"
+          readonly
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">DIRECCIÓN</label>
+        <input
+          type="text"
+          id="direccion"
+          name="direccion"
+          class="form-input"
+          placeholder="Dirección completa"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          CIRCUITO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Circuito eléctrico (alimentador) al que se conecta la estructura.
+              Se actualiza automáticamente según el municipio seleccionado.
+            </span>
+          </span>
+        </label>
+        <select
+          id="alimentador"
+          name="alimentador"
+          class="form-select"
+          required
+        >
+          <option value="">Seleccionar</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          ESTRUCTURA RETIRADA
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Código de la estructura que se retira. Solo se habilita para tipos
+              de inversión I y III. Debe empezar con "Z" seguido de números.
+            </span>
+          </span>
+        </label>
+        <div class="space-y-3">
+          <input
+            type="text"
+            id="estructura_retirada_campo"
+            name="estructura_retirada_campo"
+            class="form-input bg-yellow-50"
+            placeholder="Z10000"
+            disabled
+          />
+        </div>
+      </div>
+
+      <!-- Campos de coordenadas -->
+      <div class="md:col-span-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="form-group">
+            <label class="form-label required" id="longitud_label">
+              LONGITUD
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Longitud (grados decimales) de la ubicación en
+                  Colombia. Rango válido: -79.0 a -66.8 (valores negativos hacia
+                  el oeste).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="longitud"
+              name="longitud"
+              class="form-input"
+              placeholder="-74.0721"
+              step="0.000001"
+              min="-79.0"
+              max="-66.8"
+              required
+              oninput="validateCoordinate(this, 'longitud')"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required" id="latitud_label">
+              LATITUD
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Latitud (grados decimales) de la ubicación en
+                  Colombia. Rango válido: -4.2 a 15.5 (positivo hacia el norte).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="latitud"
+              name="latitud"
+              class="form-input"
+              placeholder="4.7110"
+              step="0.000001"
+              min="-4.2"
+              max="15.5"
+              required
+              oninput="validateCoordinate(this, 'latitud')"
+            />
+          </div>
+
+          <div
+            class="form-group"
+            id="longitud_final_group"
+            style="display: none"
+          >
+            <label class="form-label" id="longitud_final_label">
+              LONGITUD FINAL
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Longitud Final (grados decimales) de la
+                  ubicación final en Colombia. Rango válido: -79.0 a -66.8
+                  (valores negativos hacia el oeste).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="longitud_final"
+              name="longitud_final"
+              class="form-input"
+              placeholder="-74.0721"
+              step="0.000001"
+              min="-79.0"
+              max="-66.8"
+              oninput="validateCoordinate(this, 'longitud')"
+            />
+          </div>
+
+          <div
+            class="form-group"
+            id="latitud_final_group"
+            style="display: none"
+          >
+            <label class="form-label" id="latitud_final_label">
+              LATITUD FINAL
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Latitud Final (grados decimales) de la ubicación
+                  final en Colombia. Rango válido: -4.2 a 15.5 (positivo hacia
+                  el norte).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="latitud_final"
+              name="latitud_final"
+              class="form-input"
+              placeholder="4.7110"
+              step="0.000001"
+              min="-4.2"
+              max="15.5"
+              oninput="validateCoordinate(this, 'latitud')"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">CANTIDAD TOTAL</label>
+        <input
+          type="number"
+          id="cantidad"
+          name="cantidad"
+          class="form-input"
+          placeholder="1"
+          min="1"
+          value="1"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">NÚMERO DE CONDUCTORES</label>
+        <input
+          type="text"
+          id="numero_conductores"
+          name="numero_conductores"
+          class="form-input"
+          placeholder="0"
+          value="0"
         />
       </div>
     </div>
+  </div>
+  <!-- Sección: Detalles de los Equipos -->
+  <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-green-600">
+      <i class="fas fa-shield-alt mr-2"></i>
+      Detalles de los Equipos
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="form-group">
+        <label class="form-label required">TIPO DE EQUIPO</label>
+        <select
+          id="equipos_tipo_equipo"
+          name="equipos_tipo_equipo"
+          class="form-select"
+          required
+        >
+          <option value="">Seleccionar equipo</option>
+          <option value="Fusible">Fusible</option>
+          <option value="Seccionador">Seccionador</option>
+          <option value="Pararrayos">Pararrayos</option>
+          <option value="Reconectador">Reconectador</option>
+          <option value="Regulador">Regulador de Tensión</option>
+          <option value="Condensador">Banco de Condensadores</option>
+        </select>
+      </div>
 
-    <!-- Campos de coordenadas -->
-    <div class="md:col-span-3">
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div class="form-group">
-          <label class="form-label required" id="equipos_longitud_label">
-            LONGITUD
-            <span class="tooltip">
-              <i class="fas fa-question-circle help-icon"></i>
-              <span class="tooltip-content">
-                Coordenada de Longitud (grados decimales) de la ubicación en Colombia. Rango válido: -79.0 a -66.8 (valores negativos hacia el oeste).
-              </span>
-            </span>
-          </label>
-          <input
-            type="number"
-            id="equipos_longitud"
-            name="equipos_longitud"
-            class="form-input"
-            placeholder="-74.0721"
-            step="0.000001"
-            min="-79.0"
-            max="-66.8"
-            required
-            oninput="validateCoordinate(this, 'longitud')"
-          />
-        </div>
+      <div class="form-group">
+        <label class="form-label required">MARCA DEL EQUIPO</label>
+        <input
+          type="text"
+          id="equipos_marca_equipo"
+          name="equipos_marca_equipo"
+          class="form-input"
+          placeholder="ABB, Schneider, Siemens, etc."
+          required
+        />
+      </div>
 
-        <div class="form-group">
-          <label class="form-label required" id="equipos_latitud_label">
-            LATITUD
-            <span class="tooltip">
-              <i class="fas fa-question-circle help-icon"></i>
-              <span class="tooltip-content">
-                Coordenada de Latitud (grados decimales) de la ubicación en Colombia. Rango válido: -4.2 a 15.5 (positivo hacia el norte).
-              </span>
-            </span>
-          </label>
-          <input
-            type="number"
-            id="equipos_latitud"
-            name="equipos_latitud"
-            class="form-input"
-            placeholder="4.7110"
-            step="0.000001"
-            min="-4.2"
-            max="15.5"
-            required
-            oninput="validateCoordinate(this, 'latitud')"
-          />
-        </div>
+      <div class="form-group">
+        <label class="form-label required">MODELO</label>
+        <input
+          type="text"
+          id="equipos_modelo_equipo"
+          name="equipos_modelo_equipo"
+          class="form-input"
+          placeholder="Modelo del equipo"
+          required
+        />
+      </div>
 
-        <div class="form-group" id="equipos_longitud_final_group" style="display: none">
-          <label class="form-label" id="equipos_longitud_final_label">
-            LONGITUD FINAL
-            <span class="tooltip">
-              <i class="fas fa-question-circle help-icon"></i>
-              <span class="tooltip-content">
-                Coordenada de Longitud Final (grados decimales) de la ubicación final en Colombia. Rango válido: -79.0 a -66.8 (valores negativos hacia el oeste).
-              </span>
-            </span>
-          </label>
-          <input
-            type="number"
-            id="equipos_longitud_final"
-            name="equipos_longitud_final"
-            class="form-input"
-            placeholder="-74.0721"
-            step="0.000001"
-            min="-79.0"
-            max="-66.8"
-            oninput="validateCoordinate(this, 'longitud')"
-          />
-        </div>
+      <div class="form-group">
+        <label class="form-label required">CORRIENTE NOMINAL (A)</label>
+        <input
+          type="number"
+          id="equipos_corriente_equipo"
+          name="equipos_corriente_equipo"
+          class="form-input"
+          placeholder="100"
+          min="1"
+          step="0.1"
+          required
+        />
+      </div>
 
-        <div class="form-group" id="equipos_latitud_final_group" style="display: none">
-          <label class="form-label" id="equipos_latitud_final_label">
-            LATITUD FINAL
-            <span class="tooltip">
-              <i class="fas fa-question-circle help-icon"></i>
-              <span class="tooltip-content">
-                Coordenada de Latitud Final (grados decimales) de la ubicación final en Colombia. Rango válido: -4.2 a 15.5 (positivo hacia el norte).
-              </span>
-            </span>
-          </label>
-          <input
-            type="number"
-            id="equipos_latitud_final"
-            name="equipos_latitud_final"
-            class="form-input"
-            placeholder="4.7110"
-            step="0.000001"
-            min="-4.2"
-            max="15.5"
-            oninput="validateCoordinate(this, 'latitud')"
-          />
-        </div>
+      <div class="form-group">
+        <label class="form-label required">TENSIÓN DE OPERACIÓN (kV)</label>
+        <select
+          id="equipos_tension_equipo"
+          name="equipos_tension_equipo"
+          class="form-select"
+          required
+        >
+          <option value="">Seleccionar tensión</option>
+          <option value="13.8">13.8 kV</option>
+          <option value="34.5">34.5 kV</option>
+          <option value="115">115 kV</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">FECHA DE INSTALACIÓN</label>
+        <input
+          type="date"
+          id="equipos_fecha_instalacion_equipo"
+          name="equipos_fecha_instalacion_equipo"
+          class="form-input"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">NÚMERO DE SERIE</label>
+        <input
+          type="text"
+          id="equipos_numero_serie"
+          name="equipos_numero_serie"
+          class="form-input"
+          placeholder="Número de serie del equipo"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">ESTADO DEL EQUIPO</label>
+        <select
+          id="equipos_estado_equipo"
+          name="equipos_estado_equipo"
+          class="form-select"
+          required
+        >
+          <option value="">Seleccionar estado</option>
+          <option value="Nuevo">Nuevo</option>
+          <option value="Usado - Bueno">Usado - Bueno</option>
+          <option value="Usado - Regular">Usado - Regular</option>
+          <option value="Requiere Mantenimiento">Requiere Mantenimiento</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">OBSERVACIONES</label>
+        <textarea
+          id="equipos_observaciones_equipo"
+          name="equipos_observaciones_equipo"
+          class="form-input"
+          rows="3"
+          placeholder="Observaciones adicionales sobre el equipo"
+        ></textarea>
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label required">CANTIDAD TOTAL DE ESTRUCTURAS</label>
-      <input
-        type="number"
-        id="equipos_cantidad"
-        name="equipos_cantidad"
-        class="form-input"
-        placeholder="1"
-        min="1"
-        value="1"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">NÚMERO DE CONDUCTORES</label>
-      <input
-        type="text"
-        id="equipos_numero_conductores"
-        name="equipos_numero_conductores"
-        class="form-input"
-        placeholder="0"
-        value="0"
-      />
-    </div>
-  </div>
-</div>
-
-<!-- Sección: Detalles de los Equipos -->
-<div class="bg-white rounded-lg shadow-sm p-8 mb-8">
-  <h2 class="text-xl font-semibold mb-6 flex items-center text-green-600">
-    <i class="fas fa-shield-alt mr-2"></i>
-    Detalles de los Equipos
-  </h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="form-group">
-      <label class="form-label required">TIPO DE EQUIPO</label>
-      <select
-        id="equipos_tipo_equipo"
-        name="equipos_tipo_equipo"
-        class="form-select"
-        required
-      >
-        <option value="">Seleccionar equipo</option>
-        <option value="Fusible">Fusible</option>
-        <option value="Seccionador">Seccionador</option>
-        <option value="Pararrayos">Pararrayos</option>
-        <option value="Reconectador">Reconectador</option>
-        <option value="Regulador">Regulador de Tensión</option>
-        <option value="Condensador">Banco de Condensadores</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">MARCA DEL EQUIPO</label>
-      <input
-        type="text"
-        id="equipos_marca_equipo"
-        name="equipos_marca_equipo"
-        class="form-input"
-        placeholder="ABB, Schneider, Siemens, etc."
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">MODELO</label>
-      <input
-        type="text"
-        id="equipos_modelo_equipo"
-        name="equipos_modelo_equipo"
-        class="form-input"
-        placeholder="Modelo del equipo"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">CORRIENTE NOMINAL (A)</label>
-      <input
-        type="number"
-        id="equipos_corriente_equipo"
-        name="equipos_corriente_equipo"
-        class="form-input"
-        placeholder="100"
-        min="1"
-        step="0.1"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">TENSIÓN DE OPERACIÓN (kV)</label>
-      <select
-        id="equipos_tension_equipo"
-        name="equipos_tension_equipo"
-        class="form-select"
-        required
-      >
-        <option value="">Seleccionar tensión</option>
-        <option value="13.8">13.8 kV</option>
-        <option value="34.5">34.5 kV</option>
-        <option value="115">115 kV</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">FECHA DE INSTALACIÓN</label>
-      <input
-        type="date"
-        id="equipos_fecha_instalacion_equipo"
-        name="equipos_fecha_instalacion_equipo"
-        class="form-input"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">NÚMERO DE SERIE</label>
-      <input
-        type="text"
-        id="equipos_numero_serie"
-        name="equipos_numero_serie"
-        class="form-input"
-        placeholder="Número de serie del equipo"
-      />
-    </div>
-
-    <div class="form-group">
-      <label class="form-label required">ESTADO DEL EQUIPO</label>
-      <select
-        id="equipos_estado_equipo"
-        name="equipos_estado_equipo"
-        class="form-select"
-        required
-      >
-        <option value="">Seleccionar estado</option>
-        <option value="Nuevo">Nuevo</option>
-        <option value="Usado - Bueno">Usado - Bueno</option>
-        <option value="Usado - Regular">Usado - Regular</option>
-        <option value="Requiere Mantenimiento">Requiere Mantenimiento</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">OBSERVACIONES</label>
-      <textarea
-        id="equipos_observaciones_equipo"
-        name="equipos_observaciones_equipo"
-        class="form-input"
-        rows="3"
-        placeholder="Observaciones adicionales sobre el equipo"
-      ></textarea>
-    </div>
-  </div>
-
-  <!-- Fotos del Equipo -->
-  <div class="mt-6">
-    <label class="form-label required">Fotografías del Equipo</label>
-    <div class="file-drop-zone border-green-300 hover:border-green-500 hover:bg-green-50/50">
-      <input
-        type="file"
-        id="equipos_fotos_equipo"
-        name="equipos_fotos_equipo"
-        class="hidden"
-        accept="image/*"
-        multiple
-        required
-      />
-      <div class="text-center">
-        <i class="fas fa-camera text-2xl text-green-400 mb-2"></i>
-        <p class="text-sm text-gray-600">
-          Arrastra las fotos aquí o haz clic para seleccionar
-        </p>
-        <p class="text-xs text-gray-500 mt-1">
-          Se requiere al menos 1 foto (JPG, PNG, máx. 5MB)
-        </p>
+    <!-- Fotos -->
+    <div class="mt-6">
+      <label class="form-label required">Fotografias</label>
+      <div class="flex items-center justify-center w-full">
+        <label
+          for="fotos"
+          class="flex flex-col items-center justify-center w-full h-40 border-2 border-yellow-300 border-dashed rounded-lg cursor-pointer bg-yellow-50 hover:bg-yellow-100 dark:border-yellow-600 dark:hover:border-yellow-500"
+        >
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <svg
+              class="w-8 h-8 mb-4 text-yellow-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 16"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+              />
+            </svg>
+            <p class="mb-2 text-sm text-yellow-600">
+              <span class="font-semibold">Click to upload</span> or drag and
+              drop
+            </p>
+            <p class="text-xs text-yellow-500">
+              JPG, PNG • Múltiples archivos • Máximo 5MB cada uno
+            </p>
+          </div>
+          <input
+            id="fotos"
+            name="fotos"
+            type="file"
+            accept="image/*"
+            multiple
+            class="hidden"
+            required
+          />
+        </label>
       </div>
+      <div
+        id="preview_fotos"
+        class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-4"
+      ></div>
     </div>
-    <div
-      id="equipos_preview_equipo"
-      class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-4"
-    ></div>
   </div>
 </div>

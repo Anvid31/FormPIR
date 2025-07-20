@@ -3,8 +3,7 @@
 let currentStep = "estructuras";
 const steps = [
   "estructuras",
-  "conductor_n1",
-  "conductor_n2_n3",
+  "conductores",
   "equipos",
   "transformador",
 ];
@@ -50,8 +49,8 @@ function updateNavbarState() {
       icon.className = getStepIcon(step, "inactive");
 
       // Agregar efectos hover específicos
-      if (step === "conductor") {
-        item.classList.add("hover:bg-blue-400");
+      if (step === "conductores") {
+        item.classList.add("hover:bg-yellow-400");
       } else if (step === "equipos") {
         item.classList.add("hover:bg-green-400");
       } else if (step === "transformador") {
@@ -79,8 +78,7 @@ function updateNavbarState() {
 function getStepIcon(step, state) {
   const icons = {
     estructuras: "fas fa-building",
-    conductor_n1: "fas fa-bolt",
-    conductor_n2_n3: "fas fa-bolt",
+    conductores: "fas fa-bolt",
     equipos: "fas fa-shield-alt",
     transformador: "fas fa-microchip",
   };
@@ -136,9 +134,7 @@ function updateFieldsForStep(step) {
             <span class="tooltip">
               <i class="fas fa-question-circle help-icon"></i>
               <span class="tooltip-content">
-                Coordenada X (Longitud) de la ubicación exacta de la
-                estructura en el sistema de coordenadas MAGNA-SIRGAS. Rango
-                válido: 800,000 - 1,300,000.
+                Coordenada X (Longitud) de la ubicación exacta.
               </span>
             </span>`;
 
@@ -146,9 +142,7 @@ function updateFieldsForStep(step) {
             <span class="tooltip">
               <i class="fas fa-question-circle help-icon"></i>
               <span class="tooltip-content">
-                Coordenada Y (Latitud) de la ubicación exacta de la
-                estructura en el sistema de coordenadas MAGNA-SIRGAS. Rango
-                válido: 1,000,000 - 1,600,000.
+                Coordenada Y (Latitud) de la ubicación exacta.
               </span>
             </span>`;
 

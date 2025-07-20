@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DESS - Sistema de Formularios</title>
+    <title>Proyecto Plan de Inversion</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -20,7 +20,7 @@
     <!-- Header con fondo azul -->
     <header class="bg-blue-600 text-white py-8 px-4 mb-8">
       <div class="container mx-auto max-w-6xl">
-        <h1 class="text-3xl font-bold mb-2">Formulario</h1>
+        <h1 class="text-3xl font-bold mb-2">Proyecto Plan de Inversion</h1>
       </div>
     </header>
 
@@ -52,24 +52,24 @@
             <div class="hidden lg:block flex-1 mx-4">
               <div
                 class="progress-line h-0.5 rounded-full bg-gray-300"
-                data-connection="estructuras-conductor_n1"
+                data-connection="estructuras-conductores"
               ></div>
             </div>
 
-            <!-- Paso 2: CONDUCTOR N1 -->
+            <!-- Paso 2: CONDUCTORES N1-N2-N3 -->
             <div class="flex flex-col items-center group">
               <div
                 class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-yellow-400"
-                data-step="conductor_n1"
-                onclick="navigateToStep('conductor_n1')"
+                data-step="conductores"
+                onclick="navigateToStep('conductores')"
               >
                 <i class="fas fa-bolt text-gray-600 text-lg"></i>
               </div>
               <div
                 class="nav-step px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
               >
-                <div class="font-semibold">CONDUCTOR</div>
-                <div class="text-xs opacity-75">N1</div>
+                <div class="font-semibold">CONDUCTORES</div>
+                <div class="text-xs opacity-75">N1-N2-N3</div>
               </div>
             </div>
 
@@ -77,36 +77,11 @@
             <div class="hidden lg:block flex-1 mx-4">
               <div
                 class="progress-line h-0.5 rounded-full bg-gray-300"
-                data-connection="conductor_n1-conductor_n2_n3"
+                data-connection="conductores-equipos"
               ></div>
             </div>
 
-            <!-- Paso 3: CONDUCTOR N2-N3 -->
-            <div class="flex flex-col items-center group">
-              <div
-                class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-orange-400"
-                data-step="conductor_n2_n3"
-                onclick="navigateToStep('conductor_n2_n3')"
-              >
-                <i class="fas fa-bolt text-gray-600 text-lg"></i>
-              </div>
-              <div
-                class="nav-step px-3 py-1.5 rounded-full text-xs font-medium text-center min-w-max"
-              >
-                <div class="font-semibold">CONDUCTOR</div>
-                <div class="text-xs opacity-75">N2-N3</div>
-              </div>
-            </div>
-
-            <!-- Línea de progreso 3 -->
-            <div class="hidden lg:block flex-1 mx-4">
-              <div
-                class="progress-line h-0.5 rounded-full bg-gray-300"
-                data-connection="conductor_n2_n3-equipos"
-              ></div>
-            </div>
-
-            <!-- Paso 4: EQUIPOS PROTECCIÓN -->
+            <!-- Paso 3: EQUIPOS PROTECCIÓN -->
             <div class="flex flex-col items-center group">
               <div
                 class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-green-400"
@@ -123,7 +98,7 @@
               </div>
             </div>
 
-            <!-- Línea de progreso 4 -->
+            <!-- Línea de progreso 3 -->
             <div class="hidden lg:block flex-1 mx-4">
               <div
                 class="progress-line h-0.5 rounded-full bg-gray-300"
@@ -131,7 +106,7 @@
               ></div>
             </div>
 
-            <!-- Paso 5: TRANSFORMADOR DISTRIBUCIÓN -->
+            <!-- Paso 4: TRANSFORMADOR DISTRIBUCIÓN -->
             <div class="flex flex-col items-center group">
               <div
                 class="nav-item w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-3 cursor-pointer shadow-lg transition-all duration-300 hover:scale-105 hover:bg-purple-400"
@@ -165,23 +140,30 @@
           {% include 'forms/form_sections/estructuras_complete.html' %}
         </div>
 
-        <!-- Sección: CONDUCTOR N1 -->
-        <div id="section-conductor_n1" data-form-section="conductor_n1" style="display: none">
-          {% include 'forms/form_sections/conductor_n1.html' %}
-        </div>
-
-        <!-- Sección: CONDUCTOR N2-N3 -->
-        <div id="section-conductor_n2_n3" data-form-section="conductor_n2_n3" style="display: none">
-          {% include 'forms/form_sections/conductor_n2_n3.html' %}
+        <!-- Sección: CONDUCTORES -->
+        <div
+          id="section-conductores"
+          data-form-section="conductores"
+          style="display: none"
+        >
+          {% include 'forms/form_sections/conductores_complete.html' %}
         </div>
 
         <!-- Sección: EQUIPOS -->
-        <div id="section-equipos" data-form-section="equipos" style="display: none">
+        <div
+          id="section-equipos"
+          data-form-section="equipos"
+          style="display: none"
+        >
           {% include 'forms/form_sections/equipos.html' %}
         </div>
 
         <!-- Sección: TRANSFORMADOR -->
-        <div id="section-transformador" data-form-section="transformador" style="display: none">
+        <div
+          id="section-transformador"
+          data-form-section="transformador"
+          style="display: none"
+        >
           {% include 'forms/form_sections/transformador.html' %}
         </div>
 
@@ -216,7 +198,8 @@
     <script src="{% static 'forms/js/form-synchronization.js' %}"></script>
     <script src="{% static 'forms/js/form-initialization.js' %}"></script>
     <script src="{% static 'forms/js/form-modular-init.js' %}"></script>
-    
+    <script src="{% static 'forms/js/transformador-autocompletado.js' %}"></script>
+
     <!-- Validación del sistema UC -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -231,7 +214,7 @@
           );
           return;
         }
-        
+
         console.log("Sistema de códigos UC cargado correctamente");
       });
     </script>

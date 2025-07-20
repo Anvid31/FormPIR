@@ -5,32 +5,32 @@ const SYNC_FIELDS_CONFIG = {
   // Campos de la sección estructuras que se sincronizan a otras secciones
   'nombre': {
     readonly_targets: [
-      'conductor_n1_nombre_proyecto',
-      'conductor_n2_n3_nombre_proyecto', 
+      'conductores_nombre_proyecto_n1',
+      'conductores_nombre_proyecto_n2_n3', 
       'equipos_nombre_proyecto',
       'transformador_nombre_proyecto'
     ]
   },
   'banco_proyecto': {
     readonly_targets: [
-      'conductor_n1_banco_proyecto',
-      'conductor_n2_n3_banco_proyecto',
+      'conductores_banco_proyecto_n1',
+      'conductores_banco_proyecto_n2_n3',
       'equipos_banco_proyecto', 
       'transformador_banco_proyecto'
     ]
   },
   'contrato': {
     readonly_targets: [
-      'conductor_n1_contrato',
-      'conductor_n2_n3_contrato',
+      'conductores_contrato_n1',
+      'conductores_contrato_n2_n3',
       'equipos_contrato',
       'transformador_contrato'
     ]
   },
   'fecha': {
     readonly_targets: [
-      'conductor_n1_fecha',
-      'conductor_n2_n3_fecha',
+      'conductores_fecha_n1',
+      'conductores_fecha_n2_n3',
       'equipos_fecha',
       'transformador_fecha'
     ],
@@ -38,8 +38,8 @@ const SYNC_FIELDS_CONFIG = {
   },
   'nivel_tension': {
     readonly_targets: [
-      'conductor_n1_nivel_tension',
-      'conductor_n2_n3_nivel_tension',
+      'conductores_nivel_tension_n1',
+      'conductores_nivel_tension_n2_n3',
       'equipos_nivel_tension',
       'transformador_nivel_tension'
     ],
@@ -47,16 +47,16 @@ const SYNC_FIELDS_CONFIG = {
   },
   't_inv': {
     readonly_targets: [
-      'conductor_n1_t_inv',
-      'conductor_n2_n3_t_inv',
+      'conductores_t_inv_n1',
+      'conductores_t_inv_n2_n3',
       'equipos_t_inv',
       'transformador_t_inv'
     ]
   },
   'municipio': {
     readonly_targets: [
-      'conductor_n1_municipio',
-      'conductor_n2_n3_municipio',
+      'conductores_municipio_n1',
+      'conductores_municipio_n2_n3',
       'equipos_municipio',
       'transformador_municipio'
     ],
@@ -64,16 +64,16 @@ const SYNC_FIELDS_CONFIG = {
   },
   'departamento': {
     readonly_targets: [
-      'conductor_n1_departamento',
-      'conductor_n2_n3_departamento',
+      'conductores_departamento_n1',
+      'conductores_departamento_n2_n3',
       'equipos_departamento',
       'transformador_departamento'
     ]
   },
   'regional': {
     readonly_targets: [
-      'conductor_n1_regional',
-      'conductor_n2_n3_regional',
+      'conductores_regional_n1',
+      'conductores_regional_n2_n3',
       'equipos_regional',
       'transformador_regional'
     ],
