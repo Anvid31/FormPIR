@@ -1,295 +1,272 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard Administrador - DESS{% endblock %}
+{% block title %}Dashboard Administrador - FormPIR{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'forms/css/admin-dashboard.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
 
 {% block content %}
-<!-- Header específico para Administrador -->
-<div class="header-semaforo-gestion mb-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">
-                    <i class="fas fa-user-cog mr-3"></i>
-                    Dashboard Administrador
-                </h1>
-                <p class="text-lg opacity-90">
-                    Gestión del Sistema - {{ user.get_full_name }}
-                </p>
-            </div>
-            <div class="flex space-x-4">
-                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
-                    <div class="text-2xl font-bold">{{ total_formularios }}</div>
-                    <div class="text-sm opacity-80">Total Formularios</div>
-                </div>
-                <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm text-center">
-                    <div class="text-2xl font-bold">{{ total_usuarios }}</div>
-                    <div class="text-sm opacity-80">Usuarios Activos</div>
+<div class="admin-dashboard">
+    <div class="container-fluid py-4">
+        <!-- Header del Dashboard -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card dashboard-header">
+                    <div class="card-header">
+                        <h3 class="dashboard-title">📊 Dashboard del Administrador</h3>
+                        <p class="dashboard-subtitle">Bienvenido {{ user.get_full_name|default:user.username }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Acciones de Administración -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <!-- Gestión de Usuarios -->
-    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center mb-4">
-            <div class="icon-semaforo-gestion mr-4">
-                <i class="fas fa-users text-3xl text-blue-600"></i>
+        <!-- Estadísticas Generales -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-success">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h4 class="stat-number">{{ stats.total_formularios }}</h4>
+                            <p class="stat-label">Total Formularios</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900">Gestión Usuarios</h3>
-                <p class="text-sm text-gray-600">Crear y administrar usuarios</p>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-info">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h4 class="stat-number">{{ stats.total_usuarios }}</h4>
+                            <p class="stat-label">Usuarios Activos</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-warning">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h4 class="stat-number">{{ stats.usuarios_pendientes }}</h4>
+                            <p class="stat-label">Usuarios Pendientes</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-danger">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h4 class="stat-number">{{ stats.formularios_eliminados }}</h4>
+                            <p class="stat-label">Forms Eliminados</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <a href="{% url 'forms:admin_users_list' %}" class="btn-semaforo btn-gestion w-full">
-            <i class="fas fa-user-cog mr-2"></i>
-            Gestionar Usuarios
-        </a>
-    </div>
 
-    <!-- Monitoreo de Formularios -->
-    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center mb-4">
-            <div class="icon-semaforo-contratista mr-4">
-                <i class="fas fa-file-alt text-3xl text-green-600"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900">Formularios</h3>
-                <p class="text-sm text-gray-600">Monitorear todos los formularios</p>
-            </div>
-        </div>
-        <a href="{% url 'forms:admin_formularios_list' %}" class="btn-semaforo btn-contratista w-full">
-            <i class="fas fa-search mr-2"></i>
-            Ver Formularios
-        </a>
-    </div>
-
-    <!-- Admin Django -->
-    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center mb-4">
-            <div class="icon-semaforo-interventor mr-4">
-                <i class="fas fa-cogs text-3xl text-purple-600"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900">Configuración</h3>
-                <p class="text-sm text-gray-600">Panel de administración</p>
-            </div>
-        </div>
-        <a href="/admin/" class="btn-semaforo btn-interventor w-full">
-            <i class="fas fa-cog mr-2"></i>
-            Admin Django
-        </a>
-    </div>
-
-    <!-- Crear Usuario Rápido -->
-    <div class="action-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-center mb-4">
-            <div class="icon-semaforo-planeacion mr-4">
-                <i class="fas fa-user-plus text-3xl text-orange-600"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900">Nuevo Usuario</h3>
-                <p class="text-sm text-gray-600">Crear usuario rápidamente</p>
-            </div>
-        </div>
-        <a href="/admin/forms/customuser/add/" class="btn-semaforo btn-planeacion w-full">
-            <i class="fas fa-plus mr-2"></i>
-            Crear Usuario
-        </a>
-    </div>
-</div>
-
-<!-- Estadísticas del Sistema -->
-<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        <i class="fas fa-chart-pie mr-2"></i>
-        Estadísticas del Sistema
-    </h3>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Formularios por Estado -->
-        <div class="stats-item text-center">
-            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-contratista rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-contratista">{{ stats.contratista|default:0 }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">En Trabajo</div>
-            <div class="text-xs text-gray-500">Contratista</div>
-        </div>
-
-        <div class="stats-item text-center">
-            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-interventor rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-interventor">{{ stats.interventor|default:0 }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">En Revisión</div>
-            <div class="text-xs text-gray-500">Interventor</div>
-        </div>
-
-        <div class="stats-item text-center">
-            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-gestion rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-gestion">{{ stats.gestion|default:0 }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">En Gestión</div>
-            <div class="text-xs text-gray-500">Gestión</div>
-        </div>
-
-        <div class="stats-item text-center">
-            <div class="stats-circle mx-auto mb-2 border-4 border-semaforo-completado rounded-full w-16 h-16 flex items-center justify-center">
-                <span class="text-lg font-bold text-semaforo-completado">{{ stats.finalizado|default:0 }}</span>
-            </div>
-            <div class="text-sm font-medium text-gray-900">Finalizados</div>
-            <div class="text-xs text-gray-500">Completados</div>
-        </div>
-    </div>
-</div>
-
-<!-- Usuarios Recientes -->
-<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-900">
-                <i class="fas fa-users mr-2"></i>
-                Usuarios del Sistema
-            </h3>
-            <a href="/admin/forms/customuser/" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                Gestionar todos los usuarios <i class="fas fa-arrow-right ml-1"></i>
-            </a>
-        </div>
-    </div>
-
-    <div class="table-semaforo overflow-x-auto">
-        <table class="min-w-full">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Usuario
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Rol
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Estado
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Último Acceso
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Acciones
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for usuario in usuarios_recientes %}
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10">
-                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                    <i class="fas fa-user text-gray-600"></i>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h5 class="content-title">📋 Formularios por Estado</h5>
+                    </div>
+                    <div class="content-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="status-box status-warning">
+                                    <strong><i class="fas fa-briefcase status-icon"></i>Contratista:</strong> {{ stats.contratista }}
                                 </div>
                             </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ usuario.get_full_name|default:usuario.username }}
+                            <div class="col-6 mb-3">
+                                <div class="status-box status-info">
+                                    <strong><i class="fas fa-eye status-icon"></i>Interventor:</strong> {{ stats.interventor }}
                                 </div>
-                                <div class="text-sm text-gray-500">
-                                    {{ usuario.email }}
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="status-box status-primary">
+                                    <strong><i class="fas fa-cogs status-icon"></i>Gestión:</strong> {{ stats.gestion }}
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="status-box status-success">
+                                    <strong><i class="fas fa-check-circle status-icon"></i>Finalizado:</strong> {{ stats.finalizado }}
                                 </div>
                             </div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{ usuario.get_rol_display }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        {% if usuario.is_active %}
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                Activo
-                            </span>
-                        {% else %}
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                Inactivo
-                            </span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ usuario.fecha_ultimo_acceso|date:"d/m/Y H:i"|default:"Nunca" }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="/admin/forms/customuser/{{ usuario.id }}/change/" class="text-blue-600 hover:text-blue-900" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center">
-                        <div class="text-gray-500">
-                            <i class="fas fa-users text-4xl mb-4"></i>
-                            <p class="text-lg">No hay usuarios registrados</p>
-                            <p class="text-sm mb-4">Crea el primer usuario del sistema</p>
-                            <a href="/admin/forms/customuser/add/" class="btn-semaforo btn-gestion">
-                                <i class="fas fa-user-plus mr-2"></i>
-                                Crear Usuario
-                            </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h5 class="content-title">👥 Usuarios por Rol</h5>
+                    </div>
+                    <div class="content-body">
+                        {% for rol, cantidad in stats.usuarios_por_rol.items %}
+                        <div class="role-item">
+                            <span class="role-name"><i class="fas fa-user-tag"></i>{{ rol|title }}:</span>
+                            <span class="role-badge">{{ cantidad }}</span>
                         </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- Información del Sistema -->
-<div class="mt-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        <i class="fas fa-info-circle mr-2 text-blue-500"></i>
-        Información del Sistema
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="info-item">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-database text-green-500 mt-1"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-gray-700">
-                        <strong>Base de Datos:</strong> 
-                        {% if tables_exist %}
-                            <span class="text-green-600">Oracle XE - Conectado</span>
-                        {% else %}
-                            <span class="text-red-600">Configuración Pendiente</span>
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="info-item">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-shield-alt text-blue-500 mt-1"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-gray-700">
-                        <strong>Autenticación:</strong> Backend Oracle Personalizado
-                    </p>
+        <!-- Acciones Rápidas -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h5 class="content-title">🚀 Acciones Rápidas</h5>
+                    </div>
+                    <div class="content-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <a href="/admin/forms/customuser/" class="action-btn action-primary">
+                                    <i class="fas fa-users"></i> Gestionar Usuarios
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{% url 'forms:admin_formularios_list' %}" class="action-btn action-success">
+                                    <i class="fas fa-file-alt"></i> Gestionar Formularios
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="/admin/forms/customuser/?is_active__exact=0" class="action-btn action-warning">
+                                    <i class="fas fa-user-clock"></i> Usuarios Pendientes
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="/admin/" class="action-btn action-info">
+                                    <i class="fas fa-cog"></i> Panel Admin Django
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="info-item">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-code text-purple-500 mt-1"></i>
+
+        <!-- Formularios Recientes -->
+        {% if formularios_recientes %}
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h5 class="content-title">📄 Formularios Recientes</h5>
+                    </div>
+                    <div class="content-body table-container">
+                        <div class="formularios-table">
+                            <table class="custom-table">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th><i class="fas fa-hashtag"></i>ID</th>
+                                        <th><i class="fas fa-briefcase"></i>Trabajo</th>
+                                        <th><i class="fas fa-map-marker-alt"></i>Municipio</th>
+                                        <th><i class="fas fa-flag"></i>Estado</th>
+                                        <th><i class="fas fa-user"></i>Creado por</th>
+                                        <th><i class="fas fa-calendar"></i>Fecha</th>
+                                        <th><i class="fas fa-toggle-on"></i>Activo</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                    {% for formulario in formularios_recientes %}
+                                    <tr class="table-row">
+                                        <td class="table-id">F{{ formulario.id|stringformat:"06d" }}</td>
+                                        <td class="table-trabajo">{{ formulario.trabajo|truncatechars:40 }}</td>
+                                        <td class="table-municipio">{{ formulario.municipio|default:"Sin asignar" }}</td>
+                                        <td class="table-estado">
+                                            <span class="estado-badge estado-{{ formulario.estado_actual }}">
+                                                {{ formulario.get_estado_actual_display }}
+                                            </span>
+                                        </td>
+                                        <td class="table-usuario">
+                                            <i class="fas fa-user-circle"></i>
+                                            {{ formulario.creado_por.username|default:"Sistema" }}
+                                        </td>
+                                        <td class="table-fecha">{{ formulario.created_at|date:"d/m/Y H:i" }}</td>
+                                        <td class="table-activo">
+                                            {% if formulario.activo %}
+                                                <span class="status-active">
+                                                    <i class="fas fa-check-circle"></i>Activo
+                                                </span>
+                                            {% else %}
+                                                <span class="status-inactive">
+                                                    <i class="fas fa-times-circle"></i>Inactivo
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="ml-3">
-                    <p class="text-sm text-gray-700">
-                        <strong>Versión:</strong> Django 5.2.3 - DESS FormPIR v2.0
-                    </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Información del Sistema -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="content-card system-info">
+                    <div class="content-header">
+                        <h5 class="content-title">ℹ️ Información del Sistema</h5>
+                    </div>
+                    <div class="content-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="system-item">
+                                    <i class="fas fa-database system-icon"></i>
+                                    <strong>Base de Datos:</strong> Oracle XE
+                                </div>
+                                <div class="system-item">
+                                    <i class="fas fa-user-shield system-icon"></i>
+                                    <strong>Usuario BD:</strong> FORM_PIR
+                                </div>
+                                <div class="system-item">
+                                    <i class="fas fa-code system-icon"></i>
+                                    <strong>Sistema:</strong> FormPIR v1.0
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="system-item">
+                                    <i class="fas fa-recycle system-icon"></i>
+                                    <strong>Eliminación Lógica:</strong> 
+                                    <span class="system-status system-enabled">✅ Habilitada</span>
+                                </div>
+                                <div class="system-item">
+                                    <i class="fas fa-user-plus system-icon"></i>
+                                    <strong>Registro de Usuarios:</strong> 
+                                    <span class="system-status system-pending">Pendiente activación admin</span>
+                                </div>
+                                <div class="system-item">
+                                    <i class="fas fa-heartbeat system-icon"></i>
+                                    <strong>Estado:</strong> 
+                                    <span class="system-status system-operational">✅ Sistema Operativo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -298,19 +275,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-// Funciones específicas para administrador
-function refreshStats() {
-    fetch('/api/estadisticas-admin/')
-        .then(response => response.json())
-        .then(data => {
-            // Actualizar estadísticas si están disponibles
-            console.log('Estadísticas actualizadas:', data);
-        })
-        .catch(error => console.error('Error actualizando estadísticas:', error));
-}
-
-// Actualizar estadísticas cada minuto
-setInterval(refreshStats, 60000);
-</script>
+<script src="{% static 'forms/js/admin-dashboard.js' %}"></script>
 {% endblock %}

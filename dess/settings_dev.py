@@ -1,5 +1,5 @@
 """
-Django settings for DESS project.
+Configuración para desarrollo con SQLite
 """
 
 from pathlib import Path
@@ -58,15 +58,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dess.wsgi.application'
 
-# Database
+# Database - SQLite para desarrollo
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': config('DB_NAME', default='XE'),
-        'USER': config('DB_USER', default='FORM_PIR'),
-        'PASSWORD': config('DB_PASSWORD', default='dess123'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='1521'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -75,7 +71,6 @@ AUTH_USER_MODEL = 'forms.CustomUser'
 
 # Backends de autenticación
 AUTHENTICATION_BACKENDS = [
-    'forms.auth_backend.OracleAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

@@ -1,0 +1,47 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "oracledevtools.connections": [
+      {
+        "name": "FormPIR - Oracle Database",
+        "host": "localhost",
+        "port": 1521,
+        "serviceName": "XE",
+        "username": "FORM_PIR",
+        "password": "dess123",
+        "schema": "FORM_PIR"
+      }
+    ],
+    "oracledevtools.downloadUrl": "https://download.oracle.com/otn_software/java/sqldeveloper/",
+    "files.associations": {
+      "*.sql": "oraclesql",
+      "*.pks": "oraclesql", 
+      "*.pkb": "oraclesql"
+    },
+    "sql.connections": [
+      {
+        "name": "FormPIR Oracle",
+        "driver": "Oracle",
+        "server": "localhost",
+        "port": 1521,
+        "database": "XE",
+        "username": "FORM_PIR",
+        "password": "dess123",
+        "options": {
+          "schema": "FORM_PIR"
+        }
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "oracle-developer-tools.oracledevtools",
+      "Oracle.sql-developer",
+      "ms-mssql.mssql"
+    ]
+  }
+}

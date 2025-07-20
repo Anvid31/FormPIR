@@ -13,6 +13,9 @@
     <!-- Sistema Semáforo CSS -->
     <link href="{% load static %}{% static 'css/semaforo-system.css' %}" rel="stylesheet">
     
+    <!-- CSS adicional -->
+    {% block extra_css %}{% endblock %}
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;

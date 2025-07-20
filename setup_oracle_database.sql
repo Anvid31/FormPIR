@@ -1,0 +1,410 @@
+-- =====================================================
+-- Script de configuración completa para Oracle Database
+-- FormPIR - Sistema de Formularios para Postes
+-- =====================================================
+
+-- Configurar el formato de fecha y mensajes
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY HH24:MI:SS';
+SET SERVEROUTPUT ON;
+
+PROMPT =====================================================
+PROMPT Iniciando configuración de la base de datos Oracle
+PROMPT FormPIR - Sistema de Formularios para Postes
+PROMPT =====================================================
+
+-- =====================================================
+-- 1. CREACIÓN DEL USUARIO Y PERMISOS
+-- =====================================================
+
+PROMPT 
+PROMPT 1. Configurando usuario FORM_PIR...
+
+-- Verificar si el usuario existe y eliminarlo si es necesario
+DECLARE
+    user_exists NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO user_exists 
+    FROM DBA_USERS 
+    WHERE USERNAME = 'FORM_PIR';
+    
+    IF user_exists > 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Usuario FORM_PIR ya existe. Eliminando...');
+        EXECUTE IMMEDIATE 'DROP USER FORM_PIR CASCADE';
+        DBMS_OUTPUT.PUT_LINE('✓ Usuario anterior eliminado');
+    END IF;
+END;
+/
+
+-- Crear el usuario
+PROMPT Creando usuario FORM_PIR...
+CREATE USER FORM_PIR IDENTIFIED BY dess123
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON USERS;
+
+PROMPT ✓ Usuario FORM_PIR creado exitosamente
+
+-- Otorgar permisos básicos
+PROMPT Otorgando permisos al usuario...
+GRANT CONNECT TO FORM_PIR;
+GRANT RESOURCE TO FORM_PIR;
+GRANT DBA TO FORM_PIR;
+
+-- Permisos específicos para el desarrollo
+GRANT CREATE SESSION TO FORM_PIR;
+GRANT CREATE TABLE TO FORM_PIR;
+GRANT CREATE SEQUENCE TO FORM_PIR;
+GRANT CREATE PROCEDURE TO FORM_PIR;
+GRANT CREATE TRIGGER TO FORM_PIR;
+GRANT CREATE VIEW TO FORM_PIR;
+GRANT CREATE SYNONYM TO FORM_PIR;
+GRANT CREATE TYPE TO FORM_PIR;
+
+PROMPT ✓ Permisos otorgados exitosamente
+
+-- =====================================================
+-- 2. CONEXIÓN COMO EL USUARIO CREADO
+-- =====================================================
+
+PROMPT 
+PROMPT 2. Conectando como usuario FORM_PIR...
+CONNECT FORM_PIR/dess123@XE;
+
+PROMPT ✓ Conectado como FORM_PIR
+
+-- =====================================================
+-- 3. CREACIÓN DE SECUENCIAS
+-- =====================================================
+
+PROMPT 
+PROMPT 3. Creando secuencias...
+
+-- Secuencia para formulario global
+CREATE SEQUENCE AC_FORM_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    NOMAXVALUE
+    NOCYCLE
+    CACHE 20;
+PROMPT ✓ Secuencia AC_FORM_SEQ creada
+
+-- Secuencia para estructura nueva
+CREATE SEQUENCE AC_EST_NUEVA_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    NOMAXVALUE
+    NOCYCLE
+    CACHE 20;
+PROMPT ✓ Secuencia AC_EST_NUEVA_SEQ creada
+
+-- Secuencia para estructura retirada
+CREATE SEQUENCE AC_EST_RET_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    NOMAXVALUE
+    NOCYCLE
+    CACHE 20;
+PROMPT ✓ Secuencia AC_EST_RET_SEQ creada
+
+-- Secuencia para proyecto
+CREATE SEQUENCE AC_PROY_SEQ_PIR
+    START WITH 1
+    INCREMENT BY 1
+    NOMAXVALUE
+    NOCYCLE
+    CACHE 20;
+PROMPT ✓ Secuencia AC_PROY_SEQ_PIR creada
+
+-- =====================================================
+-- 4. CREACIÓN DE TABLAS
+-- =====================================================
+
+PROMPT 
+PROMPT 4. Creando tablas...
+
+-- Tabla principal: Formulario Global
+PROMPT Creando tabla AC_TPIR_FORMULARIO_GLOBAL...
+CREATE TABLE AC_TPIR_FORMULARIO_GLOBAL (
+    AC_ID_PIR NUMBER CONSTRAINT PK_FORMULARIO_GLOBAL PRIMARY KEY,
+    AC_TRABAJO_PIR VARCHAR2(100) NOT NULL,
+    AC_MUNICIPIO_PIR VARCHAR2(100) NOT NULL,
+    AC_NUMERO_X_PIR NUMBER(15,6),
+    AC_REGIONAL_PIR VARCHAR2(100),
+    AC_DIRECCION_PIR VARCHAR2(200),
+    AC_NUMERO_Y_PIR NUMBER(15,6),
+    AC_ALIMENTADOR_PIR VARCHAR2(100),
+    AC_BARRIO_VEREDA_PIR VARCHAR2(100),
+    AC_NUMERO_Z_PIR NUMBER(15,6),
+    AC_NIVEL_TENSION_PIR VARCHAR2(50),
+    AC_CIRCUITO_PIR VARCHAR2(100),
+    AC_ARCHIVO_CAD BLOB,
+    AC_CREATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    AC_UPDATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL
+);
+PROMPT ✓ Tabla AC_TPIR_FORMULARIO_GLOBAL creada
+
+-- Tabla: Estructura Nueva
+PROMPT Creando tabla AC_TPIR_ESTRUCTURA_NUEVA...
+CREATE TABLE AC_TPIR_ESTRUCTURA_NUEVA (
+    AC_ID_PIR NUMBER CONSTRAINT PK_ESTRUCTURA_NUEVA PRIMARY KEY,
+    AC_FORMULARIO_ID_PIR NUMBER NOT NULL,
+    AC_COD_EST_PIR VARCHAR2(50),
+    AC_APOYO_PIR VARCHAR2(50),
+    AC_MATERIAL_PIR VARCHAR2(50),
+    AC_ALTURA_PIR NUMBER(5,2),
+    AC_TIPO_RED_PIR VARCHAR2(50),
+    AC_DISPOSICION_PIR VARCHAR2(50),
+    AC_KGF_PIR NUMBER(10,2),
+    AC_POBLACION_PIR VARCHAR2(50),
+    AC_CREATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    AC_UPDATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    CONSTRAINT FK_EST_NUEVA_FORM 
+        FOREIGN KEY (AC_FORMULARIO_ID_PIR) 
+        REFERENCES AC_TPIR_FORMULARIO_GLOBAL(AC_ID_PIR) 
+        ON DELETE CASCADE
+);
+PROMPT ✓ Tabla AC_TPIR_ESTRUCTURA_NUEVA creada
+
+-- Tabla: Estructura Retirada
+PROMPT Creando tabla AC_ESTRUCTURA_RETIRADA...
+CREATE TABLE AC_ESTRUCTURA_RETIRADA (
+    AC_ID_PIR NUMBER CONSTRAINT PK_ESTRUCTURA_RETIRADA PRIMARY KEY,
+    AC_FORMULARIO_ID_PIR NUMBER NOT NULL,
+    AC_COD_EST_PIR VARCHAR2(50),
+    AC_APOYO_PIR VARCHAR2(50),
+    AC_MATERIAL_PIR VARCHAR2(50),
+    AC_ALTURA_PIR NUMBER(5,2),
+    AC_TIPO_RED_PIR VARCHAR2(50),
+    AC_PUNTO_PIR VARCHAR2(100),
+    AC_CREATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    AC_UPDATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    CONSTRAINT FK_EST_RETIRADA_FORM 
+        FOREIGN KEY (AC_FORMULARIO_ID_PIR) 
+        REFERENCES AC_TPIR_FORMULARIO_GLOBAL(AC_ID_PIR) 
+        ON DELETE CASCADE
+);
+PROMPT ✓ Tabla AC_ESTRUCTURA_RETIRADA creada
+
+-- Tabla: Información del Proyecto
+PROMPT Creando tabla AC_PROYECTO_INFO...
+CREATE TABLE AC_PROYECTO_INFO (
+    AC_ID_PIR NUMBER CONSTRAINT PK_PROYECTO_INFO PRIMARY KEY,
+    AC_FORMULARIO_ID_PIR NUMBER NOT NULL,
+    AC_NOMBRE_PIR VARCHAR2(200),
+    AC_OT_MANO_OBRA_PIR VARCHAR2(100),
+    AC_OT_MATERIA_PIR VARCHAR2(100),
+    AC_CONTRATO_PIR VARCHAR2(100),
+    AC_PRO_TERC_PIR VARCHAR2(100),
+    AC_CREATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    AC_UPDATED_AT_PIR DATE DEFAULT SYSDATE NOT NULL,
+    CONSTRAINT FK_PROYECTO_FORM 
+        FOREIGN KEY (AC_FORMULARIO_ID_PIR) 
+        REFERENCES AC_TPIR_FORMULARIO_GLOBAL(AC_ID_PIR) 
+        ON DELETE CASCADE
+);
+PROMPT ✓ Tabla AC_PROYECTO_INFO creada
+
+-- =====================================================
+-- 5. CREACIÓN DE TRIGGERS
+-- =====================================================
+
+PROMPT 
+PROMPT 5. Creando triggers para auto-incremento...
+
+-- Trigger para formulario global
+CREATE OR REPLACE TRIGGER TRG_FORMULARIO_GLOBAL_ID
+    BEFORE INSERT ON AC_TPIR_FORMULARIO_GLOBAL
+    FOR EACH ROW
+BEGIN
+    IF :NEW.AC_ID_PIR IS NULL THEN
+        SELECT AC_FORM_SEQ.NEXTVAL INTO :NEW.AC_ID_PIR FROM DUAL;
+    END IF;
+END;
+/
+PROMPT ✓ Trigger TRG_FORMULARIO_GLOBAL_ID creado
+
+-- Trigger para estructura nueva
+CREATE OR REPLACE TRIGGER TRG_ESTRUCTURA_NUEVA_ID
+    BEFORE INSERT ON AC_TPIR_ESTRUCTURA_NUEVA
+    FOR EACH ROW
+BEGIN
+    IF :NEW.AC_ID_PIR IS NULL THEN
+        SELECT AC_EST_NUEVA_SEQ.NEXTVAL INTO :NEW.AC_ID_PIR FROM DUAL;
+    END IF;
+END;
+/
+PROMPT ✓ Trigger TRG_ESTRUCTURA_NUEVA_ID creado
+
+-- Trigger para estructura retirada
+CREATE OR REPLACE TRIGGER TRG_ESTRUCTURA_RETIRADA_ID
+    BEFORE INSERT ON AC_ESTRUCTURA_RETIRADA
+    FOR EACH ROW
+BEGIN
+    IF :NEW.AC_ID_PIR IS NULL THEN
+        SELECT AC_EST_RET_SEQ.NEXTVAL INTO :NEW.AC_ID_PIR FROM DUAL;
+    END IF;
+END;
+/
+PROMPT ✓ Trigger TRG_ESTRUCTURA_RETIRADA_ID creado
+
+-- Trigger para proyecto info
+CREATE OR REPLACE TRIGGER TRG_PROYECTO_INFO_ID
+    BEFORE INSERT ON AC_PROYECTO_INFO
+    FOR EACH ROW
+BEGIN
+    IF :NEW.AC_ID_PIR IS NULL THEN
+        SELECT AC_PROY_SEQ_PIR.NEXTVAL INTO :NEW.AC_ID_PIR FROM DUAL;
+    END IF;
+END;
+/
+PROMPT ✓ Trigger TRG_PROYECTO_INFO_ID creado
+
+-- Triggers para actualizar timestamp
+CREATE OR REPLACE TRIGGER TRG_FORMULARIO_GLOBAL_UPD
+    BEFORE UPDATE ON AC_TPIR_FORMULARIO_GLOBAL
+    FOR EACH ROW
+BEGIN
+    :NEW.AC_UPDATED_AT_PIR := SYSDATE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER TRG_ESTRUCTURA_NUEVA_UPD
+    BEFORE UPDATE ON AC_TPIR_ESTRUCTURA_NUEVA
+    FOR EACH ROW
+BEGIN
+    :NEW.AC_UPDATED_AT_PIR := SYSDATE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER TRG_ESTRUCTURA_RETIRADA_UPD
+    BEFORE UPDATE ON AC_ESTRUCTURA_RETIRADA
+    FOR EACH ROW
+BEGIN
+    :NEW.AC_UPDATED_AT_PIR := SYSDATE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER TRG_PROYECTO_INFO_UPD
+    BEFORE UPDATE ON AC_PROYECTO_INFO
+    FOR EACH ROW
+BEGIN
+    :NEW.AC_UPDATED_AT_PIR := SYSDATE;
+END;
+/
+
+PROMPT ✓ Triggers de actualización creados
+
+-- =====================================================
+-- 6. CREACIÓN DE ÍNDICES
+-- =====================================================
+
+PROMPT 
+PROMPT 6. Creando índices para mejorar el rendimiento...
+
+-- Índices en claves foráneas
+CREATE INDEX IDX_EST_NUEVA_FORM_ID ON AC_TPIR_ESTRUCTURA_NUEVA(AC_FORMULARIO_ID_PIR);
+CREATE INDEX IDX_EST_RETIRADA_FORM_ID ON AC_ESTRUCTURA_RETIRADA(AC_FORMULARIO_ID_PIR);
+CREATE INDEX IDX_PROYECTO_FORM_ID ON AC_PROYECTO_INFO(AC_FORMULARIO_ID_PIR);
+
+-- Índices en campos de búsqueda frecuente
+CREATE INDEX IDX_FORMULARIO_TRABAJO ON AC_TPIR_FORMULARIO_GLOBAL(AC_TRABAJO_PIR);
+CREATE INDEX IDX_FORMULARIO_MUNICIPIO ON AC_TPIR_FORMULARIO_GLOBAL(AC_MUNICIPIO_PIR);
+CREATE INDEX IDX_FORMULARIO_FECHA ON AC_TPIR_FORMULARIO_GLOBAL(AC_CREATED_AT_PIR);
+
+PROMPT ✓ Índices creados exitosamente
+
+-- =====================================================
+-- 7. INSERCIÓN DE DATOS DE PRUEBA (OPCIONAL)
+-- =====================================================
+
+PROMPT 
+PROMPT 7. Insertando datos de prueba...
+
+-- Insertar un formulario de prueba
+INSERT INTO AC_TPIR_FORMULARIO_GLOBAL (
+    AC_TRABAJO_PIR, AC_MUNICIPIO_PIR, AC_NUMERO_X_PIR, AC_REGIONAL_PIR,
+    AC_DIRECCION_PIR, AC_NUMERO_Y_PIR, AC_ALIMENTADOR_PIR, AC_BARRIO_VEREDA_PIR,
+    AC_NUMERO_Z_PIR, AC_NIVEL_TENSION_PIR, AC_CIRCUITO_PIR
+) VALUES (
+    'Instalación Poste de Prueba', 'Bogotá', 4.60971, 'Central',
+    'Calle 26 # 13-19', -74.08175, 'ALM-001', 'Centro',
+    2600, '13.2 kV', 'CTO-001'
+);
+
+-- Obtener el ID del formulario insertado
+DECLARE
+    v_form_id NUMBER;
+BEGIN
+    SELECT AC_FORM_SEQ.CURRVAL INTO v_form_id FROM DUAL;
+    
+    -- Insertar estructura nueva de prueba
+    INSERT INTO AC_TPIR_ESTRUCTURA_NUEVA (
+        AC_FORMULARIO_ID_PIR, AC_COD_EST_PIR, AC_APOYO_PIR, AC_MATERIAL_PIR,
+        AC_ALTURA_PIR, AC_TIPO_RED_PIR, AC_DISPOSICION_PIR, AC_KGF_PIR, AC_POBLACION_PIR
+    ) VALUES (
+        v_form_id, 'EST-001', 'Poste Concreto', 'Concreto Armado',
+        12.5, 'Aérea', 'Vertical', 1500.00, 'Urbana'
+    );
+    
+    -- Insertar información del proyecto de prueba
+    INSERT INTO AC_PROYECTO_INFO (
+        AC_FORMULARIO_ID_PIR, AC_NOMBRE_PIR, AC_OT_MANO_OBRA_PIR,
+        AC_OT_MATERIA_PIR, AC_CONTRATO_PIR, AC_PRO_TERC_PIR
+    ) VALUES (
+        v_form_id, 'Proyecto Modernización Red Centro',
+        'OT-MO-001', 'OT-MAT-001', 'CNT-2025-001', 'TERCERO-001'
+    );
+    
+    DBMS_OUTPUT.PUT_LINE('✓ Datos de prueba insertados exitosamente');
+END;
+/
+
+-- =====================================================
+-- 8. VERIFICACIÓN FINAL
+-- =====================================================
+
+PROMPT 
+PROMPT 8. Verificando la instalación...
+
+-- Verificar tablas creadas
+SELECT 'Tabla: ' || TABLE_NAME || ' - Filas: ' || NUM_ROWS AS VERIFICACION
+FROM USER_TABLES 
+WHERE TABLE_NAME LIKE 'AC_%'
+ORDER BY TABLE_NAME;
+
+-- Verificar secuencias
+SELECT 'Secuencia: ' || SEQUENCE_NAME || ' - Siguiente: ' || LAST_NUMBER AS VERIFICACION
+FROM USER_SEQUENCES
+WHERE SEQUENCE_NAME LIKE 'AC_%'
+ORDER BY SEQUENCE_NAME;
+
+-- Verificar triggers
+SELECT 'Trigger: ' || TRIGGER_NAME || ' - Estado: ' || STATUS AS VERIFICACION
+FROM USER_TRIGGERS
+WHERE TRIGGER_NAME LIKE 'TRG_%'
+ORDER BY TRIGGER_NAME;
+
+PROMPT 
+PROMPT =====================================================
+PROMPT ✓ CONFIGURACIÓN COMPLETADA EXITOSAMENTE
+PROMPT =====================================================
+PROMPT 
+PROMPT Usuario creado: FORM_PIR
+PROMPT Password: dess123
+PROMPT Esquema: FORM_PIR
+PROMPT 
+PROMPT Tablas creadas:
+PROMPT - AC_TPIR_FORMULARIO_GLOBAL
+PROMPT - AC_TPIR_ESTRUCTURA_NUEVA  
+PROMPT - AC_ESTRUCTURA_RETIRADA
+PROMPT - AC_PROYECTO_INFO
+PROMPT 
+PROMPT Secuencias creadas:
+PROMPT - AC_FORM_SEQ
+PROMPT - AC_EST_NUEVA_SEQ
+PROMPT - AC_EST_RET_SEQ
+PROMPT - AC_PROY_SEQ_PIR
+PROMPT 
+PROMPT =====================================================
+
+COMMIT;
