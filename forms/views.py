@@ -146,6 +146,94 @@ def crear_formulario(request):
     
     return render(request, 'forms/form_modular.html')
 
+@login_required
+def crear_estructuras(request):
+    """Vista para la sección de Estructuras"""
+    if request.method == 'POST':
+        # Manejar envío del formulario de estructuras
+        formulario = FormularioGlobal.objects.create(
+            trabajo=request.POST.get('trabajo', ''),
+            municipio=request.POST.get('municipio', ''),
+            regional=request.POST.get('regional', ''),
+            direccion=request.POST.get('direccion', ''),
+            creado_por=request.user
+        )
+        messages.success(request, f'Formulario de Estructuras {formulario.get_numero_formulario()} creado exitosamente')
+        return redirect('forms:lista')
+    
+    context = {
+        'seccion': 'estructuras',
+        'titulo': 'Estructuras',
+        'icono': 'fas fa-building'
+    }
+    return render(request, 'forms/secciones/estructuras.html', context)
+
+@login_required
+def crear_conductores(request):
+    """Vista para la sección de Conductores"""
+    if request.method == 'POST':
+        # Manejar envío del formulario de conductores
+        formulario = FormularioGlobal.objects.create(
+            trabajo=request.POST.get('trabajo', ''),
+            municipio=request.POST.get('municipio', ''),
+            regional=request.POST.get('regional', ''),
+            direccion=request.POST.get('direccion', ''),
+            creado_por=request.user
+        )
+        messages.success(request, f'Formulario de Conductores {formulario.get_numero_formulario()} creado exitosamente')
+        return redirect('forms:lista')
+    
+    context = {
+        'seccion': 'conductores',
+        'titulo': 'Conductores',
+        'icono': 'fas fa-bolt'
+    }
+    return render(request, 'forms/secciones/conductores.html', context)
+
+@login_required
+def crear_equipos(request):
+    """Vista para la sección de Equipos"""
+    if request.method == 'POST':
+        # Manejar envío del formulario de equipos
+        formulario = FormularioGlobal.objects.create(
+            trabajo=request.POST.get('trabajo', ''),
+            municipio=request.POST.get('municipio', ''),
+            regional=request.POST.get('regional', ''),
+            direccion=request.POST.get('direccion', ''),
+            creado_por=request.user
+        )
+        messages.success(request, f'Formulario de Equipos {formulario.get_numero_formulario()} creado exitosamente')
+        return redirect('forms:lista')
+    
+    context = {
+        'seccion': 'equipos',
+        'titulo': 'Equipos',
+        'icono': 'fas fa-shield-alt'
+    }
+    return render(request, 'forms/secciones/equipos.html', context)
+
+@login_required
+def crear_transformadores(request):
+    """Vista para la sección de Transformadores"""
+    if request.method == 'POST':
+        # Manejar envío del formulario de transformadores
+        formulario = FormularioGlobal.objects.create(
+            trabajo=request.POST.get('trabajo', ''),
+            municipio=request.POST.get('municipio', ''),
+            regional=request.POST.get('regional', ''),
+            direccion=request.POST.get('direccion', ''),
+            creado_por=request.user
+        )
+        messages.success(request, f'Formulario de Transformadores {formulario.get_numero_formulario()} creado exitosamente')
+        return redirect('forms:lista')
+    
+    context = {
+        'seccion': 'transformadores',
+        'titulo': 'Transformadores',
+        'icono': 'fas fa-microchip'
+    }
+    return render(request, 'forms/secciones/transformadores.html', context)
+
 def custom_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -378,3 +466,7 @@ def register_view(request):
         return redirect('forms:login')
     
     return render(request, 'forms/register.html', {'form': None})
+
+def form_selector(request):
+    """Vista para el selector de secciones"""
+    return render(request, 'forms/form_selector.html')

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -9,7 +9,16 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('lista/', views.lista_formularios, name='lista'),
-    path('crear/', views.crear_formulario, name='crear_formulario'),
+    path('crear/', views.crear_estructuras, name='crear'),
+    
+    # Rutas para secciones separadas
+    path('crear/estructuras/', views.crear_estructuras, name='crear_estructuras'),
+    path('crear/conductores/', views.crear_conductores, name='crear_conductores'),
+    path('crear/equipos/', views.crear_equipos, name='crear_equipos'),
+    path('crear/transformadores/', views.crear_transformadores, name='crear_transformadores'),
+    
+    # API de iteraciones
+    path('iteraciones/', include('forms.urls_iteraciones')),
     
     # Rutas específicas para administrador
     path('panel/dashboard/', views.admin_dashboard, name='admin_dashboard'),

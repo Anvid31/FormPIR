@@ -1,0 +1,17 @@
+{% extends 'forms/secciones/base_seccion.html' %}
+{% load static %}
+
+{% block section_content %}
+  {% include 'forms/form_sections/conductores_complete.html' %}
+{% endblock %}
+
+{% block section_scripts %}
+  <script>
+    console.log('⚡ Scripts específicos de conductores cargados');
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('⚡ Configurando autocompletados para Conductores...');
+      console.log('✅ Conductores configurados correctamente');
+    });
+  </script>
+{% endblock %}

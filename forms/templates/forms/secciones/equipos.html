@@ -1,0 +1,17 @@
+{% extends 'forms/secciones/base_seccion.html' %}
+{% load static %}
+
+{% block section_content %}
+  {% include 'forms/form_sections/equipos.html' %}
+{% endblock %}
+
+{% block section_scripts %}
+  <script>
+    console.log('🛡️ Scripts específicos de equipos cargados');
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🛡️ Configurando autocompletados para Equipos...');
+      console.log('✅ Equipos configurados correctamente');
+    });
+  </script>
+{% endblock %}

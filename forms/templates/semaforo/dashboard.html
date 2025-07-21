@@ -159,7 +159,7 @@
                 <span class="text-sm text-gray-700">Solo mis formularios</span>
             </label>
         </div>
-        <a href="{% url 'forms:crear_formulario' %}" class="btn-semaforo btn-contratista">
+        <a href="{% url 'forms:crear' %}" class="btn-semaforo btn-contratista">
             <i class="fas fa-plus-circle mr-2"></i>
             Nuevo Formulario
         </a>
@@ -263,26 +263,26 @@
                             
                             <!-- Cambiar Estado (según permisos) -->
                             {% if user.rol == 'contratista' and formulario.estado_actual == 'contratista' and formulario.creado_por == user %}
-                            <button onclick="cambiarEstado({{ formulario.id }}, 'interventor')" 
+                            <button onclick="cambiarEstado('{{ formulario.id }}', 'interventor')" 
                                     class="text-blue-600 hover:text-blue-900" 
                                     title="Enviar a revisión">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                             {% elif user.rol == 'ejecutor' and formulario.estado_actual == 'interventor' %}
                             <div class="flex space-x-1">
-                                <button onclick="cambiarEstado({{ formulario.id }}, 'gestion_actualizando')" 
+                                <button onclick="cambiarEstado('{{ formulario.id }}', 'gestion_actualizando')" 
                                         class="text-green-600 hover:text-green-900" 
                                         title="Aprobar">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button onclick="cambiarEstado({{ formulario.id }}, 'contratista')" 
+                                <button onclick="cambiarEstado('{{ formulario.id }}', 'contratista')" 
                                         class="text-red-600 hover:text-red-900" 
                                         title="Rechazar">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
                             {% elif user.rol == 'gestion' and formulario.estado_actual == 'gestion_actualizando' %}
-                            <button onclick="cambiarEstado({{ formulario.id }}, 'gestion_actualizado')" 
+                            <button onclick="cambiarEstado('{{ formulario.id }}', 'gestion_actualizado')" 
                                     class="text-green-600 hover:text-green-900" 
                                     title="Marcar como actualizado">
                                 <i class="fas fa-check-circle"></i>
@@ -360,6 +360,9 @@
     </div>
     {% endif %}
 </div>
+
+<!-- Token CSRF para JavaScript -->
+{% csrf_token %}
 
 <!-- Modal para cambio de estado -->
 <div id="modal-cambio-estado" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">

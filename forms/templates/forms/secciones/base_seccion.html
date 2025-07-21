@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ titulo }} - Proyecto Plan de Inversión</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'forms/css/form.css' %}" />
+  </head>
+  <body>
+    <!-- Header con fondo azul -->
+    <header class="bg-blue-600 text-white py-8 px-4 mb-8">
+      <div class="container mx-auto max-w-6xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">Proyecto Plan de Inversión</h1>
+            <p class="text-blue-100">Formulario de {{ titulo }}</p>
+          </div>
+          <div class="text-6xl opacity-20">
+            <i class="{{ icono }}"></i>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 max-w-6xl">
+      <!-- Navbar de navegación entre secciones -->
+      <div class="container mx-auto px-4 max-w-6xl mb-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <div class="flex justify-between items-center">
+            <!-- Navigation Pills -->
+            <div class="flex space-x-2">
+              <a href="{% url 'forms:crear_estructuras' %}" 
+                 class="nav-pill {% if seccion == 'estructuras' %}active{% endif %}" 
+                 data-step="estructuras">
+                <i class="fas fa-building mr-2"></i>
+                <span class="hidden md:inline">Estructuras</span>
+              </a>
+              <a href="{% url 'forms:crear_conductores' %}" 
+                 class="nav-pill {% if seccion == 'conductores' %}active{% endif %}" 
+                 data-step="conductores">
+                <i class="fas fa-bolt mr-2"></i>
+                <span class="hidden md:inline">Conductores</span>
+              </a>
+              <a href="{% url 'forms:crear_equipos' %}" 
+                 class="nav-pill {% if seccion == 'equipos' %}active{% endif %}" 
+                 data-step="equipos">
+                <i class="fas fa-shield-alt mr-2"></i>
+                <span class="hidden md:inline">Equipos</span>
+              </a>
+              <a href="{% url 'forms:crear_transformadores' %}" 
+                 class="nav-pill {% if seccion == 'transformadores' %}active{% endif %}" 
+                 data-step="transformadores">
+                <i class="fas fa-microchip mr-2"></i>
+                <span class="hidden md:inline">Transformadores</span>
+              </a>
+            </div>
+            
+            <!-- Progress indicator -->
+            <div class="text-sm text-gray-600">
+              <span class="font-medium">Sección actual:</span> {{ titulo }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario principal -->
+      <form
+        id="mainForm"
+        method="post"
+        enctype="multipart/form-data"
+        action=""
+      >
+        {% csrf_token %}
+        
+        <!-- Contenido de la sección actual -->
+        <div class="form-section" data-form-section="{{ seccion }}" style="display: block;">
+          {% block section_content %}
+          <!-- El contenido específico de cada sección se incluirá aquí -->
+          {% endblock %}
+        </div>
+
+        <!-- Tabla de Iteraciones Compartida -->
+        {% include 'forms/components/tabla_iteraciones.html' %}
+
+        <!-- Botones de acción -->
+        <div class="flex justify-center items-center gap-4 mt-8">
+          <!-- Botón Ver Formularios -->
+          <a
+            href="{% url 'forms:lista' %}"
+            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <i class="fas fa-list"></i>
+            Ver Formularios
+          </a>
+
+          <!-- Botón Guardar -->
+          <button
+            type="submit"
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <i class="fas fa-save"></i>
+            Guardar Formulario
+          </button>
+        </div>
+      </form>
+
+    </main>
+
+    <!-- Scripts Globales -->
+    <script src="{% static 'js/uc-mapping.js' %}"></script>
+    <script src="{% static 'forms/js/data-mappings.js' %}"></script>
+    <script src="{% static 'forms/js/autocompletion.js' %}"></script>
+    <script src="{% static 'forms/js/form-utils.js' %}"></script>
+    
+    <!-- Scripts específicos de la sección -->
+    {% block section_scripts %}
+    <!-- Scripts específicos de cada sección se incluirán aquí -->
+    {% endblock %}
+    
+    <!-- Scripts de navegación y funcionalidad global -->
+    <script src="{% static 'forms/js/iteraciones-manager.js' %}"></script>
+    <script src="{% static 'forms/js/transformador-autocompletado.js' %}"></script>
+    
+    <!-- Scripts de navegación y sistema global -->
+    <script>
+      // Configuración global de la sección actual
+      window.CURRENT_SECTION = '{{ seccion }}';
+      window.CSRF_TOKEN = '{{ csrf_token }}';
+      
+      // Inicializar sistema al cargar la página
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('🎯 Inicializando sección:', '{{ seccion }}');
+        
+        // Inicializar el sistema de autocompletados
+        if (typeof initializeAutocompletion === 'function') {
+          initializeAutocompletion();
+          console.log('✅ Sistema de autocompletados inicializado');
+        } else {
+          console.error('❌ Función initializeAutocompletion no encontrada');
+        }
+        
+        // Inicializar el sistema de iteraciones
+        if (window.iteracionesManager) {
+          window.iteracionesManager.init();
+          console.log('✅ Sistema de iteraciones inicializado');
+        } else {
+          console.log('ℹ️ Sistema de iteraciones no disponible');
+        }
+        
+        // Configurar autocompletados específicos de la sección
+        console.log('✅ Sección {{ seccion }} inicializada correctamente');
+      });
+    </script>
+
+    <!-- Validación del sistema UC -->
+    <script>
+      // Verificar que los mappings estén disponibles
+      if (typeof UC_MAPPING === 'undefined') {
+        console.error('❌ UC_MAPPING no está definido');
+      } else {
+        console.log('✅ UC_MAPPING cargado correctamente');
+      }
+    </script>
+
+    <style>
+      /* Estilos para las pills de navegación */
+      .nav-pill {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        color: #4b5563;
+        background-color: transparent;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+      }
+      
+      .nav-pill:hover {
+        background-color: #eff6ff;
+        color: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .nav-pill.active {
+        background-color: #2563eb;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      .nav-pill.active:hover {
+        background-color: #1d4ed8;
+        color: white;
+        transform: none;
+      }
+      
+      /* Responsive para pills */
+      @media (max-width: 768px) {
+        .nav-pill {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.875rem;
+        }
+      }
+    </style>
+  </body>
+</html>
