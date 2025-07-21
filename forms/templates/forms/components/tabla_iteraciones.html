@@ -1,0 +1,138 @@
+<!-- forms/templates/forms/components/tabla_iteraciones.html -->
+<!-- Componente reutilizable para la tabla de iteraciones -->
+
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+            <i class="fas fa-table mr-2 text-blue-600"></i>
+            Tabla de Iteraciones
+        </h3>
+        
+        <!-- Estadísticas rápidas -->
+        <div class="flex gap-4 text-sm">
+            <div class="text-center">
+                <div class="text-xs text-gray-500">Estructuras</div>
+                <div id="contador-estructuras" class="font-semibold text-blue-600">0</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xs text-gray-500">Conductores</div>
+                <div id="contador-conductores" class="font-semibold text-yellow-600">0</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xs text-gray-500">Equipos</div>
+                <div id="contador-equipos" class="font-semibold text-green-600">0</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xs text-gray-500">Transformador</div>
+                <div id="contador-transformador" class="font-semibold text-purple-600">0</div>
+            </div>
+            <div class="text-center border-l pl-4">
+                <div class="text-xs text-gray-500">Total</div>
+                <div id="contador-total" class="font-semibold text-gray-800">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón agregar iteración -->
+    <div class="mb-4">
+        <button 
+            type="button"
+            class="btn-agregar-iteracion bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <i class="fas fa-plus"></i>
+            Agregar Iteración
+        </button>
+    </div>
+
+    <!-- Tabla de iteraciones -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Sección
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        #
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Proyecto
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Municipio
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Dirección
+                    </th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Cantidad
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Fecha
+                    </th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                        Acción
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tabla-iteraciones-body">
+                <!-- Las iteraciones se cargarán aquí dinámicamente -->
+                <tr>
+                    <td colspan="8" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-3xl mb-2"></i><br>
+                        No hay iteraciones agregadas<br>
+                        <small class="text-xs">Usa el botón "Agregar Iteración" para comenzar</small>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="mt-4 text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+        <div class="flex items-start gap-2">
+            <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
+            <div>
+                <strong>Cómo funciona:</strong>
+                <ul class="mt-1 text-xs space-y-1">
+                    <li>• Las iteraciones se guardan <strong>temporalmente</strong> mientras completas el formulario</li>
+                    <li>• Puedes agregar iteraciones desde cualquier sección (Estructuras, Conductores, Equipos, Transformador)</li>
+                    <li>• Al enviar el formulario, todas las iteraciones se guardan <strong>definitivamente</strong> en la base de datos</li>
+                    <li>• Puedes eliminar iteraciones antes del envío final usando el botón <i class="fas fa-trash-alt"></i></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-agregar-iteracion:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-eliminar-iteracion:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-radius: 4px;
+}
+
+#tabla-iteraciones-body tr:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Animación para contadores */
+#contador-estructuras, #contador-conductores, #contador-equipos, #contador-transformador, #contador-total {
+    transition: all 0.3s ease;
+}
+
+/* Badges responsivos */
+@media (max-width: 640px) {
+    .overflow-x-auto table {
+        font-size: 0.875rem;
+    }
+    
+    .overflow-x-auto th,
+    .overflow-x-auto td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+</style>

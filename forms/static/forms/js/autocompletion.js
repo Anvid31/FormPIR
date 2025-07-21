@@ -227,13 +227,28 @@ function updateApoyoOptions(allowedOptions = null) {
 
 // Función para actualizar contratos según proyecto seleccionado
 function actualizarContratos() {
-  const nombreProyecto = document.getElementById("nombre").value;
-  const contratoSelect = document.getElementById("contrato");
-
-  console.log(
-    "ActualizarContratos - Proyecto seleccionado:",
-    nombreProyecto
-  );
+  // Obtener la sección activa
+  const currentSection = window.currentStep || 'estructuras';
+  
+  // Buscar elementos en la sección activa
+  let nombreProyecto, contratoSelect;
+  
+  if (currentSection === 'estructuras') {
+    // Para estructuras, usar búsqueda por ID como siempre
+    nombreProyecto = document.getElementById("nombre").value;
+    contratoSelect = document.getElementById("contrato");
+  } else {
+    // Para otras secciones, buscar dentro de la sección activa
+    const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
+    if (!activeSection) return;
+    
+    const nombreField = activeSection.querySelector('#nombre');
+    contratoSelect = activeSection.querySelector('#contrato');
+    
+    if (!nombreField || !contratoSelect) return;
+    
+    nombreProyecto = nombreField.value;
+  }
 
   // Limpiar opciones existentes (excepto la primera)
   contratoSelect.innerHTML =
@@ -254,12 +269,6 @@ function actualizarContratos() {
 
     // Agregar indicador visual
     contratoSelect.classList.add("bg-green-50", "border-green-300");
-
-    console.log(
-      `Contratos actualizados para ${nombreProyecto}:`,
-      contratos.length,
-      "opciones disponibles"
-    );
   } else {
     // Usar contratos genéricos si no hay mapeo específico
     const contratosGenericos = ["Por definir"];
@@ -273,14 +282,6 @@ function actualizarContratos() {
 
     // Remover indicador visual
     contratoSelect.classList.remove("bg-green-50", "border-green-300");
-
-    if (nombreProyecto) {
-      console.log(
-        "No se encontraron contratos específicos para proyecto:",
-        nombreProyecto,
-        "- usando contratos genéricos"
-      );
-    }
   }
 
   // Limpiar selects dependientes
@@ -328,40 +329,42 @@ function actualizarContratos() {
 
 // Función para autocompletar banco del proyecto
 function autoCompleteBanco() {
-  const nombreProyecto = document.getElementById("nombre").value;
-  const bancoProyecto = document.getElementById("banco_proyecto");
-
-  console.log(
-    "AutoCompleteBanco - Proyecto seleccionado:",
-    nombreProyecto
-  );
+  // Obtener la sección activa
+  const currentSection = window.currentStep || 'estructuras';
+  
+  // Buscar elementos en la sección activa
+  let nombreProyecto, bancoProyecto;
+  
+  if (currentSection === 'estructuras') {
+    // Para estructuras, usar búsqueda por ID como siempre
+    nombreProyecto = document.getElementById("nombre").value;
+    bancoProyecto = document.getElementById("banco_proyecto");
+  } else {
+    // Para otras secciones, buscar dentro de la sección activa
+    const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
+    if (!activeSection) return;
+    
+    const nombreField = activeSection.querySelector('#nombre');
+    bancoProyecto = activeSection.querySelector('#banco_proyecto');
+    
+    if (!nombreField || !bancoProyecto) return;
+    
+    nombreProyecto = nombreField.value;
+  }
 
   // Verificar primero el mapeo completo
   if (nombreProyecto && typeof PROYECTO_COMPLETO_MAPPING !== 'undefined' && PROYECTO_COMPLETO_MAPPING[nombreProyecto]) {
     const proyectoData = PROYECTO_COMPLETO_MAPPING[nombreProyecto];
     bancoProyecto.value = proyectoData.banco;
     bancoProyecto.classList.add("bg-green-50", "border-green-300");
-    console.log(
-      "Banco autocompletado (mapeo completo):",
-      nombreProyecto,
-      "->",
-      proyectoData.banco
-    );
   }
   // Fallback al mapeo simple
   else if (nombreProyecto && PROYECTO_BANCO_MAPPING[nombreProyecto]) {
     bancoProyecto.value = PROYECTO_BANCO_MAPPING[nombreProyecto];
     bancoProyecto.classList.add("bg-green-50", "border-green-300");
-    console.log(
-      "Banco autocompletado (mapeo simple):",
-      nombreProyecto,
-      "->",
-      PROYECTO_BANCO_MAPPING[nombreProyecto]
-    );
   } else {
     bancoProyecto.value = "";
     bancoProyecto.classList.remove("bg-green-50", "border-green-300");
-    console.log("No se encontró mapeo para proyecto:", nombreProyecto);
   }
 
   // Actualizar contratos después del banco
@@ -1146,3 +1149,45 @@ document.addEventListener("DOMContentLoaded", function() {
   // Inicializar autocompletado
   initializeAutocompletion();
 });
+
+// Función global para configurar autocompletados en cualquier sección
+function configurarAutocompletadosGlobales() {
+  const currentSection = window.currentStep || 'estructuras';
+  
+  // Buscar elementos en la sección activa
+  let nombreField, bancoField, contratoField;
+  
+  if (currentSection === 'estructuras') {
+    // Para estructuras, usar búsqueda por ID como siempre
+    nombreField = document.getElementById("nombre");
+    bancoField = document.getElementById("banco_proyecto");
+    contratoField = document.getElementById("contrato");
+  } else {
+    // Para otras secciones, buscar dentro de la sección activa
+    const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
+    if (!activeSection) return;
+    
+    nombreField = activeSection.querySelector('#nombre');
+    bancoField = activeSection.querySelector('#banco_proyecto');
+    contratoField = activeSection.querySelector('#contrato');
+  }
+
+  // Configurar event listeners si existen los elementos
+  if (nombreField) {
+    // Remover listeners anteriores
+    nombreField.removeEventListener('input', autoCompleteBanco);
+    nombreField.removeEventListener('change', autoCompleteBanco);
+    
+    // Agregar nuevos listeners
+    nombreField.addEventListener('input', autoCompleteBanco);
+    nombreField.addEventListener('change', autoCompleteBanco);
+  }
+
+  if (contratoField) {
+    // Remover listeners anteriores
+    contratoField.removeEventListener('change', handleContratoChange);
+    
+    // Agregar nuevo listener
+    contratoField.addEventListener('change', handleContratoChange);
+  }
+}

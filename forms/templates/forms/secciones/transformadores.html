@@ -1,0 +1,17 @@
+{% extends 'forms/secciones/base_seccion.html' %}
+{% load static %}
+
+{% block section_content %}
+  {% include 'forms/form_sections/transformador.html' %}
+{% endblock %}
+
+{% block section_scripts %}
+  <script>
+    console.log('🔌 Scripts específicos de transformadores cargados');
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🔌 Configurando autocompletados para Transformadores...');
+      console.log('✅ Transformadores configurados correctamente');
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'forms/secciones/base_seccion.html' %}
+{% load static %}
+
+{% block section_content %}
+  {% include 'forms/form_sections/estructuras_complete.html' %}
+{% endblock %}
+
+{% block section_scripts %}
+  <script>
+    console.log('🏗️ Scripts específicos de estructuras cargados');
+    
+    // Configuración específica para estructuras cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🏗️ Configurando autocompletados para Estructuras...');
+      
+      // Aquí puedes agregar configuraciones específicas para estructuras
+      // Por ejemplo, validaciones especiales o configuraciones de campos
+      
+      console.log('✅ Estructuras configuradas correctamente');
+    });
+  </script>
+{% endblock %}
