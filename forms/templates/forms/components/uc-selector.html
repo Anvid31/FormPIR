@@ -1,0 +1,187 @@
+<!-- Componente UC Selector Jerárquico Mejorado -->
+<div class="form-group">
+  <label for="uc-selector" class="form-label">
+    UC (Código Único)
+    <span class="tooltip-icon ml-2" data-tooltip="Selecciona la Unidad Constructiva usando el sistema jerárquico">
+      <i class="fas fa-info-circle text-gray-400"></i>
+    </span>
+  </label>
+  
+  <!-- Contenedor del selector jerárquico -->
+  <div id="uc-selector-container" class="mb-4">
+    <!-- El selector jerárquico se renderizará aquí -->
+  </div>
+  
+  <!-- Campos ocultos para almacenar los valores -->
+  <input type="hidden" id="uc_nueva" name="uc_nueva" value="">
+  <input type="hidden" id="descripcion_uc" name="descripcion_uc" value="">
+  
+  <!-- Vista previa del UC seleccionado -->
+  <div id="uc-preview" class="hidden mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="font-semibold text-blue-900">UC Seleccionado:</p>
+        <p id="uc-code-display" class="text-lg font-mono text-blue-700"></p>
+        <p id="uc-desc-display" class="text-sm text-gray-600 mt-1"></p>
+      </div>
+      <button type="button" onclick="clearUCSelection()" class="text-red-500 hover:text-red-700">
+        <i class="fas fa-times-circle"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 Inicializando selector UC jerárquico...');
+    
+    // Función para inicializar el selector cuando los scripts estén listos
+    function initializeUCSelector() {
+        if (typeof UCHierarchicalSelector === 'undefined' || 
+            typeof window.UC_HIERARCHICAL_STRUCTURE === 'undefined' ||
+            typeof window.UC_MAPPING === 'undefined') {
+            console.log('⏳ Esperando scripts UC...', {
+                UCHierarchicalSelector: typeof UCHierarchicalSelector !== 'undefined',
+                UC_HIERARCHICAL_STRUCTURE: typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined',
+                UC_MAPPING: typeof window.UC_MAPPING !== 'undefined'
+            });
+            setTimeout(initializeUCSelector, 100);
+            return;
+        }
+        
+        console.log('✅ Scripts UC cargados, inicializando selector...');
+        
+        const container = document.getElementById('uc-selector-container');
+        if (!container) {
+            console.error('❌ No se encontró el contenedor UC');
+            return;
+        }
+        
+        // Crear el selector jerárquico
+        const selector = new UCHierarchicalSelector(
+            'uc-selector-container', // Pasar el ID como string, no el elemento
+            {
+                onSelectionChange: (selections, category) => {
+                    console.log('🔄 UC - Selección cambiada:', { selections, category });
+                },
+                onComplete: (result) => {
+                    console.log('✅ UC - Selección completada:', result);
+                    handleUCSelection(result);
+                },
+                showPreview: true
+            }
+        );
+        
+        // Guardar referencia global
+        window.ucSelector = selector;
+        
+        console.log('✅ Selector UC inicializado correctamente');
+    }
+    
+    // Manejar la selección de UC
+    function handleUCSelection(result) {
+        console.log('📋 UC seleccionado:', result);
+        
+        // El resultado puede venir en diferentes formatos según la versión
+        const code = result.code || result.codigo || '';
+        const description = result.description || result.descripcion || result.fullDescription || '';
+        
+        // Actualizar campos ocultos
+        document.getElementById('uc_nueva').value = code;
+        document.getElementById('descripcion_uc').value = description;
+        
+        // Mostrar vista previa
+        document.getElementById('uc-code-display').textContent = code || 'N/A';
+        document.getElementById('uc-desc-display').textContent = description || 'Sin descripción';
+        document.getElementById('uc-preview').classList.remove('hidden');
+        
+        // Ocultar el selector principal temporalmente
+        // document.getElementById('uc-selector-container').classList.add('hidden');
+        
+        console.log('✅ UC actualizado en campos:', { code, description });
+    }
+    
+    // Limpiar selección
+    window.clearUCSelection = function() {
+        console.log('🔄 Limpiando selección UC...');
+        
+        // Limpiar campos
+        document.getElementById('uc_nueva').value = '';
+        document.getElementById('descripcion_uc').value = '';
+        
+        // Ocultar vista previa
+        document.getElementById('uc-preview').classList.add('hidden');
+        
+        // Mostrar selector nuevamente
+        document.getElementById('uc-selector-container').classList.remove('hidden');
+        
+        // Reiniciar selector si existe
+        if (window.ucSelector && typeof window.ucSelector.reset === 'function') {
+            window.ucSelector.reset();
+        }
+        
+        console.log('✅ Selección UC limpiada');
+    };
+    
+    // Función para establecer una selección programáticamente
+    window.setUCSelection = function(data) {
+        if (data && data.code) {
+            handleUCSelection(data);
+        }
+    };
+    
+    // Iniciar cuando todo esté listo
+    initializeUCSelector();
+});
+</script>
+<!-- Estilos adicionales específicos para la integración -->
+<style>
+#uc-selector-container {
+    min-height: 400px;
+    transition: all 0.3s ease;
+}
+
+#uc-preview {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.uc-hierarchical-selector {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+}
+
+.uc-hierarchical-selector .uc-selector-header h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.uc-category-card:hover {
+    transform: translateY(-1px);
+}
+
+.uc-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .uc-category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

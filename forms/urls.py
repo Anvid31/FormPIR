@@ -20,6 +20,15 @@ urlpatterns = [
     # API de iteraciones
     path('iteraciones/', include('forms.urls_iteraciones')),
     
+    # ===============================
+    # RUTAS ESPECÍFICAS DEL CONTRATISTA
+    # ===============================
+    path('contratista/', views.contratista_dashboard, name='contratista_dashboard'),
+    path('contratista/formularios/', views.contratista_formularios, name='contratista_formularios'),
+    path('contratista/nuevo/', views.contratista_nuevo_formulario, name='contratista_nuevo_formulario'),
+    path('contratista/seccion/<str:seccion>/', views.contratista_formulario_seccion, name='contratista_formulario_seccion'),
+    path('contratista/finalizar/', views.contratista_finalizar_formulario, name='contratista_finalizar_formulario'),
+    
     # Rutas específicas para administrador
     path('panel/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('panel/usuarios/', views.admin_users_list, name='admin_users_list'),
@@ -27,6 +36,11 @@ urlpatterns = [
     path('panel/formularios/<int:formulario_id>/cambiar-estado/', views.admin_cambiar_estado_formulario, name='admin_cambiar_estado_formulario'),
     path('panel/formularios/<int:formulario_id>/eliminar/', views.admin_eliminar_formulario, name='admin_eliminar_formulario'),
     path('panel/formularios/<int:formulario_id>/restaurar/', views.admin_restaurar_formulario, name='admin_restaurar_formulario'),
+    
+    # Rutas para administración de usuarios
+    path('panel/usuarios/<int:user_id>/toggle/', views.admin_toggle_user, name='admin_toggle_user'),
+    path('panel/usuarios/<int:user_id>/change-role/', views.admin_change_user_role, name='admin_change_user_role'),
+    path('panel/usuarios/<int:user_id>/delete/', views.admin_delete_user, name='admin_delete_user'),
     
     # Rutas de autenticación
     path('login/', views.custom_login, name='login'),

@@ -15,8 +15,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{% static 'forms/css/form.css' %}" />
+    <!-- CSS mínimo para highlight de campos protegidos -->
+    <link rel="stylesheet" href="{% static 'forms/css/desmantelado-highlight.css' %}" />
   </head>
-  <body>
+  <body data-section="{{ seccion }}" data-csrf-token="{{ csrf_token }}" data-debug="{{ debug|yesno:'true,false' }}">
     <!-- Header con fondo azul -->
     <header class="bg-blue-600 text-white py-8 px-4 mb-8">
       <div class="container mx-auto max-w-6xl">
@@ -116,60 +118,72 @@
 
     </main>
 
-    <!-- Scripts Globales -->
-    <script src="{% static 'js/uc-mapping.js' %}"></script>
-    <script src="{% static 'forms/js/data-mappings.js' %}"></script>
-    <script src="{% static 'forms/js/autocompletion.js' %}"></script>
+    <!-- Scripts Globales Optimizados v2.0 -->
+    
+    <!-- 1. Scripts esenciales primero -->
+    <script src="{% static 'forms/js/dom-cache.js' %}"></script>
     <script src="{% static 'forms/js/form-utils.js' %}"></script>
+    
+    <!-- 2. UC Mapping y estructura ANTES que otros scripts -->
+    <script src="{% static 'js/uc-mapping.js' %}"></script>
+    <script src="{% static 'js/uc-hierarchical.js' %}"></script>
+    <script src="{% static 'js/uc-hierarchical-selector.js' %}"></script>
+    
+    <!-- 3. Luego el resto de scripts -->
+    <script src="{% static 'forms/js/data-mappings.js' %}"></script>
+    <script src="{% static 'forms/js/autocompletion-utils.js' %}"></script>
+    <script src="{% static 'forms/js/autocompletion.js' %}"></script>
+    
+    <!-- Script específico para estructuras (solo si es la sección correcta) -->
+    {% if seccion == 'estructuras' %}
+    <script src="{% static 'forms/js/autocompletion-estructuras.js' %}"></script>
+    {% endif %}
+    
+    <script src="{% static 'forms/js/iteraciones-manager.js' %}"></script>
+    <script src="{% static 'forms/js/file-upload.js' %}"></script>
+    <script src="{% static 'forms/js/transformador-autocompletado.js' %}"></script>
+    
+    <!-- Sistema de tipos de inversión (Montaje Integral y Desmantelado) - VERSIÓN SIMPLIFICADA -->
+    <script src="{% static 'forms/js/tipos-inversion-v4.js' %}"></script>
+    
+    <!-- Script de diagnóstico comentado - ya no necesario con v4 -->
+    <!-- <script src="{% static 'forms/js/diagnostico-estructura-retirada.js' %}"></script> -->
+    
+    <script src="{% static 'forms/js/app-initializer.js' %}"></script>
+    
+    <!-- 4. Sistema Unificado de Inicialización -->
+    <script src="{% static 'forms/js/unified-init.js' %}"></script>
     
     <!-- Scripts específicos de la sección -->
     {% block section_scripts %}
     <!-- Scripts específicos de cada sección se incluirán aquí -->
     {% endblock %}
     
-    <!-- Scripts de navegación y funcionalidad global -->
-    <script src="{% static 'forms/js/iteraciones-manager.js' %}"></script>
-    <script src="{% static 'forms/js/transformador-autocompletado.js' %}"></script>
-    
-    <!-- Scripts de navegación y sistema global -->
+    <!-- Configuración global del sistema -->
     <script>
-      // Configuración global de la sección actual
-      window.CURRENT_SECTION = '{{ seccion }}';
-      window.CSRF_TOKEN = '{{ csrf_token }}';
+      // Leer configuración desde data attributes
+      const bodyElement = document.body;
+      window.CURRENT_SECTION = bodyElement.dataset.section;
+      window.CSRF_TOKEN = bodyElement.dataset.csrfToken;
+      window.DEBUG = bodyElement.dataset.debug === 'true';
       
-      // Inicializar sistema al cargar la página
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('🎯 Inicializando sección:', '{{ seccion }}');
-        
-        // Inicializar el sistema de autocompletados
-        if (typeof initializeAutocompletion === 'function') {
-          initializeAutocompletion();
-          console.log('✅ Sistema de autocompletados inicializado');
-        } else {
-          console.error('❌ Función initializeAutocompletion no encontrada');
-        }
-        
-        // Inicializar el sistema de iteraciones
-        if (window.iteracionesManager) {
-          window.iteracionesManager.init();
-          console.log('✅ Sistema de iteraciones inicializado');
-        } else {
-          console.log('ℹ️ Sistema de iteraciones no disponible');
-        }
-        
-        // Configurar autocompletados específicos de la sección
-        console.log('✅ Sección {{ seccion }} inicializada correctamente');
-      });
+      // Log inicial
+      console.log('🎯 Iniciando FormPIR - Sección:', window.CURRENT_SECTION);
     </script>
-
+    
     <!-- Validación del sistema UC -->
     <script>
       // Verificar que los mappings estén disponibles
-      if (typeof UC_MAPPING === 'undefined') {
-        console.error('❌ UC_MAPPING no está definido');
-      } else {
-        console.log('✅ UC_MAPPING cargado correctamente');
-      }
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof UC_MAPPING === 'undefined') {
+          console.error('❌ UC_MAPPING no está definido');
+        } else {
+          console.log('✅ UC_MAPPING cargado correctamente');
+        }
+        
+        // El sistema unificado se inicializa automáticamente
+        // a través de unified-init.js
+      });
     </script>
 
     <style>

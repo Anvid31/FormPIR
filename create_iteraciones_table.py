@@ -7,12 +7,12 @@ django.setup()
 
 from django.db import connection
 
-# SQL para crear la tabla de iteraciones - ORACLE
+# SQL para crear la tabla de iteraciones
 sql_create_table = """
 CREATE TABLE "formulario_iteraciones" (
-    "id" NUMBER(19) NOT NULL,
-    "session_key" NVARCHAR2(40) NOT NULL,
-    "formulario_id" NVARCHAR2(50) NULL,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "session_key" VARCHAR(40) NOT NULL,
+    "formulario_id" VARCHAR(50) NULL,
     "usuario_id" NUMBER(19) NULL,
     "seccion" NVARCHAR2(20) NOT NULL,
     "estado" NVARCHAR2(10) DEFAULT 'temporal' NOT NULL,

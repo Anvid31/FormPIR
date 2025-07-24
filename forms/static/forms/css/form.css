@@ -366,3 +366,344 @@ body {
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
+
+/* ============================================ */
+/* ESTILOS PARA TIPOS DE INVERSIÓN */
+/* ============================================ */
+
+/* Estilos para campos deshabilitados por tipos de inversión */
+.form-input:disabled,
+.form-select:disabled {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+/* Estado especial para estructura retirada cuando está activo */
+.bg-yellow-50 {
+  background-color: #fef3c7 !important;
+}
+
+.border-yellow-300 {
+  border-color: #fcd34d !important;
+}
+
+/* Checkboxes de tipos de inversión */
+#montaje_integral_checkbox,
+#desmantelado_checkbox {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+#montaje_integral_checkbox:checked,
+#desmantelado_checkbox:checked {
+  transform: scale(1.1);
+}
+
+/* Labels de checkboxes */
+label[for="montaje_integral_checkbox"],
+label[for="desmantelado_checkbox"] {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+label[for="montaje_integral_checkbox"]:hover {
+  color: #ea580c;
+}
+
+label[for="desmantelado_checkbox"]:hover {
+  color: #dc2626;
+}
+
+/* Contenedores de checkboxes */
+#montaje_integral_container,
+#desmantelado_container {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Alertas de estado */
+#estado-inversion-alert {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 100px;
+  }
+}
+
+/* Selector UC jerárquico deshabilitado */
+.uc-hierarchical-selector.pointer-events-none {
+  opacity: 0.6;
+  filter: grayscale(0.3);
+}
+
+.uc-hierarchical-selector.pointer-events-none * {
+  cursor: not-allowed !important;
+}
+
+/* Efectos visuales para campos deshabilitados */
+[data-disabled-by="montaje-integral"] {
+  position: relative;
+}
+
+[data-disabled-by="montaje-integral"]::after {
+  content: "🔧";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+[data-disabled-by="desmantelado"] {
+  position: relative;
+}
+
+[data-disabled-by="desmantelado"]::after {
+  content: "⚠️";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 768px) {
+  #montaje_integral_container,
+  #desmantelado_container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  #montaje_integral_help,
+  #desmantelado_help {
+    text-align: left !important;
+    margin-left: 0;
+  }
+  
+  .flex.items-start.gap-4 {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* Efectos de hover para mejorar UX */
+#montaje_integral_container:hover,
+#desmantelado_container:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+}
+
+/* Estilos para secciones habilitadas en modo desmantelado */
+.seccion-habilitada-desmantelado {
+  position: relative;
+  border: 2px solid #10b981 !important;
+  background-color: #f0fdf4 !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1), 0 2px 4px -1px rgba(16, 185, 129, 0.06);
+}
+
+.seccion-habilitada-desmantelado::before {
+  content: "✓ HABILITADO";
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* Animación sutil para secciones habilitadas */
+.seccion-habilitada-desmantelado {
+  animation: destacarSeccion 0.5s ease-in-out;
+}
+
+@keyframes destacarSeccion {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 8px 15px -3px rgba(16, 185, 129, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+  }
+}
+
+/* Indicador visual para estructura retirada en modo desmantelado */
+#estructura_retirada_campo.destacado-desmantelado {
+  border: 3px solid #f59e0b !important;
+  background-color: #fef3c7 !important;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2) !important;
+  animation: pulseDestacado 2s infinite;
+}
+
+@keyframes pulseDestacado {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0.1);
+  }
+}
+
+/* Mejoras para la visualización de campos de archivo habilitados */
+input[type="file"]:not(:disabled) {
+  border: 2px dashed #10b981 !important;
+  background-color: #f0fdf4 !important;
+}
+
+/* Estilos para botones de archivo habilitados */
+.file-upload-container:not(.disabled) {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+}
+
+.file-upload-container:not(.disabled):hover {
+  background-color: #dcfce7 !important;
+  transform: scale(1.02);
+  transition: all 0.2s ease-in-out;
+}
+
+/* =============================================================================
+   ESTILOS PARA DESMANTELADO - Mejora de la funcionalidad
+   ============================================================================= */
+
+/* Estilo cuando desmantelado está activo */
+.desmantelado-activo {
+  position: relative;
+}
+
+.desmantelado-activo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Excluir SOLO el checkbox desmantelado y estructura retirada del overlay */
+#desmantelado_checkbox,
+#desmantelado_container,
+#estructura_retirada_campo[data-keep-enabled="true"] {
+  position: relative;
+  z-index: 10 !important;
+}
+
+/* Resaltar estructura retirada cuando está activo */
+#estructura_retirada_campo[data-keep-enabled="true"] {
+  background-color: #fef3c7 !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+  font-weight: 600 !important;
+}
+
+#estructura_retirada_campo[data-keep-enabled="true"]:focus {
+  outline: 2px solid #f59e0b !important;
+  outline-offset: 2px !important;
+}
+
+/* Asegurar que SOLO el checkbox de desmantelado sea clickeable */
+.desmantelado-activo input[type="checkbox"]#desmantelado_checkbox {
+  cursor: pointer !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Label de estructura retirada destacado */
+.desmantelado-activo label[for="estructura_retirada_campo"] {
+  color: #d97706 !important;
+  font-weight: 600 !important;
+}
+
+/* Estilo para el mensaje de desmantelado mejorado */
+#desmantelado-mensaje {
+  animation: slideDown 0.3s ease-out;
+  border-left: 4px solid #dc2626;
+}
+
+#desmantelado-mensaje ul li {
+  margin-bottom: 2px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación pulse para destacar el campo estructura retirada */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+/* Contenedor de checkbox desmantelado siempre visible */
+#desmantelado_container {
+  z-index: 15 !important;
+  position: relative;
+}
+
+/* Label del checkbox desmantelado siempre visible y clickeable */
+.desmantelado-activo #desmantelado_container label {
+  cursor: pointer !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 15 !important;
+  position: relative;
+}

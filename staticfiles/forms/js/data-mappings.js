@@ -1,9 +1,16 @@
 /**
- * DESS - Mapeos de Datos del Sistema
- * Contiene todos los mapeos de proyectos, municipios, circuitos, etc.
+ * DESS - Mapeos de Datos del Sistema Centralizados
+ * Versión optimizada que evita duplicación y mejora rendimiento
+ * @version 2.0.0
+ * @description Todos los mapeos están centralizados aquí para evitar redundancia
  */
 
-// Mapeo de proyectos a bancos
+// ==================== CONFIGURACIÓN GLOBAL ====================
+window.DESS_MAPPINGS = window.DESS_MAPPINGS || {};
+
+// ==================== MAPEOS DE PROYECTOS ====================
+
+// Mapeo de proyectos a bancos (legacy - mantenido por compatibilidad)
 const PROYECTO_BANCO_MAPPING = {
   "Automatización de redes distribución CENS": "NEG0719TYD",
   "Compra de bien futuro": "NEG9996TYD",
@@ -354,17 +361,210 @@ const MUNICIPIO_CIRCUITO_MAPPING = {
   "VILLA DEL ROSARIO": ["AGUC4", "ATAC86", "ATAC87", "BELC21", "BELC22", "BELC23", "BELC28", "BELC29", "BELC30", "BELC31", "CAMC3", "CULC1", "ELSC68", "ELSC69", "ESCC61", "ESCC62", "ESCC63", "INSC91", "INSC92", "INSC93", "INSC94", "PATC1", "PATC2", "PATC3", "PLZ283B1", "SALC1", "SANC43", "SANC45", "SANC46", "SANC49", "SANC53", "SANC54", "SANC55", "SANC57", "SANC58", "SANC59", "SANIL15", "SANOL25", "SANOL35", "SANOL45", "SEVC3", "SEVC4", "SEVC5", "SEVC7", "SEVC11", "SEVC16", "SPAC2", "TARC2"]
 };
 
-// Función para inicializar los mapeos
-function initializeDataMappings() {
-  console.log("Mapeo Proyecto-Banco cargado:", Object.keys(PROYECTO_BANCO_MAPPING).length, "proyectos");
-  console.log("Mapeo Proyecto-Completo cargado:", Object.keys(PROYECTO_COMPLETO_MAPPING).length, "proyectos con contratos");
-  console.log("Mapeo Municipio cargado:", Object.keys(MUNICIPIO_MAPPING).length, "municipios");
-  console.log("Mapeo Municipio-Circuito cargado:", Object.keys(MUNICIPIO_CIRCUITO_MAPPING).length, "municipios con circuitos");
+// ==================== CENTRALIZACIÓN DE MAPEOS ====================
+
+/**
+ * Objeto centralizado que contiene todos los mapeos del sistema
+ * Evita duplicación y facilita mantenimiento
+ */
+window.DESS_MAPPINGS = {
+  // Mapeos de proyectos
+  proyectos: {
+    banco: PROYECTO_BANCO_MAPPING,
+    completo: PROYECTO_COMPLETO_MAPPING
+  },
+  
+  // Mapeos geográficos
+  geografia: {
+    municipios: MUNICIPIO_MAPPING,
+    circuitos: MUNICIPIO_CIRCUITO_MAPPING
+  },
+  
+  // Mapeos técnicos (se pueden agregar más aquí)
+  tecnico: {
+    // UC_MAPPING se cargará desde uc-mapping.js
+    // Este será el lugar central para todos los mapeos técnicos
+  },
+
+  // Metadatos
+  metadata: {
+    version: '2.0.0',
+    lastUpdated: new Date().toISOString(),
+    totalProyectos: Object.keys(PROYECTO_COMPLETO_MAPPING).length,
+    totalMunicipios: Object.keys(MUNICIPIO_MAPPING).length,
+    totalCircuitos: Object.keys(MUNICIPIO_CIRCUITO_MAPPING).length
+  }
+};
+
+// ==================== MANTENER COMPATIBILIDAD ====================
+// Estas variables globales se mantienen para compatibilidad con código existente
+// Pero ahora apuntan al objeto centralizado
+
+window.PROYECTO_BANCO_MAPPING = DESS_MAPPINGS.proyectos.banco;
+window.PROYECTO_COMPLETO_MAPPING = DESS_MAPPINGS.proyectos.completo;
+window.MUNICIPIO_MAPPING = DESS_MAPPINGS.geografia.municipios;
+window.MUNICIPIO_CIRCUITO_MAPPING = DESS_MAPPINGS.geografia.circuitos;
+
+// ==================== UTILIDADES DE MAPEO ====================
+
+/**
+ * Clase para gestionar mapeos de manera centralizada
+ */
+class MappingManager {
+  /**
+   * Obtiene datos de un mapeo específico
+   */
+  static getData(category, subcategory = null, key = null) {
+    let data = window.DESS_MAPPINGS[category];
+    
+    if (!data) {
+      console.warn(`⚠️ Categoría de mapeo '${category}' no encontrada`);
+      return null;
+    }
+    
+    if (subcategory) {
+      data = data[subcategory];
+      if (!data) {
+        console.warn(`⚠️ Subcategoría '${subcategory}' no encontrada en '${category}'`);
+        return null;
+      }
+    }
+    
+    if (key) {
+      return data[key] || null;
+    }
+    
+    return data;
+  }
+
+  /**
+   * Busca en un mapeo con filtros
+   */
+  static search(category, subcategory, searchField, searchValue) {
+    const data = this.getData(category, subcategory);
+    if (!data) return [];
+
+    return Object.entries(data).filter(([key, item]) => {
+      if (typeof item === 'object' && item[searchField]) {
+        return item[searchField] === searchValue;
+      }
+      return false;
+    }).map(([key, item]) => ({ key, ...item }));
+  }
+
+  /**
+   * Obtiene estadísticas de los mapeos
+   */
+  static getStats() {
+    return window.DESS_MAPPINGS.metadata;
+  }
+
+  /**
+   * Valida integridad de mapeos
+   */
+  static validateMappings() {
+    const issues = [];
+    const stats = this.getStats();
+    
+    // Verificar que los mapeos principales existen
+    const requiredMappings = [
+      ['proyectos', 'completo'],
+      ['geografia', 'municipios'],
+      ['geografia', 'circuitos']
+    ];
+
+    requiredMappings.forEach(([cat, subcat]) => {
+      const data = this.getData(cat, subcat);
+      if (!data || Object.keys(data).length === 0) {
+        issues.push(`Mapeo vacío: ${cat}.${subcat}`);
+      }
+    });
+
+    console.log('🔍 Validación de mapeos:', {
+      issues: issues.length,
+      details: issues,
+      stats
+    });
+
+    return {
+      isValid: issues.length === 0,
+      issues,
+      stats
+    };
+  }
 }
+
+// Exponer globalmente
+window.MappingManager = MappingManager;
+
+// ==================== MAPPINGS ADICIONALES ====================
+
+// Mapeo de estructuras (definición básica)
+const ESTRUCTURA_MAPPING = {
+  // Mapeo básico para autocompletado de estructuras
+  "Poste": ["N1", "N2", "N3", "N4"],
+  "Estructura": ["N3", "N4"],
+  "Torre": ["N4"],
+  "Torrecilla": ["N3"]
+};
+
+// Mapeo de códigos de conductores
+const CODIGO_CONDUCTOR_MAPPING = {
+  // Conductores comunes en el sistema
+  "ACSR": ["2/0", "4/0", "266.8", "336.4", "477", "556.5"],
+  "AAAC": ["2/0", "4/0", "266.8", "336.4"],
+  "ACAR": ["2/0", "4/0", "266.8"],
+  "Cobre": ["2", "1/0", "2/0", "4/0"]
+};
+
+// ==================== INICIALIZACIÓN ====================
+
+/**
+ * Función para inicializar los mapeos y validar integridad
+ */
+function initializeDataMappings() {
+  // Validar mapeos
+  const validation = MappingManager.validateMappings();
+  
+  if (!validation.isValid) {
+    console.error('❌ Problemas en mapeos:', validation.issues);
+  }
+  
+  // Exponer mapeos globalmente
+  // UC_MAPPING debería estar disponible desde uc-mapping.js
+  if (typeof UC_MAPPING !== 'undefined' && UC_MAPPING) {
+    window.UcMapping = UC_MAPPING;
+    window.UC_MAPPING = UC_MAPPING; // También como UC_MAPPING para compatibilidad
+    console.log('✅ UC_MAPPING cargado correctamente');
+  } else {
+    console.warn('⚠️ UC_MAPPING no está disponible. Verificar que uc-mapping.js se cargue antes.');
+    window.UcMapping = {};
+    window.UC_MAPPING = {};
+  }
+  
+  window.ESTRUCTURA_MAPPING = ESTRUCTURA_MAPPING;
+  window.CODIGO_CONDUCTOR_MAPPING = CODIGO_CONDUCTOR_MAPPING;
+  window.DESS_MAPPINGS = DESS_MAPPINGS;
+  
+  console.log('✅ Mapeos inicializados correctamente');
+  
+  return validation;
+}
+
+// Auto-inicializar cuando se carga el script
+document.addEventListener('DOMContentLoaded', () => {
+  initializeDataMappings();
+});
+
+// ==================== EXPORTACIÓN PARA MÓDULOS ====================
 
 // Exportar para uso en otros módulos
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
+    DESS_MAPPINGS: window.DESS_MAPPINGS,
+    MappingManager,
+    PROYECTO_COMPLETO_MAPPING,
+    MappingManager,
     PROYECTO_BANCO_MAPPING,
     PROYECTO_COMPLETO_MAPPING,
     MUNICIPIO_MAPPING,

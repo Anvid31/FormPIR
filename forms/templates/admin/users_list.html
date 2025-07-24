@@ -5,7 +5,30 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'forms/css/admin-dashboard.css' %}">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootst    // Event listeners para activar/desactivar usuarios
+    document.querySelectorAll('.toggle-user-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            const action = this.dataset.action;
+            const activate = action === 'activate';
+            
+            toggleUserStatus(userId, activate);
+        });
+    });
+
+    // Event listeners para cambio de roles
+    document.querySelectorAll('.role-selector').forEach(selector => {
+        selector.addEventListener('change', function() {
+            const userId = this.dataset.userId;
+            const originalRole = this.dataset.originalRole;
+            const newRole = this.value;
+            
+            if (newRole !== originalRole) {
+                changeUserRole(userId, newRole, originalRole, this);
+            }
+        });
+    });
+});" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
@@ -22,6 +45,9 @@
                             <p class="dashboard-subtitle">Administración de usuarios del sistema</p>
                         </div>
                         <div>
+                            <a href="{% url 'forms:register' %}" class="btn btn-success me-2">
+                                <i class="fas fa-user-plus"></i> Crear Usuario
+                            </a>
                             <a href="{% url 'forms:admin_dashboard' %}" class="btn btn-outline-primary">
                                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
                             </a>
@@ -128,10 +154,23 @@
                                             {{ usuario.email|default:"Sin email" }}
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">
-                                                <i class="fas fa-user-tag me-1"></i>
-                                                {{ usuario.rol|default:"Sin rol" }}
-                                            </span>
+                                            <!-- Selector de rol editable -->
+                                            <select class="form-select form-select-sm role-selector" 
+                                                    data-user-id="{{ usuario.id }}"
+                                                    data-original-role="{{ usuario.rol|default:'' }}">
+                                                {% if not usuario.rol %}
+                                                    <option value="" selected disabled>-- Sin rol asignado --</option>
+                                                {% endif %}
+                                                {% for role_key, role_display in role_choices %}
+                                                    <option value="{{ role_key }}" 
+                                                            {% if usuario.rol == role_key %}selected{% endif %}>
+                                                        {{ role_display }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                            {% if not usuario.rol %}
+                                                <small class="text-muted">Usuario auto-registrado</small>
+                                            {% endif %}
                                         </td>
                                         <td>
                                             {% if usuario.is_active %}
@@ -275,6 +314,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin Dashboard JS Loaded');
+    
     // Event listeners para botones de toggle estado de usuario
     document.querySelectorAll('.toggle-user-btn').forEach(button => {
         button.addEventListener('click', function() {
@@ -285,6 +326,42 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleUserStatus(userId, activate);
         });
     });
+
+    // Event listeners para cambio de roles
+    document.querySelectorAll('.role-selector').forEach(selector => {
+        console.log('Selector found:', {
+            userId: selector.dataset.userId,
+            originalRole: selector.dataset.originalRole,
+            currentValue: selector.value
+        });
+        
+        selector.addEventListener('change', function() {
+            const userId = this.dataset.userId;
+            const originalRole = this.dataset.originalRole;
+            const newRole = this.value;
+            
+            console.log('Role change detected:', {userId, originalRole, newRole});
+            console.log('Element attributes:', {
+                'data-user-id': this.getAttribute('data-user-id'),
+                'data-original-role': this.getAttribute('data-original-role')
+            });
+            
+            if (newRole !== originalRole) {
+                // Manejar usuarios sin rol asignado
+                const effectiveOriginalRole = originalRole || '';
+                console.log('Using effective original role:', effectiveOriginalRole);
+                
+                // Mensaje especial para usuarios sin rol
+                if (!originalRole || originalRole === '') {
+                    console.log('Asignando primer rol a usuario auto-registrado');
+                }
+                
+                changeUserRole(userId, newRole, effectiveOriginalRole, this);
+            } else {
+                console.log('No change needed - same role');
+            }
+        });
+    });
 });
 
 function toggleUserStatus(userId, activate) {
@@ -292,29 +369,119 @@ function toggleUserStatus(userId, activate) {
     const message = `¿Está seguro de ${action} este usuario?`;
     
     if (confirm(message)) {
-        // Aquí puedes agregar la lógica AJAX para cambiar el estado
-        fetch(`/admin/users/${userId}/toggle/`, {
+        // Crear FormData para envío correcto
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        formData.append('is_active', activate);
+        
+        // Construir URL usando el patrón correcto
+        const toggleUrl = `/panel/usuarios/${userId}/toggle/`;
+        
+        fetch(toggleUrl, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
-            body: JSON.stringify({
-                'is_active': activate
-            })
+            body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
             if (data.success) {
+                // Mostrar mensaje de éxito
+                alert(data.message);
                 location.reload();
             } else {
-                alert('Error al cambiar el estado del usuario');
+                alert(data.error || 'Error al cambiar el estado del usuario');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error al procesar la solicitud');
+            console.error('Error completo:', error);
+            alert('Error al procesar la solicitud: ' + error.message);
         });
+    }
+}
+
+function changeUserRole(userId, newRole, originalRole, selector) {
+    // Mensaje personalizado según si tiene rol o no
+    let message;
+    if (!originalRole || originalRole === '') {
+        message = `¿Está seguro de asignar el rol "${selector.options[selector.selectedIndex].text}" a este usuario? (Se activará automáticamente)`;
+    } else {
+        message = `¿Está seguro de cambiar el rol de este usuario?`;
+    }
+    
+    if (confirm(message)) {
+        // Crear FormData para envío correcto
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        formData.append('nuevo_rol', newRole);
+        
+        // Construir URL usando el patrón correcto
+        const changeRoleUrl = `/panel/usuarios/${userId}/change-role/`;
+        
+        fetch(changeRoleUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: formData
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success) {
+                alert(data.message);
+                // Actualizar el atributo data-original-role
+                selector.dataset.originalRole = newRole;
+                
+                // Si el usuario fue activado, mostrar mensaje adicional
+                if (data.usuario_activado) {
+                    console.log('Usuario activado automáticamente');
+                }
+                
+                location.reload();
+            } else {
+                // Revertir el selector al valor original
+                if (originalRole === '') {
+                    selector.selectedIndex = 0; // Volver a "Sin rol asignado"
+                } else {
+                    selector.value = originalRole;
+                }
+                alert(data.error || 'Error al cambiar el rol del usuario');
+            }
+        })
+        .catch(error => {
+            console.error('Error completo:', error);
+            // Revertir el selector al valor original
+            if (originalRole === '') {
+                selector.selectedIndex = 0; // Volver a "Sin rol asignado"
+            } else {
+                selector.value = originalRole;
+            }
+            alert('Error al procesar la solicitud: ' + error.message);
+        });
+    } else {
+        // Usuario canceló, revertir el selector
+        if (originalRole === '') {
+            selector.selectedIndex = 0; // Volver a "Sin rol asignado"
+        } else {
+            selector.value = originalRole;
+        }
     }
 }
 </script>

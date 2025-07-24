@@ -1,0 +1,1464 @@
+<!-- Wrapper del formulario completo -->
+<div id="form-total">
+  <!-- Sección: Información del Proyecto -->
+  <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-project-diagram mr-2"></i>
+      Información del Proyecto
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="form-group">
+        <label class="form-label required">
+          NOMBRE DEL PROYECTO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Selecciona el proyecto específico al que pertenece esta
+              estructura. El proyecto determina el banco y los contratos
+              disponibles.
+            </span>
+          </span>
+        </label>
+        <select id="nombre" name="nombre" class="form-select" required>
+          <option value="">Seleccionar proyecto</option>
+          <option value="Automatización de redes distribución CENS">
+            Automatización de redes distribución CENS
+          </option>
+          <option value="Compra de bien futuro">Compra de bien futuro</option>
+          <option value="Electrificación Rural CENS">
+            Electrificación Rural CENS
+          </option>
+          <option value="Expansión redes de distribución CENS">
+            Expansión redes de distribución CENS
+          </option>
+          <option value="Gestión y control pérdidas de energía - CENS">
+            Gestión y control pérdidas de energía - CENS
+          </option>
+          <option value="Mantenimiento redes de distribución">
+            Mantenimiento redes de distribución
+          </option>
+          <option value="Mantenimiento redes de distribución - MIT">
+            Mantenimiento redes de distribución - MIT
+          </option>
+          <option
+            value="Normalización subestación Sevilla 115/34.5 kV e interconexión a 115 kV"
+          >
+            Normalización subestación Sevilla 115/34.5 kV e interconexión a 115
+            kV
+          </option>
+          <option value="Nueva línea INSC77 - Guaduas 34.5 kV">
+            Nueva línea INSC77 - Guaduas 34.5 kV
+          </option>
+          <option value="Nuevo Alimentador Gabarra">
+            Nuevo Alimentador Gabarra
+          </option>
+          <option value="Reconfiguración Planta Zulia 13.8kV">
+            Reconfiguración Planta Zulia 13.8kV
+          </option>
+          <option value="Reposición redes de distribución CENS">
+            Reposición redes de distribución CENS
+          </option>
+          <option value="Reposición transformadores distribución CENS">
+            Reposición transformadores distribución CENS
+          </option>
+          <option value="Repotenciación de líneas CENS 115 kV">
+            Repotenciación de líneas CENS 115 kV
+          </option>
+          <option value="Reposición subestaciones y líneas CENS">
+            Reposición subestaciones y líneas CENS
+          </option>
+          <option
+            value="Expansión y normalización de subestaciones media tensión."
+          >
+            Expansión y normalización de subestaciones media tensión.
+          </option>
+          <option value="Nueva subestación La Playa 34.5/13.8 kV">
+            Nueva subestación La Playa 34.5/13.8 kV
+          </option>
+          <option value="Gestión de Activos CENS">
+            Gestión de Activos CENS
+          </option>
+          <option value="Activos de Uso propiedad de Terceros">
+            Activos de Uso propiedad de Terceros
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          BANCO DEL PROYECTO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Código del banco asociado al proyecto. Se autocompletará
+              automáticamente cuando selecciones un proyecto.
+            </span>
+          </span>
+        </label>
+        <input
+          type="text"
+          id="banco_proyecto"
+          name="banco_proyecto"
+          class="form-input bg-gray-50"
+          placeholder="Se autocompletará según el proyecto"
+          readonly
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          CONTRATO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Contrato específico del proyecto. Determina qué municipios estarán
+              disponibles según la regional asignada.
+            </span>
+          </span>
+        </label>
+        <select id="contrato" name="contrato" class="form-select" required>
+          <option value="">Seleccionar contrato</option>
+          <!-- Las opciones se cargarán dinámicamente según el proyecto seleccionado -->
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Documentos y Archivos - Conductores -->
+  <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-file-alt mr-2"></i>
+      Documentos y Archivos
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- AutoCAD -->
+      <div class="space-y-4">
+        <label class="form-label required">
+          ARCHIVO AUTOCAD
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Archivo de diseño técnico en formato AutoCAD (.dwg, .dxf, .dws).
+              Debe contener el plano de la estructura. Tamaño máximo: 10MB.
+            </span>
+          </span>
+        </label>
+        <div class="flex items-center justify-center w-full">
+          <label
+            for="archivo_cad"
+            class="flex flex-col items-center justify-center w-full h-40 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 dark:border-blue-600 dark:hover:border-blue-500"
+          >
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg
+                class="w-8 h-8 mb-4 text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 16"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                />
+              </svg>
+              <p class="mb-2 text-sm text-blue-600">
+                <span class="font-semibold">Click to upload</span> or drag and
+                drop
+              </p>
+              <p class="text-xs text-blue-500">DWG, DXF, DWS • Máximo 10MB</p>
+            </div>
+            <input
+              id="archivo_cad"
+              name="archivo_cad"
+              type="file"
+              accept=".dwg,.dxf,.dws"
+              class="hidden"
+            />
+          </label>
+        </div>
+        <!-- Preview AutoCAD -->
+        <div id="cad_preview" class="hidden">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+                <span
+                  class="text-sm font-medium text-gray-700"
+                  id="cad_filename"
+                ></span>
+              </div>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-800"
+                onclick="removeFile('archivo_cad')"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KMZ -->
+      <div class="space-y-4">
+        <label class="form-label required">
+          ARCHIVO KMZ (.kmz)
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Sube el archivo de ubicación geográfica de los conductores.
+              Formato aceptado: .kmz (máximo 10MB)
+            </span>
+          </span>
+        </label>
+        <div class="flex items-center justify-center w-full">
+          <label
+            for="archivo_kmz"
+            class="flex flex-col items-center justify-center w-full h-40 border-2 border-green-300 border-dashed rounded-lg cursor-pointer bg-green-50 hover:bg-green-100 dark:border-green-600 dark:hover:border-green-500"
+          >
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg
+                class="w-8 h-8 mb-4 text-green-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 16"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                />
+              </svg>
+              <p class="mb-2 text-sm text-green-600">
+                <span class="font-semibold">Click to upload</span> or drag and
+                drop
+              </p>
+              <p class="text-xs text-green-500">KMZ • Máximo 10MB</p>
+            </div>
+            <input
+              id="archivo_kmz"
+              name="archivo_kmz"
+              type="file"
+              accept=".kmz"
+              class="hidden"
+            />
+          </label>
+        </div>
+        <!-- Preview KMZ -->
+        <div id="kmz_preview" class="hidden">
+          <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <i class="fas fa-map-marked-alt text-green-600 mr-2"></i>
+                <span
+                  class="text-sm font-medium text-gray-700"
+                  id="kmz_filename"
+                ></span>
+              </div>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-800"
+                onclick="removeFile('archivo_kmz')"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Información Técnica -->
+  <div
+    class="bg-white rounded-lg shadow-sm p-8 mb-8"
+    id="seccion-informacion-tecnica"
+  >
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-bolt mr-2"></i>
+      Información Técnica
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="form-group">
+        <label class="form-label required">
+          FECHA DE INSTALACION
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Fecha en la que se instaló. No puede ser posterior a la fecha
+              actual.
+            </span>
+          </span>
+        </label>
+        <input
+          type="date"
+          id="fecha"
+          name="fecha"
+          class="form-input"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          TIPO DE INVERSION
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Tipo de inversión: I y III requieren estructura retirada, II y IV
+              son instalaciones nuevas sin retirar estructura existente.
+            </span>
+          </span>
+        </label>
+        <div class="flex items-start gap-4">
+          <div class="flex-1">
+            <select id="t_inv" name="t_inv" class="form-select" required onchange="handleTipoInversion()">
+              <option value="">Seleccionar</option>
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV">IV</option>
+            </select>
+          </div>
+
+          <!-- Checkbox Montaje Integral -->
+          <div
+            class="flex items-center space-x-2"
+            id="montaje_integral_container"
+          >
+            <input
+              type="checkbox"
+              id="montaje_integral_checkbox"
+              name="montaje_integral"
+              class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+              onchange="toggleMontajeIntegral()"
+            />
+            <label
+              for="montaje_integral_checkbox"
+              class="text-sm text-orange-700 flex items-center gap-1"
+            >
+              <i class="fas fa-tools text-xs"></i>
+              Montaje Integral
+            </label>
+          </div>
+        </div>
+
+        <!-- Texto de ayuda solo para Montaje Integral -->
+        <div class="flex gap-4 mt-1">
+          <div class="flex-1"></div>
+          <div
+            class="text-xs text-gray-500 text-center"
+            id="montaje_integral_help"
+            style="display: none"
+          >
+            Deshabilita campos UC
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          MUNICIPIO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Municipio donde se instalará la estructura. Los municipios
+              disponibles dependen de la regional seleccionada.
+            </span>
+          </span>
+        </label>
+        <select id="municipio" name="municipio" class="form-select" required>
+          <option value="">Seleccionar municipio</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          DEPARTAMENTO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Departamento donde se encuentra el municipio seleccionado. Se
+              autocompletará según el municipio.
+            </span>
+          </span>
+        </label>
+        <input
+          type="text"
+          id="departamento"
+          name="departamento"
+          class="form-input bg-gray-50"
+          placeholder="Se autocompletará según el municipio"
+          readonly
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          REGIONAL
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Regional responsable del proyecto. Se autocompletará según el
+              contrato o municipio seleccionado.
+            </span>
+          </span>
+        </label>
+        <input
+          type="text"
+          id="regional"
+          name="regional"
+          class="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+          placeholder="Se autocompletará según contrato o municipio"
+          readonly
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">DIRECCIÓN</label>
+        <input
+          type="text"
+          id="direccion"
+          name="direccion"
+          class="form-input"
+          placeholder="Dirección completa"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required">
+          CIRCUITO
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Circuito eléctrico (alimentador) al que se conecta la estructura.
+              Se actualiza automáticamente según el municipio seleccionado.
+            </span>
+          </span>
+        </label>
+        <select
+          id="alimentador"
+          name="alimentador"
+          class="form-select"
+          required
+        >
+          <option value="">Seleccionar</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label required" for="estructura_retirada_campo">
+          ESTRUCTURA RETIRADA
+          <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+              Código de la estructura que se retira. Solo se habilita para tipos
+              de inversión I y III. Debe empezar con "Z" seguido de números.
+            </span>
+          </span>
+        </label>
+
+        
+        <div class="flex items-start gap-4">
+          <!-- Campo de entrada -->
+          <div class="flex-1">
+            <input
+              type="text"
+              id="estructura_retirada_campo"
+              name="estructura_retirada_campo"
+              class="form-input bg-white"
+              placeholder="Z10000"
+            />
+          </div>
+          
+          <!-- Checkbox Desmantelado junto al campo -->
+          <div
+            class="flex items-center space-x-2"
+            id="desmantelado_container"
+            style="display: none"
+          >
+            <input
+              type="checkbox"
+              id="desmantelado_checkbox"
+              name="desmantelado"
+              class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+              onchange="toggleDesmantelado()"
+            />
+            <label
+              for="desmantelado_checkbox"
+              class="text-sm text-red-700 flex items-center gap-1 whitespace-nowrap"
+            >
+              <i class="fas fa-exclamation-triangle text-xs"></i>
+              Desmantelado
+            </label>
+          </div>
+        </div>
+        
+        <!-- Texto de ayuda para desmantelado -->
+        <div class="mt-1">
+          <div
+            class="text-xs text-gray-500 text-center"
+            id="desmantelado_help"
+            style="display: none"
+          >
+            Solo habilita: Información del proyecto, Documentos/archivos y Estructura retirada
+          </div>
+        </div>
+      </div>
+
+      <!-- Campos de coordenadas -->
+      <div class="md:col-span-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="form-group">
+            <label class="form-label required" id="longitud_label">
+              LONGITUD
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Longitud (grados decimales) de la ubicación en
+                  Colombia. Rango válido: -79.0 a -66.8 (valores negativos hacia
+                  el oeste).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="longitud"
+              name="longitud"
+              class="form-input"
+              placeholder="-74.0721"
+              step="0.000001"
+              min="-79.0"
+              max="-66.8"
+              required
+              oninput="validateCoordinate(this, 'longitud')"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required" id="latitud_label">
+              LATITUD
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Latitud (grados decimales) de la ubicación en
+                  Colombia. Rango válido: -4.2 a 15.5 (positivo hacia el norte).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="latitud"
+              name="latitud"
+              class="form-input"
+              placeholder="4.7110"
+              step="0.000001"
+              min="-4.2"
+              max="15.5"
+              required
+              oninput="validateCoordinate(this, 'latitud')"
+            />
+          </div>
+
+          <div
+            class="form-group"
+            id="longitud_final_group"
+            style="display: none"
+          >
+            <label class="form-label" id="longitud_final_label">
+              LONGITUD FINAL
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Longitud Final (grados decimales) de la
+                  ubicación final en Colombia. Rango válido: -79.0 a -66.8
+                  (valores negativos hacia el oeste).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="longitud_final"
+              name="longitud_final"
+              class="form-input"
+              placeholder="-74.0721"
+              step="0.000001"
+              min="-79.0"
+              max="-66.8"
+              oninput="validateCoordinate(this, 'longitud')"
+            />
+          </div>
+
+          <div
+            class="form-group"
+            id="latitud_final_group"
+            style="display: none"
+          >
+            <label class="form-label" id="latitud_final_label">
+              LATITUD FINAL
+              <span class="tooltip">
+                <i class="fas fa-question-circle help-icon"></i>
+                <span class="tooltip-content">
+                  Coordenada de Latitud Final (grados decimales) de la ubicación
+                  final en Colombia. Rango válido: -4.2 a 15.5 (positivo hacia
+                  el norte).
+                </span>
+              </span>
+            </label>
+            <input
+              type="number"
+              id="latitud_final"
+              name="latitud_final"
+              class="form-input"
+              placeholder="4.7110"
+              step="0.000001"
+              min="-4.2"
+              max="15.5"
+              oninput="validateCoordinate(this, 'latitud')"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">CANTIDAD TOTAL</label>
+        <input
+          type="number"
+          id="cantidad"
+          name="cantidad"
+          class="form-input bg-gray-100 text-gray-600 cursor-not-allowed"
+          value="1"
+          readonly
+          disabled
+        />
+        <small class="text-xs text-gray-500 mt-1">Valor fijo para estructuras</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">NÚMERO DE CONDUCTORES</label>
+        <input
+          type="text"
+          id="numero_conductores"
+          name="numero_conductores"
+          class="form-input bg-gray-100 text-gray-600 cursor-not-allowed"
+          value="0"
+          readonly
+          disabled
+        />
+        <small class="text-xs text-gray-500 mt-1">Valor fijo para estructuras</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección: Información de Estructuras -->
+  <div
+    class="bg-white rounded-lg shadow-sm p-8 mb-8"
+    id="seccion-informacion-estructuras"
+  >
+    <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+      <i class="fas fa-building mr-2"></i>
+      Información de Estructuras
+    </h2>
+
+    <!-- Contenedor de campos de estructuras -->
+    <div id="form-uc">
+      <!-- Estructura Nueva - Solo Selector UC Jerárquico -->
+      <div class="bg-emerald-50/50 rounded-lg border border-emerald-200 p-6 mb-6">
+        
+        <!-- Selector UC Jerárquico Integrado -->
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-emerald-800 mb-4 flex items-center">
+            <i class="fas fa-cube mr-2"></i>
+            Configuración de Unidad Constructiva
+          </h3>
+          <p class="text-sm text-gray-600 mb-4">
+            Utiliza el selector jerárquico para configurar automáticamente todos los parámetros de la estructura según el tipo de UC seleccionado.
+          </p>
+          
+          <!-- El selector UC jerárquico reemplaza todos los campos individuales -->
+          {% include 'forms/components/uc-selector.html' %}
+        </div>
+
+        <!-- Fotos -->
+        <div class="mt-6">
+          <label class="form-label required">Fotografías</label>
+          <div class="flex items-center justify-center w-full">
+            <label
+              for="fotos"
+              class="flex flex-col items-center justify-center w-full h-40 border-2 border-yellow-300 border-dashed rounded-lg cursor-pointer bg-green-50 hover:bg-green-100 dark:border-green-600 dark:hover:border-green-500"
+            >
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg
+                  class="w-8 h-8 mb-4 text-green-500"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                />
+              </svg>
+              <p class="mb-2 text-sm text-green-600">
+                <span class="font-semibold">Click para subir</span> o arrastra y
+                suelta
+              </p>
+              <p class="text-xs text-green-500">
+                JPG, PNG • Múltiples archivos • Máximo 5MB cada uno
+              </p>
+            </div>
+            <input
+              id="fotos"
+              name="fotos"
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden"
+            />
+          </label>
+        </div>
+        <div
+          id="preview"
+          class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-4"
+        ></div>
+      </div>
+
+      <!-- Botón Agregar Iteración -->
+      <div class="mt-6 flex justify-end">
+        <button
+          type="button"
+          id="agregarIteracion"
+          class="btn-agregar-iteracion px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <i class="fas fa-plus"></i>
+          Agregar Iteración
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de iteraciones -->
+    <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+      <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
+        <i class="fas fa-table mr-2"></i>
+        Registro de Iteraciones
+      </h2>
+
+      <div class="overflow-x-auto rounded-lg border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th
+                colspan="4"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
+              >
+                Estructura Retirada
+              </th>
+              <th
+                colspan="7"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Estructura Nueva
+              </th>
+              <th
+                rowspan="2"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"
+              >
+                Acciones
+              </th>
+            </tr>
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
+              >
+                Material
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
+              >
+                Altura
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
+              >
+                Apoyo
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
+              >
+                UC
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Material
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Altura
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Población
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Disposición
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Apoyo
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                UC
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
+              >
+                Fotos
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-red-50"
+              >
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            id="iterationTableBody"
+            class="bg-white divide-y divide-gray-200"
+          >
+            <!-- Las filas se agregarán dinámicamente aquí -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Fin contenedor form-uc -->
+  </div>
+</div>
+<!-- Fin del wrapper del formulario completo -->
+
+<form id="formEstructuras" method="post" enctype="multipart/form-data">
+  <!-- ...todos los campos del formulario... -->
+  <input type="hidden" id="iteraciones_json" name="iteraciones_json" />
+  <!-- ...botón de envío... -->
+</form>
+
+<script>
+// Array para almacenar las iteraciones
+let iteraciones = [];
+
+// Función para parsear información del UC desde la descripción
+function parseUCFromDescription(ucCode, ucDescription) {
+    if (!ucDescription) return {};
+    
+    const parsed = {
+        material: '',
+        altura: '',
+        poblacion: '',
+        apoyo: '',
+        codigo: ucCode || ''
+    };
+    
+    const desc = ucDescription.toLowerCase();
+    
+    // Extraer material - patrones más específicos
+    if (desc.includes('concreto')) {
+        parsed.material = 'concreto';
+    } else if (desc.includes('metálico') || desc.includes('metalico')) {
+        parsed.material = 'metálico';
+    } else if (desc.includes('madera')) {
+        parsed.material = 'madera';
+    } else if (desc.includes('fibra de vidrio')) {
+        parsed.material = 'fibra de vidrio';
+    }
+    
+    // Extraer altura (buscar patrón "## m")
+    const alturaMatch = ucDescription.match(/(\d+)\s*m/);
+    if (alturaMatch) {
+        parsed.altura = alturaMatch[1];
+    }
+    
+    // Extraer población - patrones mejorados
+    if (desc.includes('urbano')) {
+        parsed.poblacion = 'urbano';
+    } else if (desc.includes('rural')) {
+        parsed.poblacion = 'rural';
+    } else if (desc.includes('circuito doble') || desc.includes('protegida')) {
+        // Circuitos dobles y líneas protegidas suelen ser urbanos
+        parsed.poblacion = 'urbano';
+    } else if (desc.includes('línea aérea desnuda') || desc.includes('circuito sencillo')) {
+        // Líneas aéreas desnudas y circuitos sencillos suelen ser rurales
+        parsed.poblacion = 'rural';
+    }
+    
+    // Extraer apoyo/disposición (suspensión/retención)
+    if (desc.includes('suspensión')) {
+        parsed.apoyo = 'suspensión';
+    } else if (desc.includes('retención')) {
+        parsed.apoyo = 'retención';
+    }
+    
+    console.log(`parseUCFromDescription para ${ucCode}:`, parsed);
+    return parsed;
+}
+
+// Función de debug para inspeccionar el selector UC
+function debugUCSelector() {
+    console.log('=== DEBUG UC SELECTOR ===');
+    
+    // Buscar todos los elementos relacionados con UC
+    const elementos = {
+        'uc_nueva': document.getElementById('uc_nueva'),
+        'descripcion_uc': document.getElementById('descripcion_uc'),
+        'uc-preview': document.querySelector('.uc-preview'),
+        'uc-code-display': document.getElementById('uc-code-display'),
+        'uc-desc-display': document.getElementById('uc-desc-display'),
+        'uc-selector-container': document.getElementById('uc-selector-container')
+    };
+    
+    // Mostrar valores
+    Object.entries(elementos).forEach(([key, elem]) => {
+        if (elem) {
+            console.log(`${key}:`, {
+                value: elem.value || elem.textContent,
+                innerHTML: elem.innerHTML?.substring(0, 200) + '...',
+                attributes: Array.from(elem.attributes || []).map(a => `${a.name}="${a.value}"`)
+            });
+        } else {
+            console.log(`${key}: NO ENCONTRADO`);
+        }
+    });
+    
+    // **NUEVO** - Análisis detallado del preview
+    const previewContainer = document.querySelector('.uc-preview, #uc-preview');
+    if (previewContainer) {
+        console.log('=== ANÁLISIS DETALLADO DEL PREVIEW ===');
+        const textoCompleto = previewContainer.textContent || previewContainer.innerText || '';
+        console.log('Texto completo del preview:', textoCompleto);
+        
+        // Intentar extraer patrones comunes
+        const patrones = {
+            codigo: textoCompleto.match(/([A-Z]\d+[A-Z]?\d*)/),
+            material: textoCompleto.match(/Poste de ([^-]+)/i) || textoCompleto.match(/concreto|madera|metálico|fibra de vidrio/i),
+            altura: textoCompleto.match(/(\d+)\s*m/i),
+            poblacion: textoCompleto.match(/urbano|rural/gi),
+            disposicion: textoCompleto.match(/suspensión|retención/gi)
+        };
+        
+        console.log('Patrones encontrados en preview:', patrones);
+        
+        // Buscar elementos seleccionados dentro del preview
+        const elementosSeleccionados = previewContainer.querySelectorAll('.selected, .active, [data-selected], .highlighted');
+        if (elementosSeleccionados.length > 0) {
+            console.log('Elementos seleccionados en preview:', Array.from(elementosSeleccionados).map(el => ({
+                tag: el.tagName,
+                texto: el.textContent,
+                clases: el.className,
+                atributos: Array.from(el.attributes).map(a => `${a.name}="${a.value}"`).join(', ')
+            })));
+        }
+    }
+    
+    // Buscar campos ocultos relacionados con UC
+    const hiddenInputs = document.querySelectorAll('input[type="hidden"][name*="uc"], input[type="hidden"][id*="uc"]');
+    console.log('Campos ocultos UC:', Array.from(hiddenInputs).map(input => ({
+        id: input.id,
+        name: input.name,
+        value: input.value
+    })));
+    
+    // Buscar selectores
+    const selects = document.querySelectorAll('select[name*="uc"], select[id*="uc"]');
+    console.log('Selectores UC:', Array.from(selects).map(select => ({
+        id: select.id,
+        name: select.name,
+        value: select.value,
+        selectedText: select.selectedOptions[0]?.textContent
+    })));
+    
+    // Buscar todos los elementos que puedan contener datos UC
+    const allInputs = document.querySelectorAll('input, select, textarea');
+    const ucRelated = Array.from(allInputs).filter(input => 
+        input.id?.toLowerCase().includes('uc') || 
+        input.name?.toLowerCase().includes('uc') ||
+        input.className?.toLowerCase().includes('uc')
+    );
+    console.log('Todos los elementos relacionados con UC:', ucRelated.map(elem => ({
+        tag: elem.tagName,
+        id: elem.id,
+        name: elem.name,
+        value: elem.value,
+        className: elem.className
+    })));
+    
+    // **NUEVO** - Probar la extracción de datos en tiempo real
+    console.log('=== PRUEBA DE EXTRACCIÓN EN TIEMPO REAL ===');
+    const datosExtraidos = obtenerDatosUCDesdeSelector();
+    console.log('Datos que se extraerían actualmente:', datosExtraidos);
+}
+
+// Función alternativa para obtener datos del selector UC
+function obtenerDatosUCDesdeSelector() {
+    console.log('=== OBTENIENDO DATOS UC ===');
+    
+    // Esta función intenta múltiples formas de obtener los datos
+    const datos = {
+        material: '',
+        altura: '',
+        poblacion: '',
+        disposicion: '',
+        apoyo: '',
+        codigo: ''
+    };
+    
+    // Método 1: Campos ocultos principales
+    const ucCodigo = document.getElementById('uc_nueva')?.value || '';
+    const ucDescripcion = document.getElementById('descripcion_uc')?.value || '';
+    
+    console.log('Método 1 - Campos principales:', { ucCodigo, ucDescripcion });
+    
+    if (ucCodigo) datos.codigo = ucCodigo;
+    
+    // Método 2: **NUEVO** - Buscar en el preview del selector (MUY IMPORTANTE)
+    const previewContainer = document.querySelector('.uc-preview, #uc-preview, .selected-uc-info');
+    if (previewContainer) {
+        const texto = previewContainer.textContent || previewContainer.innerText || '';
+        console.log('Método 2 - Preview encontrado, texto completo:', texto);
+        
+        // Buscar el código UC en el preview (generalmente aparece como código)
+        const codigoMatch = texto.match(/([A-Z]\d+[A-Z]?\d*)/);
+        if (codigoMatch && !datos.codigo) {
+            datos.codigo = codigoMatch[1];
+            console.log('Código UC encontrado en preview:', codigoMatch[1]);
+        }
+        
+        // Buscar información específica en el texto del preview
+        // Patrón: "Poste de X - Y m - Z - W"
+        const descripcionMatch = texto.match(/Poste de ([^-]+)\s*-\s*(\d+)\s*m\s*-\s*([^-]+)\s*-\s*([^-\n]+)/);
+        if (descripcionMatch) {
+            datos.material = descripcionMatch[1].trim();
+            datos.altura = descripcionMatch[2];
+            datos.poblacion = descripcionMatch[3].trim();
+            datos.disposicion = descripcionMatch[4].trim();
+            datos.apoyo = descripcionMatch[4].trim(); // apoyo = disposición
+            console.log('Datos parseados desde preview:', { 
+                material: datos.material, 
+                altura: datos.altura, 
+                poblacion: datos.poblacion, 
+                disposicion: datos.disposicion 
+            });
+        }
+        
+        // Métodos alternativos de parsing si el formato es diferente
+        if (!datos.material) {
+            // Buscar "material: X" o similar
+            const materialMatch = texto.match(/material[:\s]+([^\n,]+)/i) || 
+                                 texto.match(/concreto|madera|metálico|fibra de vidrio/i);
+            if (materialMatch) {
+                datos.material = materialMatch[1] ? materialMatch[1].trim() : materialMatch[0];
+                console.log('Material encontrado alternativo:', datos.material);
+            }
+        }
+        
+        if (!datos.altura) {
+            // Buscar "X m" o "altura: X"
+            const alturaMatch = texto.match(/(\d+)\s*m/i) || texto.match(/altura[:\s]+(\d+)/i);
+            if (alturaMatch) {
+                datos.altura = alturaMatch[1];
+                console.log('Altura encontrada alternativa:', datos.altura);
+            }
+        }
+        
+        if (!datos.poblacion) {
+            // Buscar urbano/rural
+            if (texto.toLowerCase().includes('urbano')) {
+                datos.poblacion = 'urbano';
+            } else if (texto.toLowerCase().includes('rural')) {
+                datos.poblacion = 'rural';
+            }
+            console.log('Población encontrada alternativa:', datos.poblacion);
+        }
+        
+        if (!datos.disposicion) {
+            // Buscar suspensión/retención
+            if (texto.toLowerCase().includes('suspensión')) {
+                datos.disposicion = 'suspensión';
+                datos.apoyo = 'suspensión';
+            } else if (texto.toLowerCase().includes('retención')) {
+                datos.disposicion = 'retención';
+                datos.apoyo = 'retención';
+            }
+            console.log('Disposición encontrada alternativa:', datos.disposicion);
+        }
+    }
+    
+    // Método 3: Buscar en elementos específicos del preview
+    const ucCodeDisplay = document.getElementById('uc-code-display');
+    const ucDescDisplay = document.getElementById('uc-desc-display');
+    
+    if (ucCodeDisplay && ucCodeDisplay.textContent && !datos.codigo) {
+        datos.codigo = ucCodeDisplay.textContent.trim();
+        console.log('Método 3a - Código desde uc-code-display:', datos.codigo);
+    }
+    
+    if (ucDescDisplay && ucDescDisplay.textContent) {
+        const descripcionCompleta = ucDescDisplay.textContent.trim();
+        console.log('Método 3b - Descripción desde uc-desc-display:', descripcionCompleta);
+        
+        // Parsear la descripción completa
+        const parsed = parseUCFromDescription(datos.codigo, descripcionCompleta);
+        Object.keys(parsed).forEach(key => {
+            if (parsed[key] && !datos[key]) {
+                datos[key] = parsed[key];
+            }
+        });
+    }
+    
+    // Método 4: Buscar en la estructura jerárquica del selector
+    const selectorContainer = document.getElementById('uc-selector-container');
+    if (selectorContainer) {
+        // Buscar elementos seleccionados dentro del contenedor
+        const selectedElements = selectorContainer.querySelectorAll('.selected, .active, [data-selected="true"]');
+        selectedElements.forEach(elem => {
+            const text = elem.textContent || elem.innerText || '';
+            const dataValue = elem.getAttribute('data-value') || elem.getAttribute('data-code') || '';
+            
+            if (dataValue && !datos.codigo) {
+                datos.codigo = dataValue;
+                console.log('Método 4a - Código desde elemento seleccionado:', dataValue);
+            }
+            
+            if (text && text.includes('m')) {
+                const alturaMatch = text.match(/(\d+)\s*m/);
+                if (alturaMatch && !datos.altura) {
+                    datos.altura = alturaMatch[1];
+                    console.log('Método 4b - Altura desde elemento seleccionado:', datos.altura);
+                }
+            }
+        });
+    }
+    
+    // Método 5: Si tenemos UC_MAPPING y un código, usarlo
+    if (window.UC_MAPPING && datos.codigo) {
+        let mappingData = null;
+        
+        // Buscar coincidencia exacta
+        if (window.UC_MAPPING[datos.codigo]) {
+            mappingData = window.UC_MAPPING[datos.codigo];
+            console.log('Método 5 - Coincidencia exacta en UC_MAPPING para', datos.codigo, ':', mappingData);
+        } else {
+            // Buscar códigos similares si no hay coincidencia exacta
+            const codePrefix = datos.codigo.substring(0, 3);
+            const similarCodes = Object.keys(window.UC_MAPPING).filter(code => 
+                code.startsWith(codePrefix)
+            );
+            
+            if (similarCodes.length > 0) {
+                mappingData = window.UC_MAPPING[similarCodes[0]];
+                console.log(`Método 5 - Usando código similar ${similarCodes[0]} para ${datos.codigo}:`, mappingData);
+            }
+        }
+        
+        if (mappingData) {
+            // Parsear los datos del mapping
+            const parsed = parseUCFromDescription(datos.codigo, mappingData);
+            Object.keys(parsed).forEach(key => {
+                if (parsed[key] && !datos[key]) {
+                    datos[key] = parsed[key];
+                    console.log(`Método 5 - Completado ${key} desde UC_MAPPING:`, parsed[key]);
+                }
+            });
+            
+            // Inferir población si no se encontró en el preview
+            if (!datos.poblacion) {
+                // Buscar patrones específicos que indiquen el tipo de población
+                if (mappingData.toLowerCase().includes('línea aérea')) {
+                    // Las líneas aéreas desnudas generalmente son rurales
+                    // Las líneas aéreas con circuito doble pueden ser urbanas
+                    if (mappingData.toLowerCase().includes('circuito doble') || 
+                        mappingData.toLowerCase().includes('protegida') ||
+                        mappingData.toLowerCase().includes('urbano')) {
+                        datos.poblacion = 'urbano';
+                    } else {
+                        datos.poblacion = 'rural';
+                    }
+                    console.log('Método 5 - Población inferida:', datos.poblacion);
+                }
+                
+                // Si aún no tenemos población, usar rural como default para líneas
+                if (!datos.poblacion && mappingData.toLowerCase().includes('línea')) {
+                    datos.poblacion = 'rural';
+                    console.log('Método 5 - Población por defecto (línea):', datos.poblacion);
+                }
+            }
+        }
+    }
+    
+    console.log('Datos finales obtenidos:', datos);
+    return datos;
+}
+
+// Función para capturar los datos de la UC y otros campos - MEJORADA
+function capturarDatosUC() {
+    console.log('=== CAPTURANDO DATOS UC ===');
+    
+    // Usar la función alternativa para obtener datos
+    const datosUC = obtenerDatosUCDesdeSelector();
+    
+    // Capturar fotos
+    const fotosInput = document.getElementById('fotos');
+    let fotos = [];
+    if (fotosInput && fotosInput.files.length > 0) {
+        for (let i = 0; i < fotosInput.files.length; i++) {
+            fotos.push(fotosInput.files[i].name);
+        }
+    }
+
+    // Capturar datos de estructura retirada
+    const retiradaCodigo = document.getElementById('estructura_retirada_campo')?.value || '';
+    
+    // Construir objeto final
+    const resultado = {
+        retirada: {
+            material: '-',
+            altura: '-',
+            apoyo: '-',
+            codigo: retiradaCodigo || '-'
+        },
+        nueva: {
+            material: datosUC.material || '-',
+            altura: datosUC.altura || '-',
+            poblacion: datosUC.poblacion || '-',
+            disposicion: datosUC.disposicion || datosUC.apoyo || '-',
+            apoyo: datosUC.apoyo || datosUC.disposicion || '-',
+            codigo: datosUC.codigo || '-',
+            fotos: fotos
+        }
+    };
+    
+    console.log('Resultado final capturarDatosUC:', resultado);
+    return resultado;
+}
+
+// Función para renderizar la tabla de iteraciones
+function renderizarTablaIteraciones() {
+    const tbody = document.getElementById('iterationTableBody');
+    tbody.innerHTML = '';
+    
+    if (iteraciones.length === 0) {
+        // Mostrar mensaje cuando no hay iteraciones
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="12" class="px-6 py-4 text-center text-gray-500 italic">
+                No hay iteraciones agregadas. Selecciona una UC y haz clic en "Agregar Iteración".
+            </td>
+        `;
+        tbody.appendChild(row);
+        return;
+    }
+    
+    iteraciones.forEach((iter, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-6 py-4">${iter.retirada.material}</td>
+            <td class="px-6 py-4">${iter.retirada.altura}</td>
+            <td class="px-6 py-4">${iter.retirada.apoyo}</td>
+            <td class="px-6 py-4"><span class="font-mono text-xs bg-amber-100 px-2 py-1 rounded">${iter.retirada.codigo}</span></td>
+            <td class="px-6 py-4">${iter.nueva.material}</td>
+            <td class="px-6 py-4">${iter.nueva.altura}${iter.nueva.altura !== '-' ? 'm' : ''}</td>
+            <td class="px-6 py-4">${iter.nueva.poblacion}</td>
+            <td class="px-6 py-4">${iter.nueva.disposicion}</td>
+            <td class="px-6 py-4">${iter.nueva.apoyo}</td>
+            <td class="px-6 py-4"><span class="font-mono text-xs bg-emerald-100 px-2 py-1 rounded">${iter.nueva.codigo}</span></td>
+            <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${iter.nueva.fotos.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                    ${iter.nueva.fotos.length}
+                </span>
+            </td>
+            <td class="px-6 py-4">
+                <button type="button" class="text-red-600 hover:text-red-800 transition-colors" onclick="eliminarIteracion(${idx})" title="Eliminar iteración">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Función para agregar una iteración
+function agregarIteracion() {
+    const datos = capturarDatosUC();
+    
+    // Validación mejorada - verificar si tenemos al menos algo de información UC
+    const tieneInformacionUC = datos.nueva.codigo !== '-' || 
+                              datos.nueva.material !== '-' || 
+                              datos.nueva.altura !== '-';
+    
+    if (!tieneInformacionUC) {
+        alert('Por favor, selecciona una Unidad Constructiva usando el selector jerárquico antes de agregar la iteración.');
+        console.warn('❌ No se encontró información de UC. Ejecutando debug...');
+        debugUCSelector(); // Ejecutar debug automáticamente si hay error
+        return;
+    }
+    
+    // Verificar si tenemos información mínima necesaria
+    if (datos.nueva.codigo === '-' && datos.nueva.material === '-') {
+        const confirmar = confirm('Se detectó información limitada de la UC. ¿Deseas continuar agregando la iteración?');
+        if (!confirmar) {
+            debugUCSelector();
+            return;
+        }
+    }
+    
+    iteraciones.push(datos);
+    renderizarTablaIteraciones();
+    
+    console.log('✅ Iteración agregada correctamente:', datos);
+    console.log('📊 Total de iteraciones:', iteraciones.length);
+    
+    // Opcional: Limpiar el selector de fotos después de agregar
+    const fotosInput = document.getElementById('fotos');
+    if (fotosInput) {
+        fotosInput.value = '';
+        const preview = document.getElementById('preview');
+        if (preview) preview.innerHTML = '';
+    }
+    
+    // Mostrar mensaje de éxito con información de la UC
+    const infoUC = datos.nueva.codigo !== '-' ? 
+                   `UC: ${datos.nueva.codigo}` : 
+                   `Material: ${datos.nueva.material}, Altura: ${datos.nueva.altura}m`;
+    mostrarMensaje(`Iteración agregada correctamente. ${infoUC}`, 'success');
+}
+
+// Función para mostrar mensajes al usuario
+function mostrarMensaje(mensaje, tipo = 'info') {
+    // Crear elemento de mensaje
+    const mensajeEl = document.createElement('div');
+    mensajeEl.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 transition-all duration-300 ${
+        tipo === 'success' ? 'bg-green-500' : 
+        tipo === 'error' ? 'bg-red-500' : 
+        'bg-blue-500'
+    }`;
+    mensajeEl.textContent = mensaje;
+    
+    document.body.appendChild(mensajeEl);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        mensajeEl.remove();
+    }, 3000);
+}
+
+// Función para eliminar una iteración
+function eliminarIteracion(idx) {
+    iteraciones.splice(idx, 1);
+    renderizarTablaIteraciones();
+}
+
+// Evento para el botón Agregar Iteración
+const btnAgregar = document.getElementById('agregarIteracion');
+if (btnAgregar) {
+    btnAgregar.addEventListener('click', agregarIteracion);
+    
+    // Agregar botón de debug
+    const debugBtn = document.createElement('button');
+    debugBtn.textContent = '🔍 Debug UC';
+    debugBtn.type = 'button';
+    debugBtn.className = 'ml-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm';
+    debugBtn.onclick = debugUCSelector;
+    debugBtn.title = 'Inspeccionar elementos del selector UC para debug';
+    
+    // Insertar el botón de debug después del botón agregar
+    btnAgregar.parentElement.appendChild(debugBtn);
+    
+    console.log('✅ Botones de iteración inicializados');
+}
+
+// Serializar iteraciones antes de enviar el formulario
+const formEstructuras = document.getElementById('formEstructuras');
+if (formEstructuras) {
+    formEstructuras.addEventListener('submit', function(e) {
+        if (iteraciones.length === 0) {
+            const confirmacion = confirm('No has agregado ninguna iteración. ¿Deseas continuar sin iteraciones?');
+            if (!confirmacion) {
+                e.preventDefault();
+                return;
+            }
+        }
+        
+        document.getElementById('iteraciones_json').value = JSON.stringify(iteraciones);
+        console.log('📤 Enviando formulario con iteraciones:', iteraciones);
+    });
+}
+
+// Función para validar UC antes de envío
+function validarUCSeleccionado() {
+    const ucCodigo = document.getElementById('uc_nueva')?.value;
+    const ucDescripcion = document.getElementById('descripcion_uc')?.value;
+    
+    if (!ucCodigo && !ucDescripcion) {
+        console.warn('⚠️ No se ha seleccionado ninguna UC');
+        return false;
+    }
+    
+    console.log('✅ UC validado:', { ucCodigo, ucDescripcion });
+    return true;
+}
+
+// Inicializar tabla vacía al cargar y configurar eventos
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Inicializando sistema de iteraciones...');
+    
+    renderizarTablaIteraciones();
+    
+    // Verificar que los elementos necesarios existan
+    const elementosNecesarios = [
+        'agregarIteracion',
+        'iterationTableBody',
+        'uc_nueva',
+        'descripcion_uc'
+    ];
+    
+    const elementosFaltantes = elementosNecesarios.filter(id => !document.getElementById(id));
+    
+    if (elementosFaltantes.length > 0) {
+        console.error('❌ Elementos faltantes:', elementosFaltantes);
+    } else {
+        console.log('✅ Todos los elementos necesarios están presentes');
+    }
+    
+    // Agregar listener para cambios en el selector UC
+    const ucNueva = document.getElementById('uc_nueva');
+    if (ucNueva) {
+        ucNueva.addEventListener('change', function() {
+            console.log('🔄 UC cambiado:', this.value);
+            validarUCSeleccionado();
+        });
+    }
+    
+    console.log('✅ Sistema de iteraciones inicializado correctamente');
+});
+</script>

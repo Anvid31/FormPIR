@@ -69,6 +69,18 @@ coverage.xml
 secrets.json
 .secrets/
 
-# Oracle Client
-instantclient*/
-oracle/
+# Logs y archivos temporales
+logs/
+*.log
+*.log.*
+
+# Base de datos SQLite (si se usa para testing)
+db.sqlite3
+*.sqlite3
+
+# Archivos de cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python

@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
     equipo_contratista = models.CharField(max_length=100, blank=True, null=True)
     regional_asignada = models.CharField(max_length=100, blank=True, null=True)
     departamento_asignado = models.CharField(max_length=100, blank=True, null=True)
-    fecha_ultimo_acceso = models.DateTimeField(auto_now=True)
+    fecha_ultimo_acceso = models.DateTimeField(auto_now=True, null=True, blank=True)
     activo = models.BooleanField(default=True)
     
     class Meta:
@@ -46,6 +46,10 @@ class FormularioGlobal(models.Model):
     barrio_vereda = models.CharField(max_length=100, blank=True, null=True)
     nivel_tension = models.CharField(max_length=50, blank=True, null=True)
     circuito = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Campos de tipos de inversión - TEMPORALMENTE COMENTADOS HASTA MIGRACIÓN
+    # montaje_integral = models.BooleanField(default=False, help_text="Montaje integral - Deshabilita campos UC")
+    # desmantelado = models.BooleanField(default=False, help_text="Desmantelado - Solo estructura retirada habilitada")
     
     # Sistema semáforo
     estado_actual = models.CharField(max_length=30, choices=ESTADO_CHOICES, default='contratista')

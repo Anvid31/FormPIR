@@ -1,22 +1,33 @@
 // autocompletion.js - Sistema de autocompletado del formulario DESS
+// Versión 2.0 - Refactorizado para usar utilidades centralizadas
 
 // Variables globales para los elementos del DOM
 let ucSelect, descripcionUc;
 
+// Variable para rastrear interacción del usuario
+window.userHasInteracted = false;
+
+// Función para marcar que el usuario ha interactuado
+function markUserInteraction() {
+  if (!window.userHasInteracted) {
+    window.userHasInteracted = true;
+  }
+}
+
 // Función para inicializar el autocompletado
 function initializeAutocompletion() {
-  // Buscar elementos con diferentes IDs según la sección
-  ucSelect = document.getElementById("uc_nueva") || document.getElementById("uc_codigo");
-  descripcionUc = document.getElementById("descripcion_uc");
+  // Buscar elementos con diferentes IDs según la sección usando utilidades
+  ucSelect = window.ACUtils?.getElement("uc_nueva") || window.ACUtils?.getElement("uc_codigo");
+  descripcionUc = window.ACUtils?.getElement("descripcion_uc");
 
   // Llenar el select de UC con el mapping completo si es un select
   if (ucSelect && ucSelect.tagName === 'SELECT' && typeof UC_MAPPING !== 'undefined') {
-    for (const [codigo, descripcion] of Object.entries(UC_MAPPING)) {
-      const option = document.createElement("option");
-      option.value = codigo;
-      option.textContent = codigo;
-      ucSelect.appendChild(option);
-    }
+    const ucOptions = Object.entries(UC_MAPPING).map(([codigo, descripcion]) => ({
+      value: codigo,
+      text: codigo
+    }));
+    
+    window.ACUtils?.populateSelect(ucSelect, ucOptions, "Seleccionar UC");
   }
 
   // Inicializar estados de campos autocompletados como deshabilitados
@@ -25,230 +36,131 @@ function initializeAutocompletion() {
 
 // Función para inicializar campos autocompletados como deshabilitados
 function initializeDisabledFields() {
-  const regionalInput = document.getElementById("regional");
-  const departamentoInput = document.getElementById("departamento");
-  const alimentadorSelect = document.getElementById("alimentador");
+  const fieldsToDisable = ["regional", "departamento", "alimentador"];
+  const placeholders = {
+    "regional": "Se autocompletará según contrato o municipio",
+    "departamento": "Se autocompletará según el municipio"
+  };
 
-  // Deshabilitar regional hasta que se seleccione un contrato o municipio
-  if (regionalInput) {
-    regionalInput.disabled = true;
-    regionalInput.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-    regionalInput.placeholder = "Se autocompletará según contrato o municipio";
-  }
-
-  // Deshabilitar departamento hasta que se seleccione un municipio
-  if (departamentoInput) {
-    departamentoInput.disabled = true;
-    departamentoInput.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-    departamentoInput.placeholder = "Se autocompletará según el municipio";
-  }
-
-  // Deshabilitar circuitos hasta que se seleccione un municipio
-  if (alimentadorSelect) {
-    alimentadorSelect.disabled = true;
-    alimentadorSelect.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-  }
-
-  console.log("Campos autocompletados inicializados como deshabilitados");
+  fieldsToDisable.forEach(fieldId => {
+    const field = window.ACUtils?.getElement(fieldId);
+    if (field) {
+      window.ACUtils?.updateFieldVisualState(field, 'disabled');
+      if (placeholders[fieldId]) {
+        field.placeholder = placeholders[fieldId];
+      }
+    }
+  });
 }
 
-// Auto-completar UC basado en selecciones de estructura nueva
+// Auto-completar UC - Sistema simplificado usando selector UC jerárquico
 function autoCompleteUC() {
-  const material = document.getElementById("material_nueva").value;
-  const altura = document.getElementById("altura_nueva").value;
-  const poblacion = document.getElementById("poblacion_nueva").value;
-  const disposicion = document.getElementById("disposicion_nueva").value;
-  const tipoRed = document.getElementById("tipo_red_nueva").value;
-  const apoyo = document.getElementById("apoyo_nueva").value;
-  const peso = document.getElementById("peso_nueva").value;
-  const configuracion = document.getElementById("configuracion_nueva").value;
-  const circuito = document.getElementById("circuito_nueva").value;
-  const linea = document.getElementById("linea_nueva").value;
-
-  console.log("AutoComplete UC - Valores obtenidos:", {
-    apoyo, material, altura, poblacion, disposicion, tipoRed, peso, configuracion, circuito, linea
-  });
-
-  // Determinar qué función de búsqueda usar según el tipo de apoyo y nivel
-  let suggestedUC = null;
+  console.log("⚠️ autoCompleteUC() llamado - Los campos individuales fueron eliminados");
+  console.log("✅ El selector UC jerárquico maneja automáticamente la generación de códigos UC");
   
-  if (typeof getUCFromAdvancedStructure === 'function') {
-    suggestedUC = getUCFromAdvancedStructure({
-      apoyo, material, altura, poblacion, disposicion, tipoRed, 
-      peso, configuracion, circuito, linea
-    });
+  // Los campos individuales ya no existen:
+  // - material_nueva, altura_nueva, poblacion_nueva, disposicion_nueva
+  // - tipo_red_nueva, apoyo_nueva, peso_nueva, configuracion_nueva
+  // - circuito_nueva, linea_nueva
+  
+  // Solo verificar si existe el campo UC para log
+  const ucField = findElementInCurrentSection("uc") || findElementInCurrentSection("uc_nueva");
+  if (ucField) {
+    console.log(`📍 Campo UC encontrado: ${ucField.id} con valor: ${ucField.value}`);
   }
-
-  console.log("UC sugerido:", suggestedUC);
-
-  if (suggestedUC && typeof UC_MAPPING !== 'undefined' && ucSelect) {
-    // Verificar si ucSelect existe antes de usarlo
-    if (ucSelect) {
-      ucSelect.disabled = false;
-      ucSelect.value = suggestedUC;
-      ucSelect.disabled = true;
-
-      // Agregar clase visual para indicar que está autocompletado
-      ucSelect.classList.add("bg-green-50", "border-green-300");
-
-      console.log(
-        "UC autocompletado exitosamente:",
-        suggestedUC,
-        "->",
-        UC_MAPPING[suggestedUC]
-      );
-    }
-  } else {
-    // Si no todos los campos están llenos, limpiar UC
-    console.log("No se encontró UC para la combinación");
-    if (ucSelect) {
-      ucSelect.value = "";
-      ucSelect.classList.remove("bg-green-50", "border-green-300");
-    }
-  }
+  
+  return; // Salir temprano - el selector jerárquico maneja todo
 }
 
-// Función para mostrar/ocultar campos según el nivel de tensión y tipo de apoyo
+// Función simplificada - Los campos individuales fueron eliminados
 function toggleStructureFields() {
-  const nivelTension = document.getElementById("nivel_tension").value;
-  const apoyo = document.getElementById("apoyo_nueva").value;
+  console.log("⚠️ toggleStructureFields() llamado - Campos individuales eliminados");
+  console.log("✅ El selector UC jerárquico maneja automáticamente todas las opciones");
   
-  // Elementos de campos condicionales
-  const pesoGroup = document.getElementById("peso_group");
-  const configuracionGroup = document.getElementById("configuracion_group");
-  const circuitoGroup = document.getElementById("circuito_group");
-  const lineaGroup = document.getElementById("linea_group");
-  const poblacionGroup = document.getElementById("poblacion_group");
-  const tipoRedGroup = document.getElementById("tipo_red_group");
-
-  console.log("Toggle Structure Fields - Nivel:", nivelTension, "Apoyo:", apoyo);
-
-  // Ocultar todos los campos por defecto
-  if (pesoGroup) pesoGroup.style.display = "none";
-  if (configuracionGroup) configuracionGroup.style.display = "none";
-  if (circuitoGroup) circuitoGroup.style.display = "none";
-  if (lineaGroup) lineaGroup.style.display = "none";
+  // Los grupos de campos individuales ya no existen:
+  // - peso_group, configuracion_group, circuito_group, linea_group
+  // - poblacion_group, tipo_red_group
+  // - Campos: apoyo_nueva, material_nueva, altura_nueva, etc.
   
-  // Manejar campos específicos según el nivel de tensión
-  if (nivelTension === "1") {
-    // N1 - Solo postes simples
-    if (poblacionGroup) poblacionGroup.style.display = "block";
-    if (tipoRedGroup) tipoRedGroup.style.display = "block";
-    updateApoyoOptions(["Poste"]);
-  } else if (nivelTension === "2") {
-    // N2 - Postes con peso
-    if (poblacionGroup) poblacionGroup.style.display = "none";
-    if (tipoRedGroup) tipoRedGroup.style.display = "none";
-    if (pesoGroup) pesoGroup.style.display = "block";
-    updateApoyoOptions(["Poste"]);
-  } else if (nivelTension === "3") {
-    // N3 - Postes, Estructuras, Torrecillas
-    if (poblacionGroup) poblacionGroup.style.display = "none";
-    if (tipoRedGroup) tipoRedGroup.style.display = "none";
-    
-    if (apoyo === "Poste") {
-      if (pesoGroup) pesoGroup.style.display = "block";
-      if (configuracionGroup) configuracionGroup.style.display = "block";
-      if (circuitoGroup) circuitoGroup.style.display = "block";
-    } else if (apoyo === "Estructura") {
-      if (pesoGroup) pesoGroup.style.display = "block";
-    } else if (apoyo === "Torrecilla") {
-      if (circuitoGroup) circuitoGroup.style.display = "block";
-    }
-    updateApoyoOptions(["Poste", "Estructura", "Torrecilla"]);
-  } else if (nivelTension === "4") {
-    // N4 - Postes, Estructuras, Torres
-    if (poblacionGroup) poblacionGroup.style.display = "none";
-    if (tipoRedGroup) tipoRedGroup.style.display = "none";
-    
-    if (apoyo === "Poste") {
-      if (lineaGroup) lineaGroup.style.display = "block";
-      if (circuitoGroup) circuitoGroup.style.display = "block";
-    } else if (apoyo === "Estructura") {
-      if (lineaGroup) lineaGroup.style.display = "block";
-      if (circuitoGroup) circuitoGroup.style.display = "block";
-    } else if (apoyo === "Torre") {
-      if (lineaGroup) lineaGroup.style.display = "block";
-      if (circuitoGroup) circuitoGroup.style.display = "block";
-    }
-    updateApoyoOptions(["Poste", "Estructura", "Torre"]);
-  }
-
-  // Limpiar UC cuando cambian los campos
-  autoCompleteUC();
+  return; // Salir temprano - el selector jerárquico maneja todo
 }
 
-// Función para actualizar las opciones del campo apoyo
-function updateApoyoOptions(allowedOptions = null) {
-  const apoyoSelect = document.getElementById("apoyo_nueva");
-  if (!apoyoSelect) return;
+// Función para mostrar/ocultar campos SIN ejecutar autocompletado automático - SIMPLIFICADA
+function toggleStructureFieldsWithoutAutoComplete() {
+  console.log("⚠️ toggleStructureFieldsWithoutAutoComplete() llamado - Campos individuales eliminados");
+  console.log("✅ El selector UC jerárquico maneja automáticamente todas las opciones");
+  
+  // Los campos individuales ya no existen, no hay nada que ocultar/mostrar
+  return; // Salir temprano - el selector jerárquico maneja todo
+}
 
-  // Si no se proporcionan opciones, determinarlas según el nivel de tensión
-  if (!allowedOptions) {
-    const nivelTension = document.getElementById("nivel_tension").value;
+// Función simplificada - Los campos individuales de apoyo fueron eliminados
+function updateApoyoOptions(allowedOptions = null) {
+  console.log("⚠️ updateApoyoOptions() llamado - Campo apoyo_nueva eliminado");
+  console.log("✅ El selector UC jerárquico maneja automáticamente las opciones de apoyo");
+  
+  // El campo apoyo_nueva ya no existe
+  return; // Salir temprano - el selector jerárquico maneja todo
+}
+
+// Función universal para encontrar elementos en la sección activa
+function findElementInCurrentSection(elementId) {
+  // Primero intentar búsqueda global por ID (para compatibilidad con estructuras)
+  let element = document.getElementById(elementId);
+  if (element) {
+    return element;
+  }
+  
+  // Si no se encuentra globalmente, buscar en la sección activa
+  const currentSection = window.currentStep || 'estructuras';
+  
+  // Buscar en sección con atributo data-form-section
+  const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
+  if (activeSection) {
+    element = activeSection.querySelector(`#${elementId}`);
+    if (element) {
+      return element;
+    }
     
-    switch(nivelTension) {
-      case "1":
-        allowedOptions = ["Poste"];
-        break;
-      case "2":
-        allowedOptions = ["Poste"];
-        break;
-      case "3":
-        allowedOptions = ["Poste", "Estructura", "Torrecilla"];
-        break;
-      case "4":
-        allowedOptions = ["Poste", "Estructura", "Torre"];
-        break;
-      default:
-        allowedOptions = ["Poste", "Estructura", "Torrecilla", "Torre"];
-        break;
+    // También buscar por name attribute como respaldo
+    element = activeSection.querySelector(`[name="${elementId}"]`);
+    if (element) {
+      return element;
     }
   }
-
-  const currentValue = apoyoSelect.value;
   
-  // Limpiar opciones actuales (excepto la primera opción vacía)
-  apoyoSelect.innerHTML = '<option value="">Seleccionar apoyo</option>';
+  // Buscar en cualquier contenedor activo visible
+  const visibleContainers = document.querySelectorAll('[id*="form"], [class*="form"], [data-step], .active');
   
-  // Agregar las opciones permitidas
-  allowedOptions.forEach(option => {
-    const optionElement = document.createElement("option");
-    optionElement.value = option;
-    optionElement.textContent = option;
-    apoyoSelect.appendChild(optionElement);
-  });
-
-  // Restaurar valor si aún es válido
-  if (allowedOptions.includes(currentValue)) {
-    apoyoSelect.value = currentValue;
+  for (const container of visibleContainers) {
+    if (container.style.display !== 'none' && !container.hidden) {
+      element = container.querySelector(`#${elementId}`);
+      if (element) {
+        return element;
+      }
+      
+      element = container.querySelector(`[name="${elementId}"]`);
+      if (element) {
+        return element;
+      }
+    }
   }
+  
+  return null;
 }
 
 // Función para actualizar contratos según proyecto seleccionado
 function actualizarContratos() {
-  // Obtener la sección activa
-  const currentSection = window.currentStep || 'estructuras';
+  // Buscar elementos usando búsqueda directa primero, luego universal
+  const nombreField = document.getElementById("nombre") || findElementInCurrentSection("nombre");
+  const contratoSelect = document.getElementById("contrato") || findElementInCurrentSection("contrato");
   
-  // Buscar elementos en la sección activa
-  let nombreProyecto, contratoSelect;
-  
-  if (currentSection === 'estructuras') {
-    // Para estructuras, usar búsqueda por ID como siempre
-    nombreProyecto = document.getElementById("nombre").value;
-    contratoSelect = document.getElementById("contrato");
-  } else {
-    // Para otras secciones, buscar dentro de la sección activa
-    const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
-    if (!activeSection) return;
-    
-    const nombreField = activeSection.querySelector('#nombre');
-    contratoSelect = activeSection.querySelector('#contrato');
-    
-    if (!nombreField || !contratoSelect) return;
-    
-    nombreProyecto = nombreField.value;
+  if (!nombreField || !contratoSelect) {
+    console.log("No se encontraron elementos nombre o contrato");
+    return;
   }
+  
+  const nombreProyecto = nombreField.value;
 
   // Limpiar opciones existentes (excepto la primera)
   contratoSelect.innerHTML =
@@ -284,39 +196,37 @@ function actualizarContratos() {
     contratoSelect.classList.remove("bg-green-50", "border-green-300");
   }
 
-  // Limpiar selects dependientes
-  document.getElementById("municipio").innerHTML =
-    '<option value="">Seleccionar municipio</option>';
-  document
-    .getElementById("municipio")
-    .classList.remove("bg-blue-50", "border-blue-300");
-  document.getElementById("alimentador").innerHTML =
-    '<option value="">Seleccionar alimentador</option>';
-  document
-    .getElementById("alimentador")
-    .classList.remove("bg-yellow-50", "border-yellow-300");
-
-  // Limpiar departamento y regional
-  const departamentoInput = document.getElementById("departamento");
-  const regionalInput = document.getElementById("regional");
-  const alimentadorSelect = document.getElementById("alimentador");
+  // Limpiar selects dependientes usando búsqueda híbrida
+  const municipioSelect = document.getElementById("municipio") || findElementInCurrentSection("municipio");
+  const alimentadorSelect = document.getElementById("alimentador") || findElementInCurrentSection("alimentador");
+  const departamentoInput = document.getElementById("departamento") || findElementInCurrentSection("departamento");
+  const regionalInput = document.getElementById("regional") || findElementInCurrentSection("regional");
   
+  if (municipioSelect) {
+    municipioSelect.innerHTML = '<option value="">Seleccionar municipio</option>';
+    municipioSelect.classList.remove("bg-blue-50", "border-blue-300");
+  }
+  
+  if (alimentadorSelect) {
+    alimentadorSelect.innerHTML = '<option value="">Seleccionar alimentador</option>';
+    alimentadorSelect.classList.remove("bg-yellow-50", "border-yellow-300");
+    alimentadorSelect.disabled = true;
+    alimentadorSelect.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
+    alimentadorSelect.classList.remove("bg-green-50", "border-green-300");
+  }
+
   if (departamentoInput) {
     departamentoInput.value = "";
     departamentoInput.disabled = true;
     departamentoInput.classList.remove("bg-green-50", "border-green-300");
     departamentoInput.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
   }
+  
   if (regionalInput) {
     regionalInput.value = "";
     regionalInput.disabled = true;
     regionalInput.classList.remove("bg-green-50", "border-green-300");
     regionalInput.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-  }
-  if (alimentadorSelect) {
-    alimentadorSelect.disabled = true;
-    alimentadorSelect.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-    alimentadorSelect.classList.remove("bg-green-50", "border-green-300");
   }
 
   // Actualizar regional y municipios según el contrato por defecto (si hay uno)
@@ -329,39 +239,26 @@ function actualizarContratos() {
 
 // Función para autocompletar banco del proyecto
 function autoCompleteBanco() {
-  // Obtener la sección activa
-  const currentSection = window.currentStep || 'estructuras';
+  // Buscar elementos usando búsqueda híbrida
+  const nombreField = document.getElementById("nombre") || findElementInCurrentSection("nombre");
+  const bancoProyecto = document.getElementById("banco_proyecto") || findElementInCurrentSection("banco_proyecto");
   
-  // Buscar elementos en la sección activa
-  let nombreProyecto, bancoProyecto;
-  
-  if (currentSection === 'estructuras') {
-    // Para estructuras, usar búsqueda por ID como siempre
-    nombreProyecto = document.getElementById("nombre").value;
-    bancoProyecto = document.getElementById("banco_proyecto");
-  } else {
-    // Para otras secciones, buscar dentro de la sección activa
-    const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
-    if (!activeSection) return;
-    
-    const nombreField = activeSection.querySelector('#nombre');
-    bancoProyecto = activeSection.querySelector('#banco_proyecto');
-    
-    if (!nombreField || !bancoProyecto) return;
-    
-    nombreProyecto = nombreField.value;
+  if (!nombreField || !bancoProyecto) {
+    console.log("No se encontraron elementos nombre o banco_proyecto");
+    return;
   }
 
-  // Verificar primero el mapeo completo
+  const nombreProyecto = nombreField.value;
+
   if (nombreProyecto && typeof PROYECTO_COMPLETO_MAPPING !== 'undefined' && PROYECTO_COMPLETO_MAPPING[nombreProyecto]) {
     const proyectoData = PROYECTO_COMPLETO_MAPPING[nombreProyecto];
-    bancoProyecto.value = proyectoData.banco;
-    bancoProyecto.classList.add("bg-green-50", "border-green-300");
-  }
-  // Fallback al mapeo simple
-  else if (nombreProyecto && PROYECTO_BANCO_MAPPING[nombreProyecto]) {
-    bancoProyecto.value = PROYECTO_BANCO_MAPPING[nombreProyecto];
-    bancoProyecto.classList.add("bg-green-50", "border-green-300");
+    const banco = proyectoData.banco;
+    
+    bancoProyecto.value = banco;
+    bancoProyecto.disabled = true;
+    bancoProyecto.classList.add("bg-green-50", "border-green-300", "text-gray-700");
+    
+    console.log("Banco autocompletado:", banco);
   } else {
     bancoProyecto.value = "";
     bancoProyecto.classList.remove("bg-green-50", "border-green-300");
@@ -373,9 +270,14 @@ function autoCompleteBanco() {
 
 // Función para autocompletar regional basado en contrato seleccionado
 function autoCompleteRegional() {
-  const contratoSeleccionado = document.getElementById("contrato").value;
-  const nombreProyecto = document.getElementById("nombre").value;
-  const regionalInput = document.getElementById("regional");
+  const contratoField = findElementInCurrentSection("contrato");
+  const regionalInput = findElementInCurrentSection("regional");
+  const nombreField = findElementInCurrentSection("nombre");
+  
+  if (!contratoField || !regionalInput || !nombreField) return;
+  
+  const contratoSeleccionado = contratoField.value;
+  const nombreProyecto = nombreField.value;
 
   console.log("AutoCompleteRegional - Contrato seleccionado:", contratoSeleccionado);
 
@@ -422,9 +324,14 @@ function autoCompleteRegional() {
 
 // Función para actualizar municipios por contrato
 function actualizarMunicipiosPorContrato() {
-  const contratoSeleccionado = document.getElementById("contrato").value;
-  const municipioSelect = document.getElementById("municipio");
-  const nombreProyecto = document.getElementById("nombre").value;
+  const contratoField = findElementInCurrentSection("contrato");
+  const municipioSelect = findElementInCurrentSection("municipio");
+  const nombreField = findElementInCurrentSection("nombre");
+  
+  if (!contratoField || !municipioSelect || !nombreField) return;
+  
+  const contratoSeleccionado = contratoField.value;
+  const nombreProyecto = nombreField.value;
 
   console.log(
     "ActualizarMunicipiosPorContrato - Contrato seleccionado:",
@@ -551,17 +458,21 @@ function actualizarMunicipiosPorContrato() {
   }
 
   // Limpiar selects dependientes
-  document.getElementById("alimentador").innerHTML =
-    '<option value="">Seleccionar alimentador</option>';
-  document
-    .getElementById("alimentador")
-    .classList.remove("bg-yellow-50", "border-yellow-300");
+  const alimentadorSelect = findElementInCurrentSection("alimentador");
+  if (alimentadorSelect) {
+    alimentadorSelect.innerHTML = '<option value="">Seleccionar alimentador</option>';
+    alimentadorSelect.classList.remove("bg-yellow-50", "border-yellow-300");
+  }
 }
 
 // Función para actualizar circuitos según municipio seleccionado
 function actualizarCircuitos() {
-  const municipioSeleccionado = document.getElementById("municipio").value;
-  const alimentadorSelect = document.getElementById("alimentador");
+  const municipioField = findElementInCurrentSection("municipio");
+  const alimentadorSelect = findElementInCurrentSection("alimentador");
+  
+  if (!municipioField || !alimentadorSelect) return;
+  
+  const municipioSeleccionado = municipioField.value;
 
   console.log(
     "ActualizarCircuitos - Municipio seleccionado:",
@@ -624,9 +535,13 @@ function actualizarCircuitos() {
 
 // Función para autocompletar departamento y regional basado en municipio
 function autoCompleteDepartamento() {
-  const municipioSeleccionado = document.getElementById("municipio").value;
-  const departamentoInput = document.getElementById("departamento");
-  const regionalInput = document.getElementById("regional");
+  const municipioField = findElementInCurrentSection("municipio");
+  const departamentoInput = findElementInCurrentSection("departamento");
+  const regionalInput = findElementInCurrentSection("regional");
+  
+  if (!municipioField || !departamentoInput || !regionalInput) return;
+  
+  const municipioSeleccionado = municipioField.value;
 
   console.log("AutoCompleteDepartamento - Municipio seleccionado:", municipioSeleccionado);
 
@@ -688,76 +603,13 @@ function autoCompleteMunicipio() {
   autoCompleteDepartamento();
 }
 
-// Función para actualizar alturas según nivel de tensión
+// Función simplificada - Campo altura_nueva eliminado
 function actualizarAlturasPorTension() {
-  const nivelTension = document.getElementById("nivel_tension").value;
-  const alturaSelect = document.getElementById("altura_nueva");
-
-  console.log("Nivel de tensión seleccionado:", nivelTension);
-
-  // Limpiar opciones existentes (excepto la primera)
-  alturaSelect.innerHTML = '<option value="">Seleccionar altura</option>';
-
-  let alturasPermitidas = [];
-
-  // Definir alturas según nivel de tensión
-  switch (nivelTension) {
-    case "1": // Baja Tensión
-      alturasPermitidas = [
-        { value: "8", text: "8 m" },
-        { value: "10", text: "10 m" }
-      ];
-      break;
-    case "2": // Media Tensión
-      alturasPermitidas = [
-        { value: "10", text: "10 m" },
-        { value: "12", text: "12 m" },
-        { value: "14", text: "14 m" }
-      ];
-      break;
-    case "3": // Alta Tensión
-      alturasPermitidas = [
-        { value: "14", text: "14 m" },
-        { value: "16", text: "16 m" }
-      ];
-      break;
-    default:
-      // Si no hay nivel seleccionado, mostrar todas las opciones
-      alturasPermitidas = [
-        { value: "8", text: "8 m" },
-        { value: "9", text: "9 m" },
-        { value: "10", text: "10 m" },
-        { value: "11", text: "11 m" },
-        { value: "12", text: "12 m" },
-        { value: "13", text: "13 m" },
-        { value: "14", text: "14 m" },
-        { value: "15", text: "15 m" },
-        { value: "16", text: "16 m" }
-      ];
-  }
-
-  // Agregar las opciones permitidas
-  alturasPermitidas.forEach(altura => {
-    const option = document.createElement("option");
-    option.value = altura.value;
-    option.textContent = altura.text;
-    alturaSelect.appendChild(option);
-  });
-
-  // Agregar indicador visual si hay filtro aplicado
-  if (nivelTension) {
-    alturaSelect.classList.add("bg-blue-50", "border-blue-300");
-    console.log(`Alturas filtradas para tensión nivel ${nivelTension}:`, alturasPermitidas.length, "opciones");
-  } else {
-    alturaSelect.classList.remove("bg-blue-50", "border-blue-300");
-  }
-
-  // Limpiar selección actual si ya no es válida
-  const valorActual = alturaSelect.value;
-  if (valorActual && !alturasPermitidas.find(a => a.value === valorActual)) {
-    alturaSelect.value = "";
-    console.log("Altura actual ya no es válida, limpiando selección");
-  }
+  console.log("⚠️ actualizarAlturasPorTension() llamado - Campo altura_nueva eliminado");
+  console.log("✅ El selector UC jerárquico maneja automáticamente las alturas");
+  
+  // El campo altura_nueva ya no existe
+  return; // Salir temprano - el selector jerárquico maneja todo
 }
 
 // =============================================================================
@@ -794,48 +646,344 @@ function toggleMontajeIntegral(seccionPrefix = '') {
 }
 
 /**
- * Alterna el estado del modo Desmantelado
- * Deshabilita información de estructuras Y información técnica, solo deja estructura retirada
- * Recibe prefijo de sección opcional para formularios modulares
+ * Toggle Desmantelado - Deshabilita TODAS las secciones excepto estructura retirada
+ * COMENTADO - Esta función está duplicada en tipos-inversion.js y causa conflictos
  */
-function toggleDesmantelado(seccionPrefix = '') {
-  const checkboxId = seccionPrefix ? `${seccionPrefix}_desmantelado_checkbox` : "desmantelado_checkbox";
-  const checkbox = document.getElementById(checkboxId);
+/*
+function toggleDesmantelado() {
+  const checkbox = document.getElementById("desmantelado_checkbox");
   desmanteladoActivo = checkbox ? checkbox.checked : false;
   
-  const estructuraRetiradaId = seccionPrefix ? `${seccionPrefix}_estructura_retirada_campo` : "estructura_retirada_campo";
-  const estructuraRetirada = document.getElementById(estructuraRetiradaId);
-  
   if (desmanteladoActivo) {
-    // Deshabilitar información de estructuras e información técnica
-    deshabilitarInformacionEstructuras(true, seccionPrefix);
-    deshabilitarInformacionTecnica(true, seccionPrefix);
+    console.log("🚨 DESMANTELADO ACTIVADO - Iniciando deshabilitación por secciones");
     
-    // Resaltar el campo estructura retirada como el único habilitado
-    if (estructuraRetirada) {
-      estructuraRetirada.classList.add("bg-yellow-100", "border-yellow-400", "ring-2", "ring-yellow-200");
-      estructuraRetirada.disabled = false; // Asegurar que esté habilitado
-      estructuraRetirada.focus(); // Enfocar el campo
+    // Deshabilitar secciones específicas
+    deshabilitarSeccionInformacionProyecto(true);
+    deshabilitarSeccionDocumentosArchivos(true);
+    deshabilitarSeccionInformacionTecnica(true);
+    deshabilitarSeccionInformacionEstructuras(true);
+    
+    // FORZAR que estos campos SIEMPRE estén habilitados
+    setTimeout(() => {
+      forzarCamposEsencialesHabilitados();
+    }, 200); // Dar tiempo a que se ejecuten las otras funciones primero
+    
+    // Activar monitor continuo
+    activarMonitorCamposEsenciales();
+    
+    // Mostrar mensaje de estado
+    const mensaje = document.getElementById('desmantelado-mensaje');
+    if (mensaje) {
+      mensaje.classList.remove('hidden');
     }
     
-    console.log("Modo Desmantelado activado - Solo campo estructura_retirada_campo disponible");
+    console.log("🚨 Desmantelado COMPLETADO - Secciones deshabilitadas excepto campos específicos");
+    
   } else {
-    // Habilitar información de estructuras e información técnica
-    deshabilitarInformacionEstructuras(false, seccionPrefix);
-    deshabilitarInformacionTecnica(false, seccionPrefix);
+    console.log("✅ DESMANTELADO DESACTIVADO - Habilitando todas las secciones");
     
-    // Remover resaltado del campo estructura retirada
+    // Desactivar monitor
+    desactivarMonitorCamposEsenciales();
+    
+    // Habilitar todas las secciones
+    deshabilitarSeccionInformacionProyecto(false);
+    deshabilitarSeccionDocumentosArchivos(false);
+    deshabilitarSeccionInformacionTecnica(false);
+    deshabilitarSeccionInformacionEstructuras(false);
+    
+    // Quitar estilos especiales de estructura retirada
+    const estructuraRetirada = document.getElementById("estructura_retirada_campo");
     if (estructuraRetirada) {
-      estructuraRetirada.classList.remove("bg-yellow-100", "border-yellow-400", "ring-2", "ring-yellow-200");
+      estructuraRetirada.classList.remove("bg-yellow-50", "border-yellow-300", "font-semibold", "ring-2", "ring-yellow-400");
+      estructuraRetirada.removeAttribute('data-keep-enabled');
     }
     
-    // Si montaje integral estaba activo, mantener información de estructuras deshabilitada
-    if (montajeIntegralActivo) {
-      deshabilitarInformacionEstructuras(true, seccionPrefix);
+    // Ocultar mensaje de estado
+    const mensaje = document.getElementById('desmantelado-mensaje');
+    if (mensaje) {
+      mensaje.classList.add('hidden');
     }
     
-    console.log("Modo Desmantelado desactivado - Formulario habilitado");
+    console.log("✅ Desmantelado desactivado - Todas las secciones habilitadas");
   }
+}
+*/
+
+/**
+ * Función para forzar que los campos esenciales estén siempre habilitados
+ */
+function forzarCamposEsencialesHabilitados() {
+  // MANTENER habilitado el checkbox de desmantelado
+  const desmanteladoCheckbox = document.getElementById("desmantelado_checkbox");
+  if (desmanteladoCheckbox) {
+    desmanteladoCheckbox.disabled = false;
+    desmanteladoCheckbox.readOnly = false;
+    desmanteladoCheckbox.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+    console.log("✅ Checkbox desmantelado FORZADO a habilitado");
+  }
+  
+  // MANTENER habilitado SOLO estructura retirada
+  const estructuraRetirada = document.getElementById("estructura_retirada_campo");
+  if (estructuraRetirada) {
+    estructuraRetirada.disabled = false;
+    estructuraRetirada.readOnly = false;
+    estructuraRetirada.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+    estructuraRetirada.classList.add("bg-yellow-50", "border-yellow-300", "font-semibold", "ring-2", "ring-yellow-400");
+    
+    // Agregar atributo especial para identificarlo
+    estructuraRetirada.setAttribute('data-keep-enabled', 'true');
+    console.log("✅ Campo estructura retirada FORZADO a habilitado");
+    
+    // Forzar focus
+    setTimeout(() => {
+      estructuraRetirada.focus();
+      estructuraRetirada.select();
+    }, 100);
+  }
+}
+
+// Variable para el monitor
+let monitorInterval = null;
+
+/**
+ * Activar monitor continuo para campos esenciales
+ */
+function activarMonitorCamposEsenciales() {
+  if (monitorInterval) return; // Ya está activo
+  
+  monitorInterval = setInterval(() => {
+    if (desmanteladoActivo) {
+      forzarCamposEsencialesHabilitados();
+    }
+  }, 1000); // Revisar cada segundo
+  
+  console.log("🔍 Monitor de campos esenciales ACTIVADO");
+}
+
+/**
+ * Desactivar monitor continuo
+ */
+function desactivarMonitorCamposEsenciales() {
+  if (monitorInterval) {
+    clearInterval(monitorInterval);
+    monitorInterval = null;
+    console.log("🔍 Monitor de campos esenciales DESACTIVADO");
+  }
+}
+
+/**
+ * Deshabilitar/habilitar TODO el formulario (versión simplificada)
+ */
+function deshabilitarFormularioCompleto(deshabilitar) {
+  const formulario = document.getElementById("form-total");
+  if (!formulario) return;
+  
+  const campos = formulario.querySelectorAll("input, select, textarea, button");
+  
+  campos.forEach(campo => {
+    // SOLO mantener habilitado el checkbox de desmantelado
+    if (campo.id === "desmantelado_checkbox") {
+      return;
+    }
+    
+    // SOLO mantener habilitado estructura retirada si tiene el atributo especial
+    if (campo.getAttribute('data-keep-enabled') === 'true') {
+      return;
+    }
+    
+    // Deshabilitar TODO lo demás
+    campo.disabled = deshabilitar;
+    
+    if (deshabilitar) {
+      campo.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+    } else {
+      campo.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+    }
+  });
+  
+  // Aplicar overlay visual al formulario
+  if (deshabilitar) {
+    formulario.classList.add("desmantelado-activo");
+  } else {
+    formulario.classList.remove("desmantelado-activo");
+  }
+}
+
+/**
+ * Deshabilitar/habilitar Sección: Información del Proyecto
+ */
+function deshabilitarSeccionInformacionProyecto(deshabilitar) {
+  const campos = [
+    'nombre', 'banco', 'contrato', 'regional', 'municipio', 
+    'departamento', 'direccion', 'circuito'
+  ];
+  
+  campos.forEach(campoId => {
+    const campo = document.getElementById(campoId);
+    if (campo) {
+      campo.disabled = deshabilitar;
+      if (deshabilitar) {
+        campo.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+      } else {
+        campo.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+      }
+    }
+  });
+  
+  console.log(`📋 Información del Proyecto: ${deshabilitar ? 'DESHABILITADA' : 'HABILITADA'}`);
+}
+
+/**
+ * Deshabilitar/habilitar Sección: Documentos y Archivos
+ */
+function deshabilitarSeccionDocumentosArchivos(deshabilitar) {
+  const campos = [
+    'archivo_cad', 'archivo_kmz', 'fotos'
+  ];
+  
+  campos.forEach(campoId => {
+    const campo = document.getElementById(campoId);
+    if (campo) {
+      campo.disabled = deshabilitar;
+      if (deshabilitar) {
+        campo.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+      } else {
+        campo.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+      }
+    }
+  });
+  
+  // También deshabilitar los controles de archivos
+  const fileContainers = document.querySelectorAll('.file-upload-container');
+  fileContainers.forEach(container => {
+    if (deshabilitar) {
+      container.classList.add('disabled', 'opacity-50', 'cursor-not-allowed');
+    } else {
+      container.classList.remove('disabled', 'opacity-50', 'cursor-not-allowed');
+    }
+  });
+  
+  console.log(`📁 Documentos y Archivos: ${deshabilitar ? 'DESHABILITADA' : 'HABILITADA'}`);
+}
+
+/**
+ * Deshabilitar/habilitar Sección: Información Técnica (EXCEPTO estructura retirada)
+ */
+function deshabilitarSeccionInformacionTecnica(deshabilitar) {
+  const seccion = document.getElementById('seccion-informacion-tecnica');
+  if (!seccion) return;
+  
+  const campos = seccion.querySelectorAll('input, select, textarea, button');
+  
+  campos.forEach(campo => {
+    // NO deshabilitar estructura retirada
+    if (campo.id === 'estructura_retirada_campo') {
+      return;
+    }
+    
+    // NO deshabilitar el checkbox de desmantelado
+    if (campo.id === 'desmantelado_checkbox') {
+      return;
+    }
+    
+    campo.disabled = deshabilitar;
+    if (deshabilitar) {
+      campo.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+    } else {
+      campo.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+    }
+  });
+  
+  console.log(`⚙️ Información Técnica: ${deshabilitar ? 'DESHABILITADA (excepto estructura retirada)' : 'HABILITADA'}`);
+}
+
+/**
+ * Deshabilitar/habilitar Sección: Información de Estructuras
+ */
+function deshabilitarSeccionInformacionEstructuras(deshabilitar) {
+  const seccion = document.getElementById('seccion-informacion-estructuras');
+  if (!seccion) {
+    console.warn('⚠️ No se encontró la sección seccion-informacion-estructuras');
+    return;
+  }
+  
+  // Buscar TODOS los campos en la sección
+  const campos = seccion.querySelectorAll('input, select, textarea, button, .uc-card, .btn, .form-control');
+  console.log(`🏗️ Encontrados ${campos.length} campos en Información de Estructuras`);
+  
+  campos.forEach(campo => {
+    // NO deshabilitar estructura retirada (aunque esté en esta sección)
+    if (campo.id === 'estructura_retirada_campo') {
+      console.log('✅ Manteniendo estructura_retirada_campo habilitado');
+      return;
+    }
+    
+    // NO deshabilitar el checkbox de desmantelado (aunque esté en esta sección)
+    if (campo.id === 'desmantelado_checkbox') {
+      console.log('✅ Manteniendo desmantelado_checkbox habilitado');
+      return;
+    }
+    
+    // Deshabilitar/habilitar el campo
+    campo.disabled = deshabilitar;
+    if (deshabilitar) {
+      campo.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+      // También agregar pointer-events: none para elementos que no sean form controls
+      campo.style.pointerEvents = 'none';
+    } else {
+      campo.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+      campo.style.pointerEvents = '';
+    }
+    
+    console.log(`${deshabilitar ? '🔒' : '🔓'} Campo ${campo.id || campo.name || campo.className || 'sin-id'}`);
+  });
+  
+  // También buscar y deshabilitar las tarjetas UC (Unidad Constructiva)
+  const ucCards = seccion.querySelectorAll('.uc-card, [data-uc-type], .nivel-card');
+  ucCards.forEach(card => {
+    if (deshabilitar) {
+      card.classList.add('opacity-50', 'pointer-events-none', 'cursor-not-allowed');
+      card.style.filter = 'grayscale(70%)';
+    } else {
+      card.classList.remove('opacity-50', 'pointer-events-none', 'cursor-not-allowed');
+      card.style.filter = '';
+    }
+  });
+  
+  // Deshabilitar toda la sección visualmente
+  if (deshabilitar) {
+    seccion.classList.add('opacity-75');
+    seccion.style.filter = 'grayscale(50%)';
+    seccion.style.pointerEvents = 'none';
+    // Agregar un overlay visual
+    seccion.style.position = 'relative';
+    if (!seccion.querySelector('.section-disabled-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.className = 'section-disabled-overlay';
+      overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.1);
+        z-index: 10;
+        pointer-events: none;
+      `;
+      seccion.appendChild(overlay);
+    }
+  } else {
+    seccion.classList.remove('opacity-75');
+    seccion.style.filter = '';
+    seccion.style.pointerEvents = '';
+    // Remover overlay
+    const overlay = seccion.querySelector('.section-disabled-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  }
+  
+  console.log(`🏗️ Información de Estructuras: ${deshabilitar ? 'DESHABILITADA COMPLETAMENTE' : 'HABILITADA'}`);
 }
 
 /**
@@ -1035,7 +1183,9 @@ function mostrarOcultarMontajeIntegral(seccionPrefix = '') {
  * Mostrar/ocultar botón Desmantelado según tipo de inversión
  * Solo aparece para tipos I y III y gestiona coordenadas
  * Recibe prefijo de sección opcional para formularios modulares
+ * COMENTADO - Esta función está duplicada en tipos-inversion.js y causa conflictos
  */
+/*
 function mostrarOcultarDesmantelado(seccionPrefix = '') {
   const tipoInversionId = seccionPrefix ? `${seccionPrefix}_t_inv` : "t_inv";
   const containerId = seccionPrefix ? `${seccionPrefix}_desmantelado_container` : "desmantelado_container";
@@ -1080,6 +1230,7 @@ function mostrarOcultarDesmantelado(seccionPrefix = '') {
     }
   }
 }
+*/
 
 // Exponer funciones globalmente
 window.autoCompleteUC = autoCompleteUC;
@@ -1092,16 +1243,32 @@ window.autoCompleteMunicipio = autoCompleteMunicipio;
 window.autoCompleteDepartamento = autoCompleteDepartamento;
 window.actualizarAlturasPorTension = actualizarAlturasPorTension;
 window.toggleMontajeIntegral = toggleMontajeIntegral;
-window.toggleDesmantelado = toggleDesmantelado;
+// window.toggleDesmantelado = toggleDesmantelado; // COMENTADO - Función conflictiva
 window.mostrarOcultarMontajeIntegral = mostrarOcultarMontajeIntegral;
-window.mostrarOcultarDesmantelado = mostrarOcultarDesmantelado;
+// window.mostrarOcultarDesmantelado = mostrarOcultarDesmantelado; // COMENTADO - Función conflictiva
 window.habilitarDeshabilitarCoordenadas = habilitarDeshabilitarCoordenadas;
 window.initializeAutocompletion = initializeAutocompletion;
 window.initializeDisabledFields = initializeDisabledFields;
 
 // Inicializar event listeners para autocompletado UC cuando se cargue el DOM
 document.addEventListener("DOMContentLoaded", function() {
-  // Event listeners para campos de estructura nueva (sección estructuras_complete)
+  // Dar tiempo para que se carguen todos los scripts y elementos
+  setTimeout(() => {
+    // Configurar listeners principales
+    configurarListenersGlobales();
+    
+    // Inicializar estado inicial para estructuras - SIN ejecutar autocompletado
+    updateApoyoOptions();
+    toggleStructureFieldsWithoutAutoComplete();
+    
+    // Inicializar autocompletado
+    initializeAutocompletion();
+  }, 1000); // Dar más tiempo para la carga completa
+});
+
+// Función para configurar listeners globales que funcionen en cualquier sección
+function configurarListenersGlobales() {
+  // Event listeners para campos de estructura nueva
   const camposEstructura = [
     "material_nueva",
     "altura_nueva", 
@@ -1115,79 +1282,344 @@ document.addEventListener("DOMContentLoaded", function() {
     "linea_nueva"
   ];
 
+  // Función con debounce para evitar ejecuciones excesivas
+  let timeoutId = null;
+  const debouncedAutoComplete = () => {
+    // Marcar interacción del usuario
+    markUserInteraction();
+    
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      console.log("🚀 Ejecutando autoComplete UC con debounce...");
+      autoCompleteUC();
+    }, 300); // 300ms de delay
+  };
+
+  // Configurar listeners para campos de estructura
   camposEstructura.forEach(campoId => {
-    const elemento = document.getElementById(campoId);
+    // Buscar elemento globalmente primero
+    let elemento = document.getElementById(campoId);
     if (elemento) {
-      elemento.addEventListener("change", autoCompleteUC);
-      console.log(`Event listener agregado para ${campoId}`);
+      // Remover listeners anteriores para evitar duplicados
+      elemento.removeEventListener("change", debouncedAutoComplete);
+      elemento.removeEventListener("input", debouncedAutoComplete);
+      elemento.removeEventListener("blur", debouncedAutoComplete);
+      
+      // Agregar nuevos listeners con diferentes eventos
+      elemento.addEventListener("change", debouncedAutoComplete);
+      elemento.addEventListener("input", debouncedAutoComplete);
+      elemento.addEventListener("blur", debouncedAutoComplete); // También al perder foco
+      
+      console.log(`✅ Event listeners (change+input+blur) agregados para ${campoId} (global)`);
     }
+    
+    // También configurar en secciones dinámicas
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const elementoSeccion = findElementInCurrentSection(campoId);
+        if (elementoSeccion && elementoSeccion !== elemento) {
+          elementoSeccion.removeEventListener("change", debouncedAutoComplete);
+          elementoSeccion.removeEventListener("input", debouncedAutoComplete);
+          elementoSeccion.removeEventListener("blur", debouncedAutoComplete);
+          elementoSeccion.addEventListener("change", debouncedAutoComplete);
+          elementoSeccion.addEventListener("input", debouncedAutoComplete);
+          elementoSeccion.addEventListener("blur", debouncedAutoComplete);
+          console.log(`✅ Event listeners dinámicos agregados para ${campoId} (sección)`);
+        }
+      }, 500);
+    });
   });
 
-  // Event listener especial para nivel de tensión y apoyo (controlan visibilidad de campos)
-  const nivelTension = document.getElementById("nivel_tension");
-  const apoyoNueva = document.getElementById("apoyo_nueva");
+  // Event listeners especiales para nivel de tensión y apoyo
+  const configurarNivelTension = () => {
+    const nivelTension = findElementInCurrentSection("nivel_tension");
+    if (nivelTension) {
+      nivelTension.removeEventListener("change", handleNivelTensionChange);
+      nivelTension.addEventListener("change", function() {
+        markUserInteraction(); // Marcar interacción
+        console.log("🔧 Nivel de tensión cambiado:", this.value);
+        updateApoyoOptions();
+        toggleStructureFields();
+        debouncedAutoComplete();
+      });
+      console.log("✅ Event listener para nivel_tension configurado");
+    }
+  };
   
-  if (nivelTension) {
-    nivelTension.addEventListener("change", function() {
-      updateApoyoOptions();
-      toggleStructureFields();
-      autoCompleteUC();
-    });
-  }
-  
-  if (apoyoNueva) {
-    apoyoNueva.addEventListener("change", function() {
-      toggleStructureFields();
-      autoCompleteUC();
-    });
-  }
+  const configurarApoyo = () => {
+    console.log("⚠️ configurarApoyo() llamado - Campo apoyo_nueva eliminado");
+    console.log("✅ El selector UC jerárquico maneja automáticamente el apoyo");
+    // El campo apoyo_nueva ya no existe
+  };
 
-  // Inicializar estado inicial
-  updateApoyoOptions();
-  toggleStructureFields();
+  // Configurar inmediatamente
+  configurarNivelTension();
+  configurarApoyo();
   
-  // Inicializar autocompletado
-  initializeAutocompletion();
-});
+  // También configurar después de cambios de sección
+  if (window.MutationObserver) {
+    const observer = new MutationObserver(() => {
+      configurarNivelTension();
+      configurarApoyo();
+      configurarAutocompletadosGlobales();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+}
 
 // Función global para configurar autocompletados en cualquier sección
 function configurarAutocompletadosGlobales() {
-  const currentSection = window.currentStep || 'estructuras';
+  console.log("Configurando autocompletados globales...");
   
-  // Buscar elementos en la sección activa
-  let nombreField, bancoField, contratoField;
-  
-  if (currentSection === 'estructuras') {
-    // Para estructuras, usar búsqueda por ID como siempre
-    nombreField = document.getElementById("nombre");
-    bancoField = document.getElementById("banco_proyecto");
-    contratoField = document.getElementById("contrato");
-  } else {
-    // Para otras secciones, buscar dentro de la sección activa
-    const activeSection = document.querySelector(`[data-form-section="${currentSection}"]`);
-    if (!activeSection) return;
-    
-    nombreField = activeSection.querySelector('#nombre');
-    bancoField = activeSection.querySelector('#banco_proyecto');
-    contratoField = activeSection.querySelector('#contrato');
-  }
+  // Buscar elementos con búsqueda híbrida
+  const nombreField = document.getElementById("nombre") || findElementInCurrentSection("nombre");
+  const bancoField = document.getElementById("banco_proyecto") || findElementInCurrentSection("banco_proyecto");
+  const contratoField = document.getElementById("contrato") || findElementInCurrentSection("contrato");
+  const municipioField = document.getElementById("municipio") || findElementInCurrentSection("municipio");
 
   // Configurar event listeners si existen los elementos
   if (nombreField) {
-    // Remover listeners anteriores
+    // Remover listeners anteriores para evitar duplicados
     nombreField.removeEventListener('input', autoCompleteBanco);
     nombreField.removeEventListener('change', autoCompleteBanco);
+    nombreField.removeEventListener('change', actualizarContratos);
     
     // Agregar nuevos listeners
     nombreField.addEventListener('input', autoCompleteBanco);
     nombreField.addEventListener('change', autoCompleteBanco);
+    nombreField.addEventListener('change', actualizarContratos);
+    console.log("Event listeners configurados para campo nombre");
   }
 
   if (contratoField) {
     // Remover listeners anteriores
     contratoField.removeEventListener('change', handleContratoChange);
+    contratoField.removeEventListener('change', autoCompleteRegional);
+    contratoField.removeEventListener('change', actualizarMunicipiosPorContrato);
     
-    // Agregar nuevo listener
+    // Agregar nuevos listeners
     contratoField.addEventListener('change', handleContratoChange);
+    contratoField.addEventListener('change', autoCompleteRegional);
+    contratoField.addEventListener('change', actualizarMunicipiosPorContrato);
+    console.log("Event listeners configurados para campo contrato");
   }
+
+  if (municipioField) {
+    // Remover listeners anteriores
+    municipioField.removeEventListener('change', autoCompleteDepartamento);
+    municipioField.removeEventListener('change', actualizarCircuitos);
+    
+    // Agregar nuevos listeners
+    municipioField.addEventListener('change', autoCompleteDepartamento);
+    municipioField.addEventListener('change', actualizarCircuitos);
+    console.log("Event listeners configurados para campo municipio");
+  }
+
+  // Configurar listeners para campos específicos de estructuras
+  configurarListenersEstructuras();
 }
+
+// Función auxiliar para manejar cambios en contrato
+function handleContratoChange() {
+  autoCompleteRegional();
+  actualizarMunicipiosPorContrato();
+}
+
+// Función para configurar listeners específicos de estructuras
+function configurarListenersEstructuras() {
+  // Ya no necesitamos configurar campos de estructura individuales
+  // El selector UC jerárquico maneja toda la configuración automáticamente
+  console.log("⚠️ Campos de estructura eliminados - usando selector UC jerárquico");
+  
+  // Los campos individuales ya no existen, solo comentamos para referencia
+  // const camposEstructura = [
+  //   "material_nueva", "altura_nueva", "poblacion_nueva", "disposicion_nueva",
+  //   "tipo_red_nueva", "apoyo_nueva", "peso_nueva", "configuracion_nueva",
+  //   "circuito_nueva", "linea_nueva"
+  // ];
+
+  console.log("✅ Configuración de listeners para estructura completada (selector UC jerárquico activo)");
+  return; // Salir temprano ya que no hay campos que configurar
+}
+
+// Funciones auxiliares simplificadas - Los campos individuales fueron eliminados
+function handleNivelTensionChange() {
+  console.log("⚠️ handleNivelTensionChange() llamado - Campos eliminados");
+  // updateApoyoOptions(); // Campo apoyo_nueva eliminado
+  // toggleStructureFields(); // Campos individuales eliminados
+  // autoCompleteUC(); // Función simplificada
+}
+
+function handleApoyoChange() {
+  console.log("⚠️ handleApoyoChange() llamado - Campo apoyo_nueva eliminado");
+  // toggleStructureFields(); // Campos individuales eliminados
+  // autoCompleteUC(); // Función simplificada
+}
+
+// Función para inicializar autocompletados manualmente en cualquier sección
+function inicializarAutocompletadosEnSeccion(seccionActual = null) {
+  // Actualizar currentStep si se proporciona
+  if (seccionActual) {
+    window.currentStep = seccionActual;
+  }
+  
+  // Configurar listeners globales
+  configurarListenersGlobales();
+  
+  // Configurar autocompletados
+  configurarAutocompletadosGlobales();
+  
+  // Inicializar campos deshabilitados
+  initializeDisabledFields();
+  
+  // Para la sección de estructuras, configurar campos específicos
+  const currentSection = window.currentStep || 'estructuras';
+  if (currentSection === 'estructuras') {
+    updateApoyoOptions();
+    toggleStructureFields();
+  }
+  
+  console.log("Autocompletados inicializados para sección:", currentSection);
+}
+
+// Función de diagnóstico para debugging
+function diagnosticarAutocompletado() {
+  const campos = [
+    "material_nueva", "altura_nueva", "poblacion_nueva", "disposicion_nueva",
+    "tipo_red_nueva", "apoyo_nueva", "peso_nueva", "configuracion_nueva",
+    "circuito_nueva", "linea_nueva", "nivel_tension", "uc", "uc_nueva"
+  ];
+  
+  let encontrados = 0;
+  campos.forEach(campoId => {
+    const elemento = document.getElementById(campoId);
+    if (elemento) encontrados++;
+  });
+  
+  console.log(`� Diagnóstico: ${encontrados}/${campos.length} campos encontrados`);
+  
+  // Intentar autocompletado
+  autoCompleteUC();
+}
+
+// Exponer funciones para uso global
+window.findElementInCurrentSection = findElementInCurrentSection;
+window.configurarAutocompletadosGlobales = configurarAutocompletadosGlobales;
+window.configurarListenersEstructuras = configurarListenersEstructuras;
+window.inicializarAutocompletadosEnSeccion = inicializarAutocompletadosEnSeccion;
+window.handleContratoChange = handleContratoChange;
+window.handleNivelTensionChange = handleNivelTensionChange;
+window.handleApoyoChange = handleApoyoChange;
+window.diagnosticarAutocompletado = diagnosticarAutocompletado;
+
+// Función mejorada para validar datos reales del usuario
+function validarDatosUsuario() {
+  const camposEstructura = [
+    "material_nueva", "altura_nueva", "poblacion_nueva", "disposicion_nueva",
+    "tipo_red_nueva", "apoyo_nueva", "peso_nueva", "configuracion_nueva",
+    "circuito_nueva", "linea_nueva"
+  ];
+  
+  let camposConDatos = 0;
+  const estadoCampos = {};
+  
+  camposEstructura.forEach(campoId => {
+    const elemento = document.getElementById(campoId) || findElementInCurrentSection(campoId);
+    if (elemento && elemento.value && elemento.value.trim() !== '') {
+      camposConDatos++;
+      estadoCampos[campoId] = elemento.value.trim();
+    }
+  });
+  
+  console.log(`📊 Validación de datos del usuario: ${camposConDatos} campos con datos`, estadoCampos);
+  return { camposConDatos, estadoCampos };
+}
+
+// Función manual para testing - expuesta globalmente
+window.testAutoCompleteUC = function() {
+  // Marcar que el usuario ha interactuado
+  window.userHasInteracted = true;
+  
+  const validacion = validarDatosUsuario();
+  
+  if (validacion.camposConDatos >= 3) {
+    autoCompleteUC();
+  } else {
+    console.log("⚠️ Insuficientes datos. Completa al menos 3 campos básicos (apoyo, material, altura)");
+  }
+};
+
+// Función para forzar el autocompletado independientemente de validaciones
+window.forceAutoCompleteUC = function() {
+  autoCompleteUC();
+};
+
+// Protección adicional para estructura retirada cuando desmantelado está activo
+document.addEventListener('DOMContentLoaded', function() {
+  // Monitor continuo para proteger estructura retirada
+  setInterval(() => {
+    if (desmanteladoActivo) {
+      const estructuraRetirada = document.getElementById("estructura_retirada_campo");
+      if (estructuraRetirada && estructuraRetirada.disabled) {
+        estructuraRetirada.disabled = false;
+        estructuraRetirada.readOnly = false;
+        estructuraRetirada.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
+        estructuraRetirada.classList.add("bg-yellow-50", "border-yellow-300", "font-semibold");
+        console.log('🔧 Re-habilitando estructura retirada automáticamente');
+      }
+    }
+  }, 1000);
+});
+
+// Event listener para mantener focus en estructura retirada
+document.addEventListener('click', function(e) {
+  if (desmanteladoActivo) {
+    const estructuraRetirada = document.getElementById("estructura_retirada_campo");
+    
+    // Si clickean en cualquier lugar y desmantelado está activo
+    if (estructuraRetirada) {
+      // Forzar que siempre esté habilitado
+      if (estructuraRetirada.disabled || estructuraRetirada.readOnly) {
+        estructuraRetirada.disabled = false;
+        estructuraRetirada.readOnly = false;
+        console.log('🔧 Re-habilitando estructura retirada por click');
+      }
+      
+      // Si clickean fuera del campo estructura retirada y del checkbox desmantelado,
+      // mostrar mensaje visual (opcional - no forzar focus para mejor UX)
+      if (!estructuraRetirada.contains(e.target) && 
+          !e.target.closest('#desmantelado_container')) {
+        
+        // Destacar visualmente el campo disponible
+        estructuraRetirada.style.animation = 'pulse 1s ease-in-out';
+        setTimeout(() => {
+          if (estructuraRetirada.style) {
+            estructuraRetirada.style.animation = '';
+          }
+        }, 1000);
+      }
+    }
+  }
+});
+
+// Prevenir que otros scripts deshabiliten el campo
+Object.defineProperty(HTMLInputElement.prototype, 'disabled', {
+  set: function(value) {
+    if (this.id === 'estructura_retirada_campo' && 
+        this.getAttribute('data-keep-enabled') === 'true') {
+      // No permitir deshabilitar si tiene el atributo especial
+      return;
+    }
+    // Para otros elementos, comportamiento normal
+    this.setAttribute('disabled', value ? '' : null);
+  },
+  get: function() {
+    return this.hasAttribute('disabled');
+  }
+});
+
+window.validarDatosUsuario = validarDatosUsuario;

@@ -55,6 +55,10 @@ def contratista_dashboard(request):
             'completados': mis_formularios.filter(estado_actual='finalizado').count(),
         }
         
+        # Iteraciones temporales en sesión
+        iteraciones_temporales = request.session.get('iteraciones_temporales', {})
+        stats['iteraciones_temporales'] = sum(len(lista) for lista in iteraciones_temporales.values())
+        
         # Formularios recientes del contratista
         mis_formularios_recientes = mis_formularios.order_by('-updated_at')[:10]
         
@@ -62,6 +66,13 @@ def contratista_dashboard(request):
             'user': user,
             'stats': stats,
             'mis_formularios_recientes': mis_formularios_recientes,
+            'iteraciones_temporales': iteraciones_temporales,
+            'secciones_disponibles': [
+                ('estructuras', 'Estructuras', 'fas fa-building'),
+                ('conductores', 'Conductores', 'fas fa-bolt'),
+                ('equipos', 'Equipos', 'fas fa-tools'),
+                ('transformador', 'Transformador', 'fas fa-battery-three-quarters')
+            ],
             'tables_exist': True
         }
         
@@ -74,8 +85,16 @@ def contratista_dashboard(request):
                 'enviados': 0,
                 'devueltos': 0,
                 'completados': 0,
+                'iteraciones_temporales': 0,
             },
             'mis_formularios_recientes': [],
+            'iteraciones_temporales': {},
+            'secciones_disponibles': [
+                ('estructuras', 'Estructuras', 'fas fa-building'),
+                ('conductores', 'Conductores', 'fas fa-bolt'),
+                ('equipos', 'Equipos', 'fas fa-tools'),
+                ('transformador', 'Transformador', 'fas fa-battery-three-quarters')
+            ],
             'tables_exist': False,
             'error_message': str(e)
         }
@@ -149,6 +168,17 @@ def crear_estructuras(request):
             direccion=request.POST.get('direccion', ''),
             creado_por=request.user
         )
+        
+        # Procesar archivos si existen
+        if 'archivo_cad' in request.FILES:
+            formulario.archivo_autocad = request.FILES['archivo_cad']
+            
+        if 'archivo_kmz' in request.FILES:
+            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            
+        # Guardar el formulario con los archivos
+        formulario.save()
+        
         messages.success(request, f'Formulario de Estructuras {formulario.get_numero_formulario()} creado exitosamente')
         return redirect('forms:lista')
     
@@ -171,6 +201,17 @@ def crear_conductores(request):
             direccion=request.POST.get('direccion', ''),
             creado_por=request.user
         )
+        
+        # Procesar archivos si existen
+        if 'archivo_cad' in request.FILES:
+            formulario.archivo_autocad = request.FILES['archivo_cad']
+            
+        if 'archivo_kmz' in request.FILES:
+            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            
+        # Guardar el formulario con los archivos
+        formulario.save()
+        
         messages.success(request, f'Formulario de Conductores {formulario.get_numero_formulario()} creado exitosamente')
         return redirect('forms:lista')
     
@@ -193,6 +234,17 @@ def crear_equipos(request):
             direccion=request.POST.get('direccion', ''),
             creado_por=request.user
         )
+        
+        # Procesar archivos si existen
+        if 'archivo_cad' in request.FILES:
+            formulario.archivo_autocad = request.FILES['archivo_cad']
+            
+        if 'archivo_kmz' in request.FILES:
+            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            
+        # Guardar el formulario con los archivos
+        formulario.save()
+        
         messages.success(request, f'Formulario de Equipos {formulario.get_numero_formulario()} creado exitosamente')
         return redirect('forms:lista')
     
@@ -215,6 +267,17 @@ def crear_transformadores(request):
             direccion=request.POST.get('direccion', ''),
             creado_por=request.user
         )
+        
+        # Procesar archivos si existen
+        if 'archivo_cad' in request.FILES:
+            formulario.archivo_autocad = request.FILES['archivo_cad']
+            
+        if 'archivo_kmz' in request.FILES:
+            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            
+        # Guardar el formulario con los archivos
+        formulario.save()
+        
         messages.success(request, f'Formulario de Transformadores {formulario.get_numero_formulario()} creado exitosamente')
         return redirect('forms:lista')
     
@@ -226,6 +289,10 @@ def crear_transformadores(request):
     return render(request, 'forms/secciones/transformadores.html', context)
 
 def custom_login(request):
+    """Vista de login personalizada que maneja tanto usuarios normales como admin"""
+    if request.user.is_authenticated:
+        return redirect('forms:dashboard')
+    
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -234,17 +301,26 @@ def custom_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('forms:home')
+                
+                # Redirigir según el parámetro 'next' o el rol del usuario
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                elif user.is_staff and '/admin/' in request.META.get('HTTP_REFERER', ''):
+                    return redirect('/admin/')
+                else:
+                    return redirect('forms:dashboard')
     else:
         form = AuthenticationForm()
-    return render(request, 'forms/login.html', {'form': form})
+    
+    return render(request, 'auth/login.html', {'form': form})
 
 def home(request):
     """Vista home - redirige a dashboard si está autenticado"""
     if request.user.is_authenticated:
         return redirect('forms:dashboard')
-    # Fix: Use the correct URL pattern name for login
-    return redirect('admin:login')  # or redirect to a custom login page
+    # Redirigir a nuestro login personalizado
+    return redirect('forms:login')
 
 @login_required
 @user_passes_test(is_admin)
@@ -340,12 +416,18 @@ def admin_users_list(request):
     
     # Estadísticas por rol
     usuarios_por_rol = {}
-    for rol in ['Administrador', 'Contratista', 'Ejecutor/Interventor', 'Gestión', 'Planeación']:
-        usuarios_por_rol[rol] = CustomUser.objects.filter(rol=rol).count()
+    for rol_key, rol_name in CustomUser.ROLE_CHOICES:
+        usuarios_por_rol[rol_name] = CustomUser.objects.filter(rol=rol_key).count()
+    
+    # Agregar estadística para usuarios sin rol
+    usuarios_sin_rol = CustomUser.objects.filter(Q(rol='') | Q(rol__isnull=True)).count()
+    if usuarios_sin_rol > 0:
+        usuarios_por_rol['Sin rol asignado'] = usuarios_sin_rol
     
     context = {
         'usuarios': usuarios,
         'usuarios_por_rol': usuarios_por_rol,
+        'role_choices': CustomUser.ROLE_CHOICES,
     }
     
     return render(request, 'admin/users_list.html', context)
@@ -474,6 +556,129 @@ def admin_restaurar_formulario(request, formulario_id):
     return redirect('forms:admin_formularios_list')
 
 @login_required
+@user_passes_test(is_admin)
+@require_http_methods(["POST"])
+def admin_toggle_user(request, user_id):
+    """Activar/desactivar usuario (solo admin)"""
+    user = get_object_or_404(CustomUser, id=user_id)
+    
+    try:
+        # Cambiar estado de activación
+        user.is_active = not user.is_active
+        user.save()
+        
+        estado = "activado" if user.is_active else "desactivado"
+        messages.success(request, f'Usuario {user.username} {estado} exitosamente.')
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'Usuario {estado}',
+            'is_active': user.is_active,
+            'estado_display': 'Activo' if user.is_active else 'Inactivo'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': f'Error al cambiar estado del usuario: {str(e)}'
+        })
+
+@login_required
+@user_passes_test(is_admin)
+@require_http_methods(["POST"])
+def admin_change_user_role(request, user_id):
+    """Cambiar rol de usuario (solo admin)"""
+    user = get_object_or_404(CustomUser, id=user_id)
+    nuevo_rol = request.POST.get('nuevo_rol')
+    
+    print(f"DEBUG - Cambio de rol solicitado:")
+    print(f"  - Usuario ID: {user_id}")
+    print(f"  - Usuario: {user.username}")
+    print(f"  - Rol actual: '{user.rol}' (vacío: {not user.rol})")
+    print(f"  - Nuevo rol: '{nuevo_rol}'")
+    print(f"  - POST data: {request.POST}")
+    
+    try:
+        # Validar que el nuevo rol sea válido
+        roles_validos = [choice[0] for choice in CustomUser.ROLE_CHOICES]
+        print(f"  - Roles válidos: {roles_validos}")
+        
+        if nuevo_rol not in roles_validos:
+            print(f"  - ERROR: Rol no válido")
+            return JsonResponse({'success': False, 'error': 'Rol no válido'})
+        
+        # No permitir cambiar el propio rol si es admin
+        if user == request.user and user.rol == 'admin' and nuevo_rol != 'admin':
+            print(f"  - ERROR: No puede cambiar su propio rol de admin")
+            return JsonResponse({'success': False, 'error': 'No puedes cambiar tu propio rol de administrador'})
+        
+        rol_anterior = user.rol or 'sin_rol'  # Manejar rol vacío
+        user.rol = nuevo_rol
+        
+        # Si el usuario no tenía rol asignado y ahora se le asigna uno, activarlo automáticamente
+        if not rol_anterior or rol_anterior == 'sin_rol':
+            user.is_active = True
+            print(f"  - Usuario activado automáticamente al asignar primer rol")
+        
+        user.save()
+        
+        print(f"  - SUCCESS: Rol cambiado de '{rol_anterior}' a '{nuevo_rol}'")
+        
+        # Mensaje personalizado para usuarios sin rol previo
+        if rol_anterior == 'sin_rol':
+            mensaje = f'Rol "{dict(CustomUser.ROLE_CHOICES)[nuevo_rol]}" asignado al usuario {user.username} (activado automáticamente)'
+        else:
+            rol_anterior_display = dict(CustomUser.ROLE_CHOICES).get(rol_anterior, 'Sin rol')
+            mensaje = f'Rol del usuario {user.username} cambiado de "{rol_anterior_display}" a "{dict(CustomUser.ROLE_CHOICES)[nuevo_rol]}"'
+        
+        messages.success(request, mensaje)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Rol asignado correctamente',
+            'nuevo_rol': nuevo_rol,
+            'nuevo_rol_display': dict(CustomUser.ROLE_CHOICES)[nuevo_rol],
+            'usuario_activado': not bool(rol_anterior) or rol_anterior == 'sin_rol'
+        })
+        
+    except Exception as e:
+        print(f"  - EXCEPTION: {str(e)}")
+        return JsonResponse({
+            'success': False, 
+            'error': f'Error al cambiar rol: {str(e)}'
+        })
+
+@login_required
+@user_passes_test(is_admin)
+@require_http_methods(["POST"])
+def admin_delete_user(request, user_id):
+    """Eliminación lógica de usuario (solo admin)"""
+    user = get_object_or_404(CustomUser, id=user_id)
+    
+    try:
+        # No permitir eliminar al usuario actual
+        if user == request.user:
+            return JsonResponse({'success': False, 'error': 'No puedes eliminarte a ti mismo'})
+        
+        # Eliminación lógica
+        user.activo = False
+        user.is_active = False
+        user.save()
+        
+        messages.warning(request, f'Usuario {user.username} eliminado lógicamente.')
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Usuario eliminado'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': f'Error al eliminar usuario: {str(e)}'
+        })
+
+@login_required
 @require_http_methods(["GET", "POST"])
 def custom_logout(request):
     """Vista personalizada de logout"""
@@ -533,3 +738,161 @@ def register_view(request):
 def form_selector(request):
     """Vista para el selector de secciones"""
     return render(request, 'forms/form_selector.html')
+
+
+# ===============================
+# VISTAS ESPECÍFICAS DEL CONTRATISTA
+# ===============================
+
+@login_required
+def contratista_formularios(request):
+    """Lista de formularios del contratista"""
+    if request.user.rol != 'contratista':
+        messages.error(request, 'No tienes permisos para acceder a esta página.')
+        return redirect('forms:dashboard')
+    
+    try:
+        formularios = FormularioGlobal.objects.filter(creado_por=request.user).order_by('-created_at')
+        
+        # Filtros
+        estado_filtro = request.GET.get('estado')
+        if estado_filtro:
+            formularios = formularios.filter(estado_actual=estado_filtro)
+        
+        context = {
+            'formularios': formularios,
+            'estado_filtro': estado_filtro,
+            'estados_disponibles': [
+                ('contratista', 'En Proceso'),
+                ('interventor', 'Enviado a Interventor'),
+                ('devuelto', 'Devuelto'),
+                ('finalizado', 'Finalizado')
+            ]
+        }
+        
+    except Exception as e:
+        context = {
+            'formularios': [],
+            'error_message': str(e)
+        }
+    
+    return render(request, 'contratista/formularios_lista.html', context)
+
+@login_required
+def contratista_nuevo_formulario(request):
+    """Crear nuevo formulario - Contratista"""
+    if request.user.rol != 'contratista':
+        messages.error(request, 'No tienes permisos para acceder a esta página.')
+        return redirect('forms:dashboard')
+    
+    # Limpiar iteraciones temporales si es necesario
+    if request.GET.get('limpiar') == '1':
+        request.session.pop('iteraciones_temporales', None)
+        messages.success(request, 'Sesión limpiada. Puedes comenzar un nuevo formulario.')
+        return redirect('forms:contratista_nuevo_formulario')
+    
+    # Verificar si hay iteraciones temporales
+    iteraciones_temporales = request.session.get('iteraciones_temporales', {})
+    
+    context = {
+        'iteraciones_temporales': iteraciones_temporales,
+        'tiene_iteraciones': bool(iteraciones_temporales),
+        'secciones_disponibles': [
+            ('estructuras', 'Estructuras', 'fas fa-building', 'Postes, estructuras de soporte'),
+            ('conductores', 'Conductores', 'fas fa-bolt', 'Cables, conductores eléctricos'),
+            ('equipos', 'Equipos', 'fas fa-tools', 'Equipos de medición y protección'),
+            ('transformador', 'Transformador', 'fas fa-battery-three-quarters', 'Transformadores de distribución')
+        ]
+    }
+    
+    return render(request, 'contratista/nuevo_formulario.html', context)
+
+@login_required
+def contratista_formulario_seccion(request, seccion):
+    """Formulario por sección específica"""
+    if request.user.rol != 'contratista':
+        messages.error(request, 'No tienes permisos para acceder a esta página.')
+        return redirect('forms:dashboard')
+    
+    secciones_validas = ['estructuras', 'conductores', 'equipos', 'transformador']
+    if seccion not in secciones_validas:
+        messages.error(request, 'Sección no válida.')
+        return redirect('forms:contratista_nuevo_formulario')
+    
+    # Obtener iteraciones de esta sección
+    iteraciones_temporales = request.session.get('iteraciones_temporales', {})
+    iteraciones_seccion = iteraciones_temporales.get(seccion, [])
+    
+    context = {
+        'seccion': seccion,
+        'seccion_titulo': seccion.title(),
+        'iteraciones_seccion': iteraciones_seccion,
+        'total_iteraciones': len(iteraciones_seccion)
+    }
+    
+    # Template específico para cada sección
+    template_map = {
+        'estructuras': 'contratista/secciones/estructuras.html',
+        'conductores': 'contratista/secciones/conductores.html',
+        'equipos': 'contratista/secciones/equipos.html',
+        'transformador': 'contratista/secciones/transformador.html'
+    }
+    
+    return render(request, template_map.get(seccion), context)
+
+@login_required
+def contratista_finalizar_formulario(request):
+    """Finalizar y enviar formulario"""
+    if request.user.rol != 'contratista':
+        messages.error(request, 'No tienes permisos para acceder a esta página.')
+        return redirect('forms:dashboard')
+    
+    iteraciones_temporales = request.session.get('iteraciones_temporales', {})
+    
+    if not iteraciones_temporales:
+        messages.error(request, 'No hay iteraciones para finalizar.')
+        return redirect('forms:contratista_nuevo_formulario')
+    
+    if request.method == 'POST':
+        try:
+            # Crear formulario global
+            formulario_data = {
+                'trabajo': request.POST.get('trabajo', 'Formulario contratista'),
+                'municipio': request.POST.get('municipio', ''),
+                'departamento': request.POST.get('departamento', ''),
+                'regional': request.POST.get('regional', ''),
+                'direccion': request.POST.get('direccion', ''),
+                'creado_por': request.user,
+                'estado_actual': 'contratista'
+            }
+            
+            # TODO: Aquí se crearía el formulario en la base de datos
+            # y se convertirían las iteraciones temporales a definitivas
+            
+            # Por ahora, limpiar sesión
+            request.session.pop('iteraciones_temporales', None)
+            
+            messages.success(request, 'Formulario creado exitosamente y enviado para revisión.')
+            return redirect('forms:contratista_formularios')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear formulario: {str(e)}')
+    
+    # Resumen de iteraciones
+    resumen = {}
+    total_iteraciones = 0
+    
+    for seccion, iteraciones in iteraciones_temporales.items():
+        resumen[seccion] = {
+            'cantidad': len(iteraciones),
+            'titulo': seccion.title()
+        }
+        total_iteraciones += len(iteraciones)
+    
+    context = {
+        'iteraciones_temporales': iteraciones_temporales,
+        'resumen': resumen,
+        'total_iteraciones': total_iteraciones
+    }
+    
+    return render(request, 'contratista/finalizar_formulario.html', context)

@@ -1,0 +1,109 @@
+/**
+ * Estilos de protección para estructura_retirada_campo en modo Desmantelado
+ * Estos estilos tienen alta prioridad (!important) para prevenir interferencia externa
+ */
+
+/* Estilos para estructura retirada cuando está protegida */
+#estructura_retirada_campo[data-desmantelado-active="true"] {
+    background-color: #fef3c7 !important;
+    border-color: #f59e0b !important;
+    color: #000 !important;
+    opacity: 1 !important;
+    cursor: text !important;
+    pointer-events: auto !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    font-weight: 500 !important;
+    /* NO forzamos padding ni dimensiones - respetamos las del formulario */
+}
+
+#estructura_retirada_campo[data-desmantelado-active="true"]:focus {
+    outline: none !important;
+    border-color: #d97706 !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3) !important;
+    background-color: #fef3c7 !important;
+}
+
+#estructura_retirada_campo[data-desmantelado-active="true"]:hover {
+    background-color: #fef3c7 !important;
+    border-color: #d97706 !important;
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Animación sutil cuando está protegido */
+@keyframes protectedPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.3);
+    }
+    70% {
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    }
+}
+
+#estructura_retirada_campo[data-desmantelado-active="true"] {
+    animation: protectedPulse 2s infinite;
+}
+
+/* Prevenir que otros estilos interfieran */
+.desmantelado-activo #estructura_retirada_campo,
+body.desmantelado-activo #estructura_retirada_campo {
+    filter: none !important;
+    transform: none !important;
+    -webkit-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+/* Mensaje de protección activa */
+.estructura-protection-message {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    background: #fbbf24;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 1000;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Estilos específicos para prevenir conflictos con Bootstrap/Tailwind */
+.form-input#estructura_retirada_campo[data-desmantelado-active="true"] {
+    background-color: #fef3c7 !important;
+    border-color: #fbbf24 !important;
+}
+
+/* Protección contra clases de Tailwind CSS */
+.bg-gray-100#estructura_retirada_campo[data-desmantelado-active="true"],
+.bg-gray-200#estructura_retirada_campo[data-desmantelado-active="true"],
+.bg-gray-300#estructura_retirada_campo[data-desmantelado-active="true"] {
+    background-color: #fef3c7 !important;
+}
+
+.text-gray-500#estructura_retirada_campo[data-desmantelado-active="true"],
+.text-gray-400#estructura_retirada_campo[data-desmantelado-active="true"],
+.text-gray-300#estructura_retirada_campo[data-desmantelado-active="true"] {
+    color: #000 !important;
+}
+
+.cursor-not-allowed#estructura_retirada_campo[data-desmantelado-active="true"] {
+    cursor: text !important;
+}
+
+.opacity-50#estructura_retirada_campo[data-desmantelado-active="true"],
+.opacity-25#estructura_retirada_campo[data-desmantelado-active="true"] {
+    opacity: 1 !important;
+}
+
+.pointer-events-none#estructura_retirada_campo[data-desmantelado-active="true"] {
+    pointer-events: auto !important;
+}

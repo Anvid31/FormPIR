@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error del servidor - FormPIR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md mx-auto text-center">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-6xl text-red-500 mb-4">500</div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">Error del servidor</h1>
+            <p class="text-gray-600 mb-6">
+                Ocurrió un error interno. Nuestro equipo ha sido notificado y está trabajando en solucionarlo.
+            </p>
+            <div class="space-y-4">
+                <a href="{% url 'forms:dashboard' %}" 
+                   class="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Ir al Dashboard
+                </a>
+                <br>
+                <a href="javascript:history.back()" 
+                   class="text-blue-500 hover:text-blue-700 transition">
+                    Volver atrás
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

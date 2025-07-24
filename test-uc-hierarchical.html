@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba UC Selector Jerárquico</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .results h4 {
+            margin-top: 0;
+            color: #155724;
+        }
+        
+        .code {
+            font-family: monospace;
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #d63384;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Prueba del Selector Jerárquico UC</h1>
+            <p>Sistema de selección dinámica de Unidades Constructivas</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Selector Principal</h2>
+            <p>Selecciona una unidad constructiva usando el sistema jerárquico:</p>
+            
+            <div id="uc-selector-main"></div>
+            
+            <div id="results-main" class="results" style="display: none;">
+                <h4>✅ Selección Completada</h4>
+                <p><strong>Código:</strong> <span class="code" id="result-code"></span></p>
+                <p><strong>Descripción:</strong> <span id="result-description"></span></p>
+                <p><strong>Categoría:</strong> <span id="result-category"></span></p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 Pruebas Programáticas</h2>
+            <p>Prueba las funciones de selección automática:</p>
+            
+            <div>
+                <button class="btn btn-primary" onclick="testN1Selection()">
+                    Prueba N1 (Poste Concreto 8m)
+                </button>
+                <button class="btn btn-primary" onclick="testN2Selection()">
+                    Prueba N2 (Poste PRFV 12m)
+                </button>
+                <button class="btn btn-primary" onclick="testN3Selection()">
+                    Prueba N3 (Estructura Avanzada)
+                </button>
+                <button class="btn btn-primary" onclick="testTransformer()">
+                    Prueba N1T (Transformador)
+                </button>
+                <button class="btn btn-secondary" onclick="resetSelector()">
+                    Reset Selector
+                </button>
+            </div>
+            
+            <div id="uc-selector-test"></div>
+            
+            <div id="results-test" class="results" style="display: none;">
+                <h4>🔬 Resultado del Test</h4>
+                <p><strong>Código:</strong> <span class="code" id="test-result-code"></span></p>
+                <p><strong>Descripción:</strong> <span id="test-result-description"></span></p>
+                <p><strong>Selecciones:</strong> <pre id="test-result-selections"></pre></p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Información del Sistema</h2>
+            <div id="system-info">
+                <p><strong>Categorías disponibles:</strong> <span id="categories-count">Cargando...</span></p>
+                <p><strong>Total UC Codes:</strong> <span id="uc-codes-count">Cargando...</span></p>
+                <p><strong>Estado del UC_MAPPING:</strong> <span id="mapping-status">Verificando...</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/uc-mapping.js"></script>
+    <script src="static/js/uc-hierarchical.js"></script>
+    <script src="static/js/uc-hierarchical-selector.js"></script>
+    
+    <script>
+        // Variables globales para los selectores
+        let mainSelector;
+        let testSelector;
+        
+        // Inicializar cuando se cargue la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSelectors();
+            updateSystemInfo();
+        });
+        
+        function initializeSelectors() {
+            // Selector principal
+            mainSelector = new UCHierarchicalSelector('uc-selector-main', {
+                onSelectionChange: (selections, category) => {
+                    console.log('Selección cambiada:', { selections, category });
+                },
+                onComplete: (result) => {
+                    console.log('Selección completada:', result);
+                    showMainResults(result);
+                },
+                showPreview: true
+            });
+            
+            // Selector de pruebas
+            testSelector = new UCHierarchicalSelector('uc-selector-test', {
+                onComplete: (result) => {
+                    console.log('Test completado:', result);
+                    showTestResults(result);
+                },
+                showPreview: true
+            });
+        }
+        
+        function showMainResults(result) {
+            const resultsDiv = document.getElementById('results-main');
+            document.getElementById('result-code').textContent = result.code || 'No encontrado';
+            document.getElementById('result-description').textContent = result.description;
+            document.getElementById('result-category').textContent = result.fullDescription;
+            resultsDiv.style.display = 'block';
+        }
+        
+        function showTestResults(result) {
+            const resultsDiv = document.getElementById('results-test');
+            document.getElementById('test-result-code').textContent = result.code || 'No encontrado';
+            document.getElementById('test-result-description').textContent = result.description;
+            document.getElementById('test-result-selections').textContent = JSON.stringify(result.selections, null, 2);
+            resultsDiv.style.display = 'block';
+        }
+        
+        function testN1Selection() {
+            console.log('Probando selección N1...');
+            testSelector.setSelection('N1', {
+                material: 'concreto',
+                altura: '8',
+                zona: 'urbano',
+                disposicion: 'suspension',
+                tipo_red: 'comun'
+            });
+        }
+        
+        function testN2Selection() {
+            console.log('Probando selección N2...');
+            testSelector.setSelection('N2', {
+                material: 'prfv',
+                altura: '12',
+                peso: '1050',
+                disposicion: 'retencion'
+            });
+        }
+        
+        function testN3Selection() {
+            console.log('Probando selección N3...');
+            testSelector.setSelection('N3', {
+                tipo_estructura: 'poste_simple',
+                material: 'concreto',
+                altura: '14',
+                peso: '1050',
+                circuito: 'sencillo',
+                disposicion: 'suspension'
+            });
+        }
+        
+        function testTransformer() {
+            console.log('Probando selección de transformador...');
+            testSelector.setSelection('N1T', {
+                tipo_instalacion: 'aereo',
+                fases: 'monofasico',
+                zona: 'urbano',
+                potencia: '10'
+            });
+        }
+        
+        function resetSelector() {
+            if (testSelector) {
+                testSelector.reset();
+                document.getElementById('results-test').style.display = 'none';
+            }
+        }
+        
+        function updateSystemInfo() {
+            // Contar categorías
+            const categoriesCount = Object.keys(UC_HIERARCHICAL_STRUCTURE || {}).length;
+            document.getElementById('categories-count').textContent = categoriesCount;
+            
+            // Contar UC codes
+            const ucCodesCount = Object.keys(UC_MAPPING || {}).length;
+            document.getElementById('uc-codes-count').textContent = ucCodesCount;
+            
+            // Estado del mapping
+            const mappingStatus = typeof UC_MAPPING !== 'undefined' ? '✅ Cargado correctamente' : '❌ No disponible';
+            document.getElementById('mapping-status').textContent = mappingStatus;
+        }
+        
+        // Función de utilidad para debug
+        function debugUCMapping() {
+            console.log('UC_HIERARCHICAL_STRUCTURE:', UC_HIERARCHICAL_STRUCTURE);
+            console.log('UC_MAPPING keys:', Object.keys(UC_MAPPING).slice(0, 10));
+            console.log('UC_CODE_GENERATOR:', UC_CODE_GENERATOR);
+        }
+        
+        // Hacer disponible para debug desde consola
+        window.debugUCMapping = debugUCMapping;
+        window.mainSelector = mainSelector;
+        window.testSelector = testSelector;
+    </script>
+</body>
+</html>

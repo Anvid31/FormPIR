@@ -59,6 +59,8 @@ class IteracionesManager {
      * Obtener datos del formulario actual
      */
     obtenerDatosFormulario() {
+        console.log(`📋 Obteniendo datos del formulario para sección: ${this.seccionActual}`);
+        
         const datos = {
             seccion: this.seccionActual,
             // Información del proyecto (común a todas las secciones)
@@ -70,8 +72,8 @@ class IteracionesManager {
             regional: this.obtenerValorCampo('regional'),
             
             // Coordenadas
-            latitud_inicial: this.obtenerValorCampo('latitud_inicial'),
-            longitud_inicial: this.obtenerValorCampo('longitud_inicial'),
+            latitud_inicial: this.obtenerValorCampo('latitud'),
+            longitud_inicial: this.obtenerValorCampo('longitud'),
             latitud_final: this.obtenerValorCampo('latitud_final'),
             longitud_final: this.obtenerValorCampo('longitud_final'),
             
@@ -83,6 +85,16 @@ class IteracionesManager {
             datos_especificos: this.obtenerDatosEspecificos()
         };
 
+        // Log de debugging para identificar problemas
+        console.log('📊 Datos obtenidos del formulario:');
+        Object.entries(datos).forEach(([key, value]) => {
+            if (typeof value === 'string' && value.length > 50) {
+                console.warn(`⚠️ Campo ${key} tiene valor muy largo:`, value.substring(0, 100) + '...');
+            } else {
+                console.log(`  ${key}:`, value);
+            }
+        });
+
         return datos;
     }
 
@@ -92,13 +104,50 @@ class IteracionesManager {
     obtenerValorCampo(id) {
         // Intentar ID directo
         let elemento = document.getElementById(id);
-        if (elemento) return elemento.value || elemento.textContent;
+        if (elemento) {
+            return this.extraerValorElemento(elemento);
+        }
 
         // Intentar con prefijo de sección
         elemento = document.getElementById(`${this.seccionActual}_${id}`);
-        if (elemento) return elemento.value || elemento.textContent;
+        if (elemento) {
+            return this.extraerValorElemento(elemento);
+        }
 
         return '';
+    }
+
+    /**
+     * Extraer valor correcto según el tipo de elemento
+     */
+    extraerValorElemento(elemento) {
+        if (!elemento) return '';
+
+        // Para elementos SELECT, siempre usar .value
+        if (elemento.tagName === 'SELECT') {
+            return elemento.value || '';
+        }
+
+        // Para elementos INPUT, usar .value
+        if (elemento.tagName === 'INPUT') {
+            return elemento.value || '';
+        }
+
+        // Para elementos TEXTAREA, usar .value
+        if (elemento.tagName === 'TEXTAREA') {
+            return elemento.value || '';
+        }
+
+        // Para otros elementos, usar textContent pero filtrar
+        const textContent = elemento.textContent || '';
+        
+        // Si el textContent es muy largo (más de 100 caracteres), probablemente es concatenación incorrecta
+        if (textContent.length > 100) {
+            console.warn(`⚠️ Texto muy largo para campo ${elemento.id}: "${textContent.substring(0, 50)}..."`);
+            return '';
+        }
+
+        return textContent.trim();
     }
 
     /**
@@ -109,12 +158,22 @@ class IteracionesManager {
 
         switch (this.seccionActual) {
             case 'estructuras':
-                especificos.material_nueva = this.obtenerValorCampo('material_nueva');
-                especificos.altura_nueva = this.obtenerValorCampo('altura_nueva');
-                especificos.poblacion_nueva = this.obtenerValorCampo('poblacion_nueva');
-                especificos.disposicion_nueva = this.obtenerValorCampo('disposicion_nueva');
-                especificos.tipo_red_nueva = this.obtenerValorCampo('tipo_red_nueva');
-                especificos.uc_codigo = this.obtenerValorCampo('uc_codigo');
+                // Campos reales que existen en el formulario de estructuras
+                especificos.fecha = this.obtenerValorCampo('fecha');
+                especificos.t_inv = this.obtenerValorCampo('t_inv');
+                especificos.alimentador = this.obtenerValorCampo('alimentador');
+                especificos.estructura_retirada_campo = this.obtenerValorCampo('estructura_retirada_campo');
+                especificos.numero_conductores = this.obtenerValorCampo('numero_conductores');
+                especificos.montaje_integral = document.getElementById('montaje_integral_checkbox')?.checked || false;
+                especificos.desmantelado = document.getElementById('desmantelado_checkbox')?.checked || false;
+                
+                // Intentar obtener datos del selector UC si está disponible
+                if (window.ucSelector && window.ucSelector.currentSelections) {
+                    especificos.uc_selecciones = window.ucSelector.currentSelections;
+                    especificos.uc_codigo = window.ucSelector.getSelectedCode ? window.ucSelector.getSelectedCode() : '';
+                }
+                
+                console.log('📊 Datos específicos de estructuras:', especificos);
                 break;
 
             case 'conductores':
@@ -304,53 +363,110 @@ class IteracionesManager {
     }
 
     /**
-     * Actualizar tabla de iteraciones
+     * Actualizar tabla de iteraciones - Versión DOM segura
      */
     actualizarTabla() {
-        const tabla = document.getElementById('tabla-iteraciones-body');
+        const tabla = document.getElementById('iterationTableBody');
         if (!tabla) {
-            console.warn('Tabla de iteraciones no encontrada');
+            console.warn('Tabla de iteraciones no encontrada con ID: iterationTableBody');
             return;
         }
+
+        console.log(`📊 Actualizando tabla con ${this.iteraciones.length} iteraciones`);
+
+        // Limpiar tabla
+        tabla.innerHTML = '';
 
         if (this.iteraciones.length === 0) {
-            tabla.innerHTML = `
-                <tr>
-                    <td colspan="8" class="text-center py-4 text-gray-500">
-                        <i class="fas fa-inbox text-2xl mb-2"></i><br>
-                        No hay iteraciones agregadas
-                    </td>
-                </tr>
-            `;
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 11;
+            td.className = 'px-6 py-4 text-center text-gray-500';
+            
+            // Crear el contenido con icono
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-inbox text-2xl mb-2';
+            
+            const br = document.createElement('br');
+            const texto = document.createTextNode('No hay iteraciones agregadas');
+            
+            td.appendChild(icon);
+            td.appendChild(br);
+            td.appendChild(texto);
+            
+            tr.appendChild(td);
+            tabla.appendChild(tr);
             return;
         }
 
-        tabla.innerHTML = this.iteraciones.map(iter => `
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 border-b">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                        ${this.getSeccionColor(iter.seccion)}">
-                        ${iter.seccion.charAt(0).toUpperCase() + iter.seccion.slice(1)}
-                    </span>
-                </td>
-                <td class="px-4 py-3 border-b">${iter.numero_iteracion}</td>
-                <td class="px-4 py-3 border-b text-sm">${iter.nombre_proyecto}</td>
-                <td class="px-4 py-3 border-b text-sm">${iter.municipio}</td>
-                <td class="px-4 py-3 border-b text-sm">${iter.direccion || '-'}</td>
-                <td class="px-4 py-3 border-b text-center">${iter.cantidad}</td>
-                <td class="px-4 py-3 border-b text-xs text-gray-500">
-                    ${new Date(iter.fecha_creacion).toLocaleString('es-CO')}
-                </td>
-                <td class="px-4 py-3 border-b text-center">
-                    <button 
-                        class="btn-eliminar-iteracion text-red-600 hover:text-red-800 p-1"
-                        data-iteracion-id="${iter.id}"
-                        title="Eliminar iteración">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        // Crear filas usando createElement para máxima seguridad
+        this.iteraciones.forEach((iter, index) => {
+            const datos = iter.datos_especificos || {};
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50';
+
+            // Helper para crear celdas estándar
+            const crearCelda = (contenido) => {
+                const td = document.createElement('td');
+                td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                td.textContent = contenido || '-';
+                return td;
+            };
+
+            // Helper para obtener valor seguro de objeto anidado
+            const obtenerValorSeguro = (obj, prop) => {
+                try {
+                    return obj && obj[prop] ? obj[prop] : '-';
+                } catch (e) {
+                    return '-';
+                }
+            };
+
+            // Estructura Retirada (4 columnas)
+            tr.appendChild(crearCelda(datos.estructura_retirada_material));
+            tr.appendChild(crearCelda(datos.estructura_retirada_altura));
+            tr.appendChild(crearCelda(datos.estructura_retirada_apoyo));
+            tr.appendChild(crearCelda(datos.estructura_retirada_uc || iter.estructura_retirada_campo));
+
+            // Estructura Nueva (7 columnas)
+            tr.appendChild(crearCelda(datos.material_nueva || obtenerValorSeguro(datos.uc_selecciones, 'material')));
+            tr.appendChild(crearCelda(datos.altura_nueva || obtenerValorSeguro(datos.uc_selecciones, 'altura')));
+            tr.appendChild(crearCelda(datos.poblacion_nueva || obtenerValorSeguro(datos.uc_selecciones, 'poblacion')));
+            tr.appendChild(crearCelda(datos.disposicion_nueva || obtenerValorSeguro(datos.uc_selecciones, 'disposicion')));
+            tr.appendChild(crearCelda(datos.tipo_red_nueva || obtenerValorSeguro(datos.uc_selecciones, 'tipo_red')));
+            tr.appendChild(crearCelda(datos.uc_codigo));
+            
+            // Columna de fotos
+            const fotosCount = iter.fotos_count || 0;
+            tr.appendChild(crearCelda(fotosCount + ' fotos'));
+
+            // Columna de acciones con botón
+            const tdAccion = document.createElement('td');
+            tdAccion.className = 'px-6 py-4 whitespace-nowrap text-sm font-medium';
+            
+            const boton = document.createElement('button');
+            boton.className = 'btn-eliminar-iteracion text-red-600 hover:text-red-900';
+            boton.setAttribute('data-iteracion-id', iter.id);
+            boton.title = 'Eliminar iteración';
+            
+            const icono = document.createElement('i');
+            icono.className = 'fas fa-trash-alt';
+            
+            boton.appendChild(icono);
+            tdAccion.appendChild(boton);
+            tr.appendChild(tdAccion);
+
+            // Agregar fila completa a la tabla
+            tabla.appendChild(tr);
+
+            console.log(`✅ Fila ${index + 1} agregada:`, {
+                id: iter.id,
+                estructura_retirada: iter.estructura_retirada_campo,
+                uc_codigo: datos.uc_codigo
+            });
+        });
+
+        console.log('✅ Tabla actualizada correctamente con createElement');
     }
 
     /**

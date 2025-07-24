@@ -152,7 +152,7 @@
             <div class="logo">
                 <i class="fas fa-building text-2xl"></i>
             </div>
-            <h1 class="text-2xl font-bold mb-2">Sistema DESS</h1>
+            <h1 class="text-2xl font-bold mb-2">Administración DESS</h1>
             <p class="text-blue-100 text-sm">Portal de Formularios PIR</p>
         </div>
         
@@ -251,6 +251,27 @@
                 <a href="#" onclick="alert('Contacta al administrador del sistema')">
                     ¿Olvidaste tu contraseña?
                 </a>
+            </div>
+            
+            <!-- Enlace para registro -->
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-600">
+                    ¿No tienes cuenta? 
+                    <a href="{% url 'forms:register' %}" class="text-blue-600 hover:text-blue-800 font-medium">
+                        <i class="fas fa-user-plus me-1"></i>
+                        Regístrate aquí
+                    </a>
+                </p>
+            </div>
+            
+            <!-- Información de acceso -->
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+                <p class="font-semibold mb-1">Tipos de acceso:</p>
+                <ul class="text-xs space-y-1">
+                    <li>• Usuarios del sistema: Acceso al dashboard</li>
+                    <li>• Administradores: Acceso completo al panel</li>
+                    <li>• <strong>Nuevo usuario:</strong> Regístrate y espera la activación del admin</li>
+                </ul>
             </div>
         </div>
     </div>
