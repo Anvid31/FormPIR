@@ -38,13 +38,13 @@
         
         if (tipoInversion === "I" || tipoInversion === "III") {
             // Habilitar para tipos I y III
-            estructuraRetirada.disabled = false;
+            estructuraRetirada.removeAttribute('disabled','disabled');
             estructuraRetirada.required = true;
             estructuraRetirada.classList.remove("bg-gray-100", "cursor-not-allowed");
             console.log("✅ Estructura retirada habilitada para tipo " + tipoInversion);
         } else {
             // Deshabilitar para tipos II y IV
-            estructuraRetirada.disabled = true;
+            estructuraRetirada.setAttribute('disabled', 'disabled');
             estructuraRetirada.required = false;
             estructuraRetirada.value = "";
             estructuraRetirada.classList.add("bg-gray-100", "cursor-not-allowed");
