@@ -36,17 +36,35 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🔧 Inicializando selector UC jerárquico...');
     
     // Función para inicializar el selector cuando los scripts estén listos
+    let intentos = 0;
+    const maxIntentos = 30; // 3 segundos máximo
+    
     function initializeUCSelector() {
-        if (typeof UCHierarchicalSelector === 'undefined' || 
-            typeof window.UC_HIERARCHICAL_STRUCTURE === 'undefined' ||
-            typeof window.UC_MAPPING === 'undefined') {
+        intentos++;
+        
+        // Solo verificar lo que realmente necesitamos: UCHierarchicalSelector y UC_HIERARCHICAL_STRUCTURE
+        const scriptsListos = typeof UCHierarchicalSelector !== 'undefined' && 
+                             typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined';
+        
+        if (!scriptsListos && intentos < maxIntentos) {
             console.log('⏳ Esperando scripts UC...', {
                 UCHierarchicalSelector: typeof UCHierarchicalSelector !== 'undefined',
                 UC_HIERARCHICAL_STRUCTURE: typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined',
-                UC_MAPPING: typeof window.UC_MAPPING !== 'undefined'
+                intentos: intentos,
+                maxIntentos: maxIntentos
             });
             setTimeout(initializeUCSelector, 100);
             return;
+        }
+        
+        if (!scriptsListos) {
+            console.warn('⚠️ Timeout esperando scripts UC. Inicializando sin UC_MAPPING.');
+        }
+        
+        // Crear UC_MAPPING vacío si no existe para evitar errores
+        if (typeof window.UC_MAPPING === 'undefined') {
+            window.UC_MAPPING = {};
+            console.log('✅ UC_MAPPING creado como objeto vacío');
         }
         
         console.log('✅ Scripts UC cargados, inicializando selector...');

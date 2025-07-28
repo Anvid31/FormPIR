@@ -118,41 +118,38 @@
 
     </main>
 
-    <!-- Scripts Globales Optimizados v2.0 -->
+    <!-- Scripts FormPIR - Estructura Limpia y Organizada -->
     
-    <!-- 1. Scripts esenciales primero -->
-    <script src="{% static 'forms/js/dom-cache.js' %}"></script>
-    <script src="{% static 'forms/js/form-utils.js' %}"></script>
+    <!-- 1. Configuración Central -->
+    <script src="{% static 'forms/js/config/app-config.js' %}"></script>
+    <script src="{% static 'forms/js/config/proyecto-mapping.js' %}"></script>
     
-    <!-- 2. UC Mapping y estructura ANTES que otros scripts -->
+    <!-- 2. Core System -->
+    <script src="{% static 'forms/js/core/logger.js' %}"></script>
+    <script src="{% static 'forms/js/core/dom-cache.js' %}"></script>
+    
+    <!-- 3. UC System (si es necesario) -->
     <script src="{% static 'js/uc-mapping.js' %}"></script>
     <script src="{% static 'js/uc-hierarchical.js' %}"></script>
     <script src="{% static 'js/uc-hierarchical-selector.js' %}"></script>
     
-    <!-- 3. Luego el resto de scripts -->
-    <script src="{% static 'forms/js/data-mappings.js' %}"></script>
-    <script src="{% static 'forms/js/autocompletion-utils.js' %}"></script>
-    <script src="{% static 'forms/js/autocompletion.js' %}"></script>
+    <!-- 4. Módulos de Funcionalidad -->
+    <script src="{% static 'forms/js/modules/autocompletion-utils.js' %}"></script>
+    <script src="{% static 'forms/js/modules/autocompletion.js' %}"></script>
+    <script src="{% static 'forms/js/modules/tipos-inversion.js' %}"></script>
+    <script src="{% static 'forms/js/modules/iteraciones-manager.js' %}"></script>
+    <script src="{% static 'forms/js/modules/transformador-autocompletado.js' %}"></script>
     
-    <!-- Script específico para estructuras (solo si es la sección correcta) -->
+    <!-- 5. Scripts específicos si existen -->
     {% if seccion == 'estructuras' %}
-    <script src="{% static 'forms/js/autocompletion-estructuras.js' %}"></script>
+    <script src="{% static 'forms/js/modules/autocompletion-estructuras.js' %}"></script>
     {% endif %}
     
-    <script src="{% static 'forms/js/iteraciones-manager.js' %}"></script>
+    <!-- 6. Archivos generales -->
     <script src="{% static 'forms/js/file-upload.js' %}"></script>
-    <script src="{% static 'forms/js/transformador-autocompletado.js' %}"></script>
     
-    <!-- Sistema de tipos de inversión (Montaje Integral y Desmantelado) - VERSIÓN SIMPLIFICADA -->
-    <script src="{% static 'forms/js/tipos-inversion-v4.js' %}"></script>
-    
-    <!-- Script de diagnóstico comentado - ya no necesario con v4 -->
-    <!-- <script src="{% static 'forms/js/diagnostico-estructura-retirada.js' %}"></script> -->
-    
-    <script src="{% static 'forms/js/app-initializer.js' %}"></script>
-    
-    <!-- 4. Sistema Unificado de Inicialización -->
-    <script src="{% static 'forms/js/unified-init.js' %}"></script>
+    <!-- 7. Inicialización Principal -->
+    <script src="{% static 'forms/js/core/app.js' %}"></script>
     
     <!-- Scripts específicos de la sección -->
     {% block section_scripts %}

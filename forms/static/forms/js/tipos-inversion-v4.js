@@ -1,6 +1,6 @@
 /**
- * Gestión de Tipos de Inversión - VERSIÓN SIMPLIFICADA 4.0
- * NO MODIFICA ESTILOS - Solo estados y clases CSS
+ * Gestión de Tipos de Inversión
+
  */
 
 (function() {
@@ -10,6 +10,7 @@
     let montajeIntegralActivo = false;
     let desmanteladoActivo = false;
     let protectionMonitor = null;
+    let montajeEstadoPrevio = false; // Nuevo: guardar estado previo
     
     /**
      * Función principal para manejar cambios en tipo de inversión
@@ -38,13 +39,13 @@
         
         if (tipoInversion === "I" || tipoInversion === "III") {
             // Habilitar para tipos I y III
-            estructuraRetirada.removeAttribute('disabled','disabled');
+            estructuraRetirada.disabled = false;
             estructuraRetirada.required = true;
             estructuraRetirada.classList.remove("bg-gray-100", "cursor-not-allowed");
             console.log("✅ Estructura retirada habilitada para tipo " + tipoInversion);
         } else {
             // Deshabilitar para tipos II y IV
-            estructuraRetirada.setAttribute('disabled', 'disabled');
+            estructuraRetirada.disabled = true;
             estructuraRetirada.required = false;
             estructuraRetirada.value = "";
             estructuraRetirada.classList.add("bg-gray-100", "cursor-not-allowed");
@@ -95,13 +96,23 @@
     }
     
     /**
-     * Toggle Montaje Integral
+     * Toggle Montaje Integral - CORREGIDO
      */
     function toggleMontajeIntegral() {
         const checkbox = document.getElementById("montaje_integral_checkbox");
         montajeIntegralActivo = checkbox ? checkbox.checked : false;
         
         console.log(`🔧 Montaje Integral: ${montajeIntegralActivo ? 'ACTIVADO' : 'DESACTIVADO'}`);
+        
+        // Si Desmantelado está activo, no hacer nada y restaurar checkbox
+        if (desmanteladoActivo) {
+            console.log('⚠️ Montaje Integral bloqueado por Desmantelado activo');
+            if (checkbox) {
+                checkbox.checked = montajeEstadoPrevio; // Restaurar estado previo
+                montajeIntegralActivo = montajeEstadoPrevio;
+            }
+            return;
+        }
         
         if (montajeIntegralActivo) {
             // Deshabilitar UC
@@ -113,8 +124,6 @@
                 estructuraRetirada.disabled = true;
                 estructuraRetirada.classList.add("bg-gray-100", "cursor-not-allowed", "opacity-50");
             }
-            
-
             
         } else {
             // Habilitar UC
@@ -129,14 +138,12 @@
                     estructuraRetirada.classList.remove("bg-gray-100", "cursor-not-allowed", "opacity-50");
                 }
             }
-            
- 
         }
     }
     
     /**
-     * Toggle Desmantelado - VERSIÓN SIMPLIFICADA
-     * NO modifica estilos visuales, solo estados
+     * Toggle Desmantelado - VERSIÓN CORREGIDA
+     * FIX: Preserva estado de Montaje Integral
      */
     function toggleDesmantelado() {
         const checkbox = document.getElementById("desmantelado_checkbox");
@@ -145,9 +152,23 @@
         console.log(`🚨 Desmantelado: ${desmanteladoActivo ? 'ACTIVADO' : 'DESACTIVADO'}`);
         
         if (desmanteladoActivo) {
+            // GUARDAR estado actual de Montaje Integral
+            montajeEstadoPrevio = montajeIntegralActivo;
+            console.log(`💾 Guardando estado Montaje Integral: ${montajeEstadoPrevio}`);
+            
             // PASO 1: Deshabilitar secciones
             deshabilitarInformacionTecnica(true);
             deshabilitarSeccionUC(true);
+            
+            // PASO 2: Deshabilitar checkbox de Montaje Integral (pero conservar su estado)
+            const montajeCheckbox = document.getElementById("montaje_integral_checkbox");
+            if (montajeCheckbox) {
+                montajeCheckbox.disabled = true;
+                montajeCheckbox.classList.add("opacity-50", "cursor-not-allowed");
+                // Guardar estado previo en data attribute para mayor seguridad
+                montajeCheckbox.dataset.estadoPrevio = montajeEstadoPrevio ? 'true' : 'false';
+                console.log(`🔒 Checkbox Montaje Integral deshabilitado, estado previo: ${montajeEstadoPrevio}`);
+            }
             
             // PASO 2: Habilitar SOLO estructura retirada sin modificar estilos
             const estructuraRetirada = document.getElementById("estructura_retirada_campo");
@@ -187,15 +208,31 @@
             
             // Monitor simplificado
             startProtectionMonitor();
-            mostrarMensajeDesmantelado(true);
             
         } else {
-            // Desactivar desmantelado
+            // Desactivar desmantelado - RESTAURACIÓN MEJORADA
             stopProtectionMonitor();
             
             // Restaurar estados
             deshabilitarInformacionTecnica(false);
             deshabilitarSeccionUC(false);
+            
+            // RESTAURAR checkbox de Montaje Integral PRIMERO
+            const montajeCheckbox = document.getElementById("montaje_integral_checkbox");
+            if (montajeCheckbox) {
+                montajeCheckbox.disabled = false;
+                montajeCheckbox.classList.remove("opacity-50", "cursor-not-allowed");
+                
+                // Restaurar estado previo
+                const estadoPrevioData = montajeCheckbox.dataset.estadoPrevio;
+                if (estadoPrevioData !== undefined) {
+                    montajeEstadoPrevio = estadoPrevioData === 'true';
+                    montajeCheckbox.checked = montajeEstadoPrevio;
+                    montajeIntegralActivo = montajeEstadoPrevio;
+                    delete montajeCheckbox.dataset.estadoPrevio;
+                    console.log(`🔄 Estado Montaje Integral restaurado: ${montajeEstadoPrevio}`);
+                }
+            }
             
             // Restaurar estructura retirada
             const estructuraRetirada = document.getElementById("estructura_retirada_campo");
@@ -225,7 +262,13 @@
                 console.log('✅ Estructura retirada restaurada completamente');
             }
             
-            mostrarMensajeDesmantelado(false);
+            // RE-APLICAR Montaje Integral si estaba activo
+            if (montajeEstadoPrevio) {
+                console.log('🔄 Re-aplicando Montaje Integral...');
+                setTimeout(() => {
+                    toggleMontajeIntegral();
+                }, 100);
+            }
         }
     }
 
@@ -368,10 +411,10 @@
 
     
     /**
-     * Inicialización
+     * Inicialización MEJORADA
      */
     function init() {
-        console.log('🚀 Inicializando gestión de tipos de inversión v4.0 SIMPLIFICADA');
+        console.log('🚀 Inicializando gestión de tipos de inversión v4.1 CORREGIDA');
         
         // Event listener para tipo de inversión
         const tipoInvSelect = document.getElementById('t_inv');
@@ -381,26 +424,61 @@
             handleTipoInversion();
         }
         
-        // Event listeners para checkboxes
+        // Event listeners para checkboxes con manejo mejorado
         const montajeCheckbox = document.getElementById('montaje_integral_checkbox');
         if (montajeCheckbox) {
+            // Remover event listeners previos para evitar duplicados
+            montajeCheckbox.removeEventListener('change', toggleMontajeIntegral);
             montajeCheckbox.addEventListener('change', toggleMontajeIntegral);
         }
         
         const desmanteladoCheckbox = document.getElementById('desmantelado_checkbox');
         if (desmanteladoCheckbox) {
+            // Remover event listeners previos para evitar duplicados
+            desmanteladoCheckbox.removeEventListener('change', toggleDesmantelado);
             desmanteladoCheckbox.addEventListener('change', toggleDesmantelado);
         }
         
         // Asegurar estado inicial correcto
         if (montajeCheckbox) montajeCheckbox.checked = false;
         if (desmanteladoCheckbox) desmanteladoCheckbox.checked = false;
+        montajeIntegralActivo = false;
+        desmanteladoActivo = false;
+        montajeEstadoPrevio = false;
+        
+        console.log('✅ Sistema tipos de inversión v4.1 inicializado correctamente');
     }
     
     // Exponer funciones globalmente
     window.handleTipoInversion = handleTipoInversion;
     window.toggleMontajeIntegral = toggleMontajeIntegral;
     window.toggleDesmantelado = toggleDesmantelado;
+    
+    // Función de depuración para testing
+    window.debugTiposInversion = function() {
+        console.log('🐛 === DEBUG TIPOS DE INVERSIÓN v4.1 ===');
+        console.log('Estado Montaje Integral:', montajeIntegralActivo);
+        console.log('Estado Desmantelado:', desmanteladoActivo);
+        console.log('Estado Previo Montaje:', montajeEstadoPrevio);
+        
+        const montajeCheckbox = document.getElementById('montaje_integral_checkbox');
+        const desmanteladoCheckbox = document.getElementById('desmantelado_checkbox');
+        
+        console.log('Checkbox Montaje:', {
+            exists: !!montajeCheckbox,
+            checked: montajeCheckbox?.checked,
+            disabled: montajeCheckbox?.disabled,
+            estadoPrevio: montajeCheckbox?.dataset?.estadoPrevio
+        });
+        
+        console.log('Checkbox Desmantelado:', {
+            exists: !!desmanteladoCheckbox,
+            checked: desmanteladoCheckbox?.checked,
+            disabled: desmanteladoCheckbox?.disabled
+        });
+        
+        console.log('=== FIN DEBUG ===');
+    };
     
     // Inicializar cuando el DOM esté listo
     if (document.readyState === 'loading') {

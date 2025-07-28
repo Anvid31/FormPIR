@@ -465,6 +465,13 @@ function filterUCs(criteria) {
     return filtered;
 }
 
+// Asignar al objeto window para uso en el navegador
+if (typeof window !== 'undefined') {
+    window.UC_MAPPING = UC_MAPPING;
+    window.getUCFromStructure = getUCFromStructure;
+    window.filterUCs = filterUCs;
+}
+
 // Exportar para uso en otros archivos
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { UC_MAPPING, getUCFromStructure, filterUCs };

@@ -1,6 +1,6 @@
 /**
- * Gestión de Tipos de Inversión - Montaje Integral y Desmantelado
- * Version 3.0 - Implementación limpia con requerimientos confirmados
+ * Gestión de Tipos de Inversión - VERSIÓN ÚNICA SIMPLIFICADA
+ * Maneja Montaje Integral y Desmantelado de forma limpia y sin conflictos
  */
 
 (function() {
@@ -9,7 +9,7 @@
     // Variables globales para el estado
     let montajeIntegralActivo = false;
     let desmanteladoActivo = false;
-    let monitorInterval = null; // Para monitoreo continuo
+    let montajeEstadoPrevio = false; // Para preservar estado al toggle Desmantelado
     
     /**
      * Función principal para manejar cambios en tipo de inversión
@@ -95,14 +95,23 @@
     }
     
     /**
-     * Toggle Montaje Integral
-     * Deshabilita: UC + estructura retirada
+     * Toggle Montaje Integral - VERSIÓN SIMPLIFICADA
      */
     function toggleMontajeIntegral() {
         const checkbox = document.getElementById("montaje_integral_checkbox");
         montajeIntegralActivo = checkbox ? checkbox.checked : false;
         
         console.log(`🔧 Montaje Integral: ${montajeIntegralActivo ? 'ACTIVADO' : 'DESACTIVADO'}`);
+        
+        // Si Desmantelado está activo, no hacer nada y restaurar estado previo
+        if (desmanteladoActivo) {
+            console.log('⚠️ Montaje Integral bloqueado por Desmantelado activo');
+            if (checkbox) {
+                checkbox.checked = montajeEstadoPrevio;
+                montajeIntegralActivo = montajeEstadoPrevio;
+            }
+            return;
+        }
         
         if (montajeIntegralActivo) {
             // Deshabilitar UC
@@ -114,9 +123,6 @@
                 estructuraRetirada.disabled = true;
                 estructuraRetirada.classList.add("bg-gray-100", "cursor-not-allowed", "opacity-50");
             }
-            
-
-            
         } else {
             // Habilitar UC
             deshabilitarSeccionUC(false);
@@ -130,15 +136,12 @@
                     estructuraRetirada.classList.remove("bg-gray-100", "cursor-not-allowed", "opacity-50");
                 }
             }
-            
-
         }
     }
     
     /**
-     * Toggle Desmantelado - Versión mejorada con protección absoluta
-     * Deshabilita: Información Técnica (excepto estructura retirada) + UC
-     * Mantiene habilitados: Información del Proyecto + Documentos + estructura retirada + botón iteración
+     * Toggle Desmantelado - VERSIÓN SIMPLIFICADA
+     * FIX: Preserva estado de Montaje Integral
      */
     function toggleDesmantelado() {
         const checkbox = document.getElementById("desmantelado_checkbox");
@@ -147,120 +150,54 @@
         console.log(`🚨 Desmantelado: ${desmanteladoActivo ? 'ACTIVADO' : 'DESACTIVADO'}`);
         
         if (desmanteladoActivo) {
-            // Primero deshabilitar todo lo demás
+            // GUARDAR estado actual de Montaje Integral
+            montajeEstadoPrevio = montajeIntegralActivo;
+            console.log(`💾 Guardando estado Montaje Integral: ${montajeEstadoPrevio}`);
+            
+            // Deshabilitar secciones
             deshabilitarInformacionTecnica(true);
             deshabilitarSeccionUC(true);
             
-            // FORZAR estructura retirada habilitada con máxima prioridad
+            // Deshabilitar checkbox de Montaje Integral
+            const montajeCheckbox = document.getElementById("montaje_integral_checkbox");
+            if (montajeCheckbox) {
+                montajeCheckbox.disabled = true;
+                montajeCheckbox.classList.add("opacity-50", "cursor-not-allowed");
+            }
+            
+            // Habilitar estructura retirada con highlight
             const estructuraRetirada = document.getElementById("estructura_retirada_campo");
             if (estructuraRetirada) {
-                console.log("� PROTECCIÓN ABSOLUTA - Clonando elemento para eliminar listeners externos");
+                estructuraRetirada.disabled = false;
+                estructuraRetirada.classList.remove("bg-gray-100", "cursor-not-allowed");
+                estructuraRetirada.classList.add("bg-yellow-50", "border-yellow-300", "ring-2", "ring-yellow-400");
                 
-                // Remover TODOS los event listeners que puedan interferir
-                const nuevoElemento = estructuraRetirada.cloneNode(true);
-                estructuraRetirada.parentNode.replaceChild(nuevoElemento, estructuraRetirada);
-                
-                // Obtener referencia al nuevo elemento
-                const estructuraRetiradaNueva = document.getElementById("estructura_retirada_campo");
-                
-                // Configurar el campo con máxima prioridad
-                estructuraRetiradaNueva.disabled = false;
-                estructuraRetiradaNueva.readOnly = false;
-                estructuraRetiradaNueva.removeAttribute('disabled');
-                estructuraRetiradaNueva.removeAttribute('readonly');
-                
-                // Limpiar TODAS las clases y aplicar solo las necesarias
-                estructuraRetiradaNueva.className = 'form-input';
-                estructuraRetiradaNueva.classList.add('bg-yellow-50', 'border-yellow-300', 'font-medium');
-                
-                // Aplicar estilos inline sin modificar dimensiones
-                estructuraRetiradaNueva.style.cssText = `
-                    background-color: #fef3c7 !important;
-                    border-color: #f59e0b !important;
-                    color: #000 !important;
-                    opacity: 1 !important;
-                    cursor: text !important;
-                    pointer-events: auto !important;
-                    -webkit-user-select: text !important;
-                    user-select: text !important;
-                    font-weight: 500 !important;
-                    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.2) !important;
-                `;
-                
-                // Agregar atributo de protección
-                estructuraRetiradaNueva.setAttribute('data-protected', 'true');
-                estructuraRetiradaNueva.setAttribute('data-desmantelado-active', 'true');
-                
-                // Focus con delay
                 setTimeout(() => {
-                    estructuraRetiradaNueva.focus();
-                    estructuraRetiradaNueva.select();
+                    estructuraRetirada.focus();
                 }, 100);
-                
-                console.log("✅ ELEMENTO CLONADO Y PROTEGIDO - Estado:", {
-                    disabled: estructuraRetiradaNueva.disabled,
-                    readonly: estructuraRetiradaNueva.readOnly,
-                    classes: estructuraRetiradaNueva.className
-                });
             }
-            
-            // Monitor mejorado - más frecuente y agresivo
-            if (monitorInterval) clearInterval(monitorInterval);
-            monitorInterval = setInterval(() => {
-                const campo = document.getElementById("estructura_retirada_campo");
-                if (campo && desmanteladoActivo) {
-                    // Verificar si alguien lo deshabilitó
-                    if (campo.disabled || campo.hasAttribute('disabled')) {
-                        console.log("🔄 MONITOR: Detectado intento de deshabilitar - corrigiendo");
-                        campo.disabled = false;
-                        campo.removeAttribute('disabled');
-                    }
-                    
-                    // Verificar readonly
-                    if (campo.readOnly || campo.hasAttribute('readonly')) {
-                        campo.readOnly = false;
-                        campo.removeAttribute('readonly');
-                    }
-                    
-                    // Mantener estilos
-                    if (!campo.classList.contains('bg-yellow-50')) {
-                        campo.className = 'form-input bg-yellow-50 border-yellow-300 font-medium';
-                    }
-                    
-                    // Mantener estilos inline sin modificar dimensiones
-                    campo.style.backgroundColor = '#fef3c7';
-                    campo.style.borderColor = '#f59e0b';
-                    campo.style.color = '#000';
-                    campo.style.opacity = '1';
-                    campo.style.pointerEvents = 'auto';
-                    campo.style.fontWeight = '500';
-                    campo.style.boxShadow = '0 0 0 1px rgba(245, 158, 11, 0.2)';
-                }
-            }, 50); // Más frecuente: cada 50ms
-
-            console.log("🔄 MONITOR SUPER-AGRESIVO activado (50ms) para estructura_retirada_campo");
             
         } else {
-            console.log("✅ DESMANTELADO DESACTIVADO - Limpiando monitor y restaurando campo");
-            
-            // Desactivar monitor continuo
-            if (monitorInterval) {
-                clearInterval(monitorInterval);
-                monitorInterval = null;
-                console.log("🔄 MONITOR SUPER-AGRESIVO desactivado");
-            }
-            
-            // Habilitar todo
+            // Desactivar desmantelado - RESTAURACIÓN SIMPLE
             deshabilitarInformacionTecnica(false);
             deshabilitarSeccionUC(false);
             
-            // Limpiar estructura retirada completamente
+            // RESTAURAR checkbox de Montaje Integral
+            const montajeCheckbox = document.getElementById("montaje_integral_checkbox");
+            if (montajeCheckbox) {
+                montajeCheckbox.disabled = false;
+                montajeCheckbox.classList.remove("opacity-50", "cursor-not-allowed");
+                
+                // Restaurar estado previo
+                montajeCheckbox.checked = montajeEstadoPrevio;
+                montajeIntegralActivo = montajeEstadoPrevio;
+                console.log(`🔄 Estado Montaje Integral restaurado: ${montajeEstadoPrevio}`);
+            }
+            
+            // Limpiar estructura retirada
             const estructuraRetirada = document.getElementById("estructura_retirada_campo");
             if (estructuraRetirada) {
-                estructuraRetirada.removeAttribute('data-protected');
-                estructuraRetirada.removeAttribute('data-desmantelado-active');
-                estructuraRetirada.style.cssText = ''; // Limpiar estilos inline
-                estructuraRetirada.className = 'form-input'; // Restaurar clase base
+                estructuraRetirada.classList.remove("bg-yellow-50", "border-yellow-300", "ring-2", "ring-yellow-400");
                 
                 // Verificar si debe estar deshabilitada según tipo de inversión
                 const tipoInversion = document.getElementById("t_inv").value;
@@ -268,16 +205,14 @@
                     estructuraRetirada.disabled = true;
                     estructuraRetirada.classList.add("bg-gray-100", "cursor-not-allowed");
                 }
-                
-                console.log("🧹 Campo estructura retirada limpiado y restaurado");
             }
             
-            // Ocultar mensaje
-            mostrarMensajeDesmantelado(false);
-            
-            // Restaurar estado de montaje integral si estaba activo
-            if (montajeIntegralActivo) {
-                toggleMontajeIntegral();
+            // RE-APLICAR Montaje Integral si estaba activo
+            if (montajeEstadoPrevio) {
+                console.log('🔄 Re-aplicando Montaje Integral...');
+                setTimeout(() => {
+                    toggleMontajeIntegral();
+                }, 100);
             }
         }
     }
@@ -383,10 +318,10 @@
 
     
     /**
-     * Inicialización
+     * Inicialización SIMPLIFICADA
      */
     function init() {
-        console.log('🚀 Inicializando gestión de tipos de inversión v3.0 - PROTECCIÓN ABSOLUTA');
+        console.log('🚀 Inicializando gestión de tipos de inversión - VERSIÓN ÚNICA SIMPLIFICADA');
         
         // Event listener para tipo de inversión
         const tipoInvSelect = document.getElementById('t_inv');
@@ -410,102 +345,26 @@
         // Asegurar estado inicial correcto
         if (montajeCheckbox) montajeCheckbox.checked = false;
         if (desmanteladoCheckbox) desmanteladoCheckbox.checked = false;
+        montajeIntegralActivo = false;
+        desmanteladoActivo = false;
+        montajeEstadoPrevio = false;
         
-        // INICIALIZAR PROTECCIÓN ABSOLUTA
-        setupProteccionAbsoluta();
-        setupDebugEstructuraRetirada();
-    }
-    
-    /**
-     * Configurar protección absoluta para estructura_retirada_campo
-     */
-    function setupProteccionAbsoluta() {
-        // Sobrescribir el setter de disabled para estructura_retirada_campo
-        const estructuraRetirada = document.getElementById('estructura_retirada_campo');
-        if (estructuraRetirada) {
-            console.log("🛡️ CONFIGURANDO PROTECCIÓN ABSOLUTA para estructura_retirada_campo");
-            
-            // Guardar el descriptor original
-            const originalDescriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'disabled') ||
-                                    Object.getOwnPropertyDescriptor(Element.prototype, 'disabled');
-            
-            Object.defineProperty(estructuraRetirada, 'disabled', {
-                get: function() {
-                    return this.hasAttribute('disabled');
-                },
-                set: function(value) {
-                    // Si desmantelado está activo, NO permitir deshabilitar
-                    if (this.getAttribute('data-desmantelado-active') === 'true' && value === true) {
-                        console.warn('⚠️ INTERCEPTADO - Intento bloqueado de deshabilitar estructura_retirada_campo');
-                        console.trace('📍 Stack trace del intento de deshabilitar:');
-                        return;
-                    }
-                    // Para otros casos, comportamiento normal
-                    if (value) {
-                        this.setAttribute('disabled', '');
-                    } else {
-                        this.removeAttribute('disabled');
-                    }
-                },
-                configurable: true
-            });
-            
-            console.log("✅ Protección absoluta configurada - disabled setter interceptado");
-        }
-    }
-    
-    /**
-     * Configurar debugging para estructura_retirada_campo
-     */
-    function setupDebugEstructuraRetirada() {
-        const campo = document.getElementById('estructura_retirada_campo');
-        if (!campo) return;
-        
-        console.log("🔍 CONFIGURANDO DEBUG para estructura_retirada_campo");
-        
-        // Observar cambios en el campo
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes') {
-                    console.log('🔍 ATRIBUTO CAMBIADO:', mutation.attributeName, 
-                               'Valor anterior:', mutation.oldValue, 
-                               'Valor actual:', campo.getAttribute(mutation.attributeName));
-                    
-                    if (mutation.attributeName === 'disabled' && campo.disabled) {
-                        console.trace('❌ STACK TRACE - Alguien deshabilitó el campo:');
-                    }
-                    
-                    if (mutation.attributeName === 'class') {
-                        console.log('🎨 CLASES CAMBIADAS:', campo.className);
-                    }
-                }
-            });
-        });
-        
-        observer.observe(campo, {
-            attributes: true,
-            attributeOldValue: true
-        });
-        
-        console.log('✅ Debug activado para estructura_retirada_campo');
-        
-        // Exponer función de debug globalmente
-        window.debugEstructuraRetirada = function() {
-            console.log('🔍 ESTADO ACTUAL estructura_retirada_campo:', {
-                disabled: campo.disabled,
-                readOnly: campo.readOnly,
-                classes: campo.className,
-                style: campo.style.cssText,
-                attributes: Array.from(campo.attributes).map(attr => `${attr.name}="${attr.value}"`),
-                value: campo.value
-            });
-        };
+        console.log('✅ Sistema de tipos de inversión inicializado correctamente');
     }
     
     // Exponer funciones globalmente
     window.handleTipoInversion = handleTipoInversion;
     window.toggleMontajeIntegral = toggleMontajeIntegral;
     window.toggleDesmantelado = toggleDesmantelado;
+    
+    // Función de debug simple
+    window.debugTiposInversion = function() {
+        console.log('� === DEBUG TIPOS DE INVERSIÓN ===');
+        console.log('Estado Montaje Integral:', montajeIntegralActivo);
+        console.log('Estado Desmantelado:', desmanteladoActivo);
+        console.log('Estado Previo Montaje:', montajeEstadoPrevio);
+        console.log('=== FIN DEBUG ===');
+    };
     
     // Inicializar cuando el DOM esté listo
     if (document.readyState === 'loading') {
