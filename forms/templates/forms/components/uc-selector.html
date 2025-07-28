@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
                              typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined';
         
         if (!scriptsListos && intentos < maxIntentos) {
-            console.log('⏳ Esperando scripts UC...', {
+            console.log(`⏳ Estructura - Intento ${intentos}: Esperando scripts UC...`, {
                 UCHierarchicalSelector: typeof UCHierarchicalSelector !== 'undefined',
                 UC_HIERARCHICAL_STRUCTURE: typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined',
                 intentos: intentos,
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (!scriptsListos) {
-            console.warn('⚠️ Timeout esperando scripts UC. Inicializando sin UC_MAPPING.');
+            console.warn('⚠️ Timeout esperando scripts UC para estructuras. Inicializando sin UC_MAPPING.');
         }
         
         // Crear UC_MAPPING vacío si no existe para evitar errores
@@ -69,24 +69,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('✅ Scripts UC cargados, inicializando selector...');
         
-        const container = document.getElementById('uc-selector-container');
-        if (!container) {
-            console.error('❌ No se encontró el contenedor UC');
-            return;
+        // Verificar que las categorías de estructuras existan
+        if (window.UC_HIERARCHICAL_STRUCTURE) {
+            const expectedCategories = ['N1', 'N2', 'N3', 'N4'];
+            const missingCategories = expectedCategories.filter(cat => !window.UC_HIERARCHICAL_STRUCTURE[cat]);
+            if (missingCategories.length > 0) {
+                console.error('❌ Categorías de estructura faltantes:', missingCategories);
+                console.log('Categorías disponibles:', Object.keys(window.UC_HIERARCHICAL_STRUCTURE));
+            } else {
+                console.log('✅ Todas las categorías de estructura están disponibles');
+            }
         }
         
-        // Crear el selector jerárquico
+        // Crear el selector jerárquico específico para estructuras
         const selector = new UCHierarchicalSelector(
-            'uc-selector-container', // Pasar el ID como string, no el elemento
+            'uc-selector-container',
             {
+                categoryFilter: ['N1', 'N2', 'N3', 'N4'], // Solo estructuras
                 onSelectionChange: (selections, category) => {
-                    console.log('🔄 UC - Selección cambiada:', { selections, category });
+                    console.log('🔄 Estructura - Selección cambiada:', { selections, category });
                 },
                 onComplete: (result) => {
-                    console.log('✅ UC - Selección completada:', result);
+                    console.log('✅ Estructura - Selección completada:', result);
                     handleUCSelection(result);
                 },
-                showPreview: true
+                showPreview: false,
+                theme: 'modern'
             }
         );
         

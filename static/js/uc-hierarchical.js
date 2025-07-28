@@ -242,6 +242,87 @@ const UC_HIERARCHICAL_STRUCTURE = {
                 }
             }
         }
+    },
+
+    // Conductores
+    N1C: {
+        label: "Conductores Nivel 1",
+        category: "conductores",
+        levels: {
+            tipo_red: {
+                label: "Tipo de Red",
+                options: {
+                    aerea_desnuda: "Aérea Desnuda",
+                    aerea_compacta: "Aérea Compacta",
+                    subterranea: "Subterránea"
+                }
+            },
+            nivel_tension: {
+                label: "Nivel de Tensión",
+                options: {
+                    n1: "Nivel 1 (Baja)",
+                    n2: "Nivel 2 (Media)", 
+                    n3: "Nivel 3 (Alta)"
+                }
+            },
+            calibre: {
+                label: "Calibre",
+                options: {
+                    "2": "2 AWG",
+                    "1/0": "1/0 AWG",
+                    "2/0": "2/0 AWG",
+                    "4/0": "4/0 AWG",
+                    "266.8": "266.8 MCM",
+                    "336.4": "336.4 MCM",
+                    "477": "477 MCM"
+                }
+            },
+            tipo_conductor: {
+                label: "Material del Conductor",
+                options: {
+                    aluminio: "Aluminio",
+                    cobre: "Cobre",
+                    acsr: "ACSR",
+                    aaac: "AAAC"
+                }
+            }
+        }
+    },
+
+    // Equipos de Protección
+    N1E: {
+        label: "Equipos de Protección",
+        category: "equipos",
+        levels: {
+            tipo_equipo: {
+                label: "Tipo de Equipo",
+                options: {
+                    seccionador: "Seccionador",
+                    reconectador: "Reconectador",
+                    regulador: "Regulador de Tensión",
+                    condensador: "Banco de Condensadores",
+                    pararrayos: "Pararrayos",
+                    interruptor: "Interruptor",
+                    fusible: "Fusible"
+                }
+            },
+            nivel_tension: {
+                label: "Nivel de Tensión",
+                options: {
+                    "13.8": "13.8 kV",
+                    "34.5": "34.5 kV", 
+                    "115": "115 kV"
+                }
+            },
+            tipo_instalacion: {
+                label: "Tipo de Instalación",
+                options: {
+                    aereo: "Aéreo",
+                    subestacion: "Subestación",
+                    pedestal: "Pedestal"
+                }
+            }
+        }
     }
 };
 
@@ -312,6 +393,33 @@ const UC_CODE_GENERATOR = {
         const zonaMap = { urbano: 'urbano', rural: 'rural' };
         
         return `Transformador ${tipoMap[selections.tipo_instalacion]} ${fasesMap[selections.fases]} ${zonaMap[selections.zona]} de ${selections.potencia} kVA`;
+    },
+
+    N1C: (selections) => {
+        const tipoRedMap = { 
+            aerea_desnuda: 'línea aérea desnuda',
+            aerea_compacta: 'línea aérea compacta', 
+            subterranea: 'línea subterránea'
+        };
+        const nivelMap = { n1: 'N1', n2: 'N2', n3: 'N3' };
+        const tipoCondMap = { aluminio: 'aluminio', cobre: 'cobre', acsr: 'ACSR', aaac: 'AAAC' };
+        
+        return `Conductor ${tipoCondMap[selections.tipo_conductor]} ${selections.calibre} ${tipoRedMap[selections.tipo_red]} ${nivelMap[selections.nivel_tension]}`;
+    },
+
+    N1E: (selections) => {
+        const equipoMap = {
+            seccionador: 'Seccionador',
+            reconectador: 'Reconectador',
+            regulador: 'Regulador de tensión',
+            condensador: 'Banco de condensadores',
+            pararrayos: 'Pararrayos',
+            interruptor: 'Interruptor',
+            fusible: 'Fusible'
+        };
+        const instalacionMap = { aereo: 'aéreo', subestacion: 'subestación', pedestal: 'pedestal' };
+        
+        return `${equipoMap[selections.tipo_equipo]} ${instalacionMap[selections.tipo_instalacion]} ${selections.nivel_tension} kV`;
     }
 };
 
@@ -400,4 +508,31 @@ if (typeof window !== 'undefined') {
     window.UC_CODE_GENERATOR = UC_CODE_GENERATOR;
     window.getUCCodeFromSelections = getUCCodeFromSelections;
     window.findExactUCCode = findExactUCCode;
+    
+    // Debug: Verificar integridad de la estructura
+    console.log('🔍 UC_HIERARCHICAL_STRUCTURE cargado. Categorías disponibles:', Object.keys(UC_HIERARCHICAL_STRUCTURE));
+    
+    // Verificar categorías específicas
+    const categoriasEsperadas = ['N1', 'N2', 'N3', 'N4', 'N1C', 'N1E', 'N1T'];
+    const categoriasFaltantes = categoriasEsperadas.filter(cat => !UC_HIERARCHICAL_STRUCTURE[cat]);
+    
+    if (categoriasFaltantes.length > 0) {
+        console.error('❌ Categorías faltantes en UC_HIERARCHICAL_STRUCTURE:', categoriasFaltantes);
+    } else {
+        console.log('✅ Todas las categorías UC están presentes');
+    }
+    
+    // Verificar específicamente N1E
+    if (UC_HIERARCHICAL_STRUCTURE.N1E) {
+        console.log('✅ N1E está disponible:', UC_HIERARCHICAL_STRUCTURE.N1E.label);
+    } else {
+        console.error('❌ N1E no está disponible en UC_HIERARCHICAL_STRUCTURE');
+    }
+    
+    // Verificar específicamente N1C
+    if (UC_HIERARCHICAL_STRUCTURE.N1C) {
+        console.log('✅ N1C está disponible:', UC_HIERARCHICAL_STRUCTURE.N1C.label);
+    } else {
+        console.error('❌ N1C no está disponible en UC_HIERARCHICAL_STRUCTURE');
+    }
 }

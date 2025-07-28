@@ -3,6 +3,9 @@
 
 {% block section_content %}
   {% include 'forms/form_sections/conductores_complete.html' %}
+  
+  <!-- NOTA: La tabla de iteraciones se inyecta automáticamente por iteraciones-compartidas.js -->
+  
 {% endblock %}
 
 {% block section_scripts %}
@@ -11,6 +14,17 @@
     
     document.addEventListener('DOMContentLoaded', function() {
       console.log('⚡ Configurando autocompletados para Conductores...');
+      
+      // Solo configurar la sección activa, NO crear nueva tabla
+      setTimeout(function() {
+        if (window.iteracionesManager && window.iteracionesManager.setSeccionActiva) {
+          window.iteracionesManager.setSeccionActiva('conductores');
+          console.log('✅ Sistema de iteraciones configurado para Conductores');
+        } else {
+          console.warn('⚠️ IteracionesManager no disponible');
+        }
+      }, 100);
+      
       console.log('✅ Conductores configurados correctamente');
     });
   </script>

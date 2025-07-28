@@ -1,0 +1,191 @@
+<!-- Componente UC Selector para Equipos -->
+<div class="form-group">
+  <label for="uc-selector-equipos" class="form-label">
+    <i class="fas fa-cogs text-purple-500 mr-2"></i>
+    UC Equipo (Código Único)
+    <span class="tooltip">
+      <i class="fas fa-question-circle help-icon"></i>
+      <span class="tooltip-content">
+        Selecciona la Unidad Constructiva del equipo de protección usando el selector jerárquico.
+        Esta selección reemplaza el selector manual de detalles.
+      </span>
+    </span>
+  </label>
+  
+  <!-- Contenedor del selector jerárquico para equipos -->
+  <div id="uc-selector-equipos-container" class="mb-4">
+    <!-- El selector jerárquico se renderizará aquí -->
+  </div>
+  
+  <!-- Campos ocultos para almacenar los valores -->
+  <input type="hidden" id="uc_equipo" name="uc_equipo" value="">
+  <input type="hidden" id="descripcion_uc_equipo" name="descripcion_uc_equipo" value="">
+  
+  <!-- Vista previa del UC seleccionado -->
+  <div id="uc-equipo-preview" class="hidden mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <h4 class="font-semibold text-purple-800 mb-2">
+          <i class="fas fa-cogs mr-1"></i>
+          UC Equipo Seleccionado:
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <span class="text-sm font-medium text-purple-700">Código:</span>
+            <span id="uc-equipo-code-display" class="ml-2 font-mono text-purple-900 font-bold"></span>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-purple-700">Descripción:</span>
+            <span id="uc-equipo-desc-display" class="ml-2 text-purple-900"></span>
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="clearUCEquipoSelection()" class="text-red-600 hover:text-red-800 ml-4 p-2 rounded-full hover:bg-red-100 transition-colors">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let intentos = 0;
+    const maxIntentos = 50;
+    
+    function initializeUCEquipoSelector() {
+        intentos++;
+        
+        const scriptsListos = typeof UCHierarchicalSelector !== 'undefined' && 
+                             typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined';
+        
+        if (!scriptsListos && intentos < maxIntentos) {
+            console.log(`⏳ Equipo - Intento ${intentos}: Esperando scripts UC...`);
+            setTimeout(initializeUCEquipoSelector, 100);
+            return;
+        }
+        
+        if (!scriptsListos) {
+            console.warn('⚠️ Timeout esperando scripts UC para equipos');
+            return;
+        }
+        
+        // Verificar que la categoría N1E exista
+        if (!window.UC_HIERARCHICAL_STRUCTURE.N1E) {
+            console.error('❌ Categoría N1E no encontrada en UC_HIERARCHICAL_STRUCTURE');
+            console.log('Categorías disponibles:', Object.keys(window.UC_HIERARCHICAL_STRUCTURE));
+            return;
+        }
+        
+        const container = document.getElementById('uc-selector-equipos-container');
+        if (!container) {
+            console.error('❌ Contenedor uc-selector-equipos-container no encontrado');
+            return;
+        }
+        
+        console.log('🎯 Creando selector UC Equipo con filtro: ["N1E"]');
+        
+        // Crear el selector jerárquico específico para equipos
+        const selector = new UCHierarchicalSelector(
+            'uc-selector-equipos-container',
+            {
+                onComplete: (result) => {
+                    handleUCEquipoSelection(result);
+                },
+                categoryFilter: ['N1E'] // SOLO mostrar categorías de equipos
+            }
+        );
+        
+        window.ucEquipoSelector = selector;
+        console.log('✅ Selector UC Equipo inicializado correctamente');
+    }
+    
+    function handleUCEquipoSelection(result) {
+        const code = result.code || '';
+        const description = result.description || '';
+        
+        // Actualizar campos ocultos
+        document.getElementById('uc_equipo').value = code;
+        document.getElementById('descripcion_uc_equipo').value = description;
+        
+        // Actualizar preview
+        document.getElementById('uc-equipo-code-display').textContent = code || 'N/A';
+        document.getElementById('uc-equipo-desc-display').textContent = description || 'Sin descripción';
+        document.getElementById('uc-equipo-preview').classList.remove('hidden');
+        
+        // Autocompletado: actualizar campos tradicionales de equipo
+        if (result.selections) {
+            autocompletarCamposEquipo(result.selections);
+        }
+        
+        // Disparar evento personalizado para integración con IteracionesManager
+        document.dispatchEvent(new CustomEvent('ucEquipoSelected', {
+            detail: { code, description, selections: result.selections }
+        }));
+        
+        console.log('🛡️ UC Equipo seleccionado:', { code, description, selections: result.selections });
+    }
+    
+    function autocompletarCamposEquipo(selections) {
+        // Mapear selecciones UC a campos tradicionales del formulario
+        if (selections.tipo_equipo) {
+            const tipoEquipoSelect = document.getElementById('tipo_equipo') || 
+                                   document.getElementById('equipos_tipo_equipo');
+            if (tipoEquipoSelect) {
+                // Mapear valores UC a valores del select
+                const tipoMap = {
+                    'seccionador': 'Seccionador',
+                    'reconectador': 'Reconectador',
+                    'regulador': 'Regulador de tensión',
+                    'condensador': 'Banco de condensadores',
+                    'pararrayos': 'Pararrayos',
+                    'interruptor': 'Interruptor',
+                    'fusible': 'Fusible'
+                };
+                const valorSelect = tipoMap[selections.tipo_equipo];
+                if (valorSelect) {
+                    tipoEquipoSelect.value = valorSelect;
+                    tipoEquipoSelect.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+        
+        if (selections.nivel_tension) {
+            const voltajeSelect = document.getElementById('voltaje_operacion') || 
+                                document.getElementById('equipos_voltaje_operacion');
+            if (voltajeSelect) {
+                // Convertir nivel de tensión a kV
+                const voltajeValue = selections.nivel_tension + ' kV';
+                voltajeSelect.value = voltajeValue;
+                voltajeSelect.dispatchEvent(new Event('change'));
+            }
+        }
+        
+        if (selections.tipo_instalacion) {
+            // Mapear tipo de instalación si existe campo específico
+            const instalacionMap = { 
+                'aereo': 'Aéreo', 
+                'subestacion': 'Subestación', 
+                'pedestal': 'Pedestal' 
+            };
+            const instalacion = instalacionMap[selections.tipo_instalacion];
+            // Actualizar campos de tipo de instalación si existen
+        }
+        
+        console.log('🔄 Autocompletado campos equipo:', selections);
+    }
+    
+    window.clearUCEquipoSelection = function() {
+        document.getElementById('uc_equipo').value = '';
+        document.getElementById('descripcion_uc_equipo').value = '';
+        document.getElementById('uc-equipo-preview').classList.add('hidden');
+        
+        if (window.ucEquipoSelector && typeof window.ucEquipoSelector.reset === 'function') {
+            window.ucEquipoSelector.reset();
+        }
+        
+        console.log('🗑️ Selección UC Equipo limpiada');
+    };
+    
+    initializeUCEquipoSelector();
+});
+</script>

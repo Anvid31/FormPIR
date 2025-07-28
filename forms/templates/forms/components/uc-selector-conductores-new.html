@@ -1,0 +1,260 @@
+<!-- Componente UC Selector para Conductores -->
+<div class="form-group">
+  <label for="uc-selector-conductores" class="form-label">
+    <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+    UC Conductor (Código Único)
+    <span class="tooltip">
+      <i class="fas fa-info-circle text-gray-400 ml-2"></i>
+      <span class="tooltip-content">
+        Selecciona la Unidad Constructiva de Conductor usando el sistema
+        jerárquico
+      </span>
+    </span>
+  </label>
+
+  <!-- Contenedor del selector jerárquico para conductores -->
+  <div id="uc-selector-conductores-container" class="mb-4">
+    <!-- El selector jerárquico se renderizará aquí -->
+  </div>
+
+  <!-- Campos ocultos para almacenar los valores -->
+  <input type="hidden" id="uc_conductor" name="uc_conductor" value="" />
+  <input
+    type="hidden"
+    id="descripcion_uc_conductor"
+    name="descripcion_uc_conductor"
+    value=""
+  />
+
+  <!-- Vista previa del UC seleccionado -->
+  <div
+    id="uc-conductor-preview"
+    class="hidden mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200"
+  >
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <h4 class="font-semibold text-yellow-800 mb-2">
+          <i class="fas fa-bolt mr-1"></i>
+          UC Conductor Seleccionado:
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <span class="text-sm font-medium text-yellow-700">Código:</span>
+            <span
+              id="uc-conductor-code-display"
+              class="ml-2 font-mono text-yellow-900 font-bold"
+            ></span>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-yellow-700"
+              >Descripción:</span
+            >
+            <span
+              id="uc-conductor-desc-display"
+              class="ml-2 text-yellow-800"
+            ></span>
+          </div>
+        </div>
+      </div>
+      <button
+        type="button"
+        onclick="clearUCConductorSelection()"
+        class="text-red-500 hover:text-red-700 ml-4"
+      >
+        <i class="fas fa-times-circle text-xl"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let intentos = 0;
+    const maxIntentos = 50;
+
+    function initializeUCConductorSelector() {
+      intentos++;
+
+      const scriptsListos =
+        typeof UCHierarchicalSelector !== "undefined" &&
+        typeof window.UC_HIERARCHICAL_STRUCTURE !== "undefined";
+
+      if (!scriptsListos && intentos < maxIntentos) {
+        console.log(
+          `⏳ Conductor - Intento ${intentos}: Esperando scripts UC...`
+        );
+        setTimeout(initializeUCConductorSelector, 100);
+        return;
+      }
+
+      if (!scriptsListos) {
+        console.error("❌ Scripts UC no disponibles para conductores");
+        return;
+      }
+
+      // Verificar que la categoría N1C exista
+      if (!window.UC_HIERARCHICAL_STRUCTURE.N1C) {
+        console.error(
+          "❌ Categoría N1C no encontrada en UC_HIERARCHICAL_STRUCTURE"
+        );
+        console.log(
+          "Categorías disponibles:",
+          Object.keys(window.UC_HIERARCHICAL_STRUCTURE)
+        );
+        return;
+      }
+
+      const container = document.getElementById(
+        "uc-selector-conductores-container"
+      );
+      if (!container) {
+        console.error(
+          "❌ Contenedor uc-selector-conductores-container no encontrado"
+        );
+        return;
+      }
+
+      console.log('🎯 Creando selector UC Conductor con filtro: ["N1C"]');
+
+      // Crear el selector jerárquico específico para conductores
+      const selector = new UCHierarchicalSelector(
+        "uc-selector-conductores-container",
+        {
+          onComplete: (result) => {
+            console.log("✅ Conductor - Selección completada:", result);
+            handleUCConductorSelection(result);
+          },
+          categoryFilter: ["N1C"], // Solo conductores
+        }
+      );
+
+      window.ucConductorSelector = selector;
+      console.log("✅ Selector UC Conductor inicializado correctamente");
+    }
+
+    function handleUCConductorSelection(result) {
+      const code = result.code || "";
+      const description = result.description || "";
+
+      // Actualizar campos ocultos
+      document.getElementById("uc_conductor").value = code;
+      document.getElementById("descripcion_uc_conductor").value = description;
+
+      // Actualizar preview
+      document.getElementById("uc-conductor-code-display").textContent = code;
+      document.getElementById("uc-conductor-desc-display").textContent =
+        description;
+      document
+        .getElementById("uc-conductor-preview")
+        .classList.remove("hidden");
+
+      console.log("✅ UC Conductor actualizado:", { code, description });
+
+      // Autocompletar campos si es posible
+      autocompletarCamposConductor(result.selections || {});
+    }
+
+    function autocompletarCamposConductor(selections) {
+      console.log("🔄 Autocompletando campos de conductor:", selections);
+
+      // Autocompletar campos basándose en las selecciones
+      if (selections.calibre) {
+        const calibreField = document.querySelector(
+          'select[name="calibre"], input[name="calibre"]'
+        );
+        if (calibreField) {
+          calibreField.value = selections.calibre;
+          console.log("✅ Campo calibre autocompletado:", selections.calibre);
+        }
+      }
+
+      if (selections.tipo_conductor) {
+        const materialField = document.querySelector(
+          'select[name="material_conductor"]'
+        );
+        if (materialField) {
+          materialField.value = selections.tipo_conductor;
+          console.log(
+            "✅ Campo material conductor autocompletado:",
+            selections.tipo_conductor
+          );
+        }
+      }
+
+      if (selections.tipo_red) {
+        const tipoRedField = document.querySelector('select[name="tipo_red"]');
+        if (tipoRedField) {
+          tipoRedField.value = selections.tipo_red;
+          console.log("✅ Campo tipo red autocompletado:", selections.tipo_red);
+        }
+      }
+    }
+
+    window.clearUCConductorSelection = function () {
+      console.log("🔄 Limpiando selección UC Conductor...");
+
+      document.getElementById("uc_conductor").value = "";
+      document.getElementById("descripcion_uc_conductor").value = "";
+      document.getElementById("uc-conductor-preview").classList.add("hidden");
+
+      if (window.ucConductorSelector && window.ucConductorSelector.reset) {
+        window.ucConductorSelector.reset();
+      }
+
+      console.log("✅ Selección UC Conductor limpiada");
+    };
+
+    initializeUCConductorSelector();
+  });
+</script>
+
+<!-- Estilos específicos para conductores -->
+<style>
+  #uc-selector-conductores-container {
+    min-height: 400px;
+    transition: all 0.3s ease;
+  }
+
+  #uc-conductor-preview {
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tooltip .tooltip-content {
+    visibility: hidden;
+    width: 300px;
+    background-color: #1f2937;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -150px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+  }
+
+  .tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+  }
+</style>

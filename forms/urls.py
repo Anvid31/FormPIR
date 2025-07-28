@@ -20,6 +20,9 @@ urlpatterns = [
     # API de iteraciones
     path('iteraciones/', include('forms.urls_iteraciones')),
     
+    # Debug UC
+    path('debug-uc/', views.debug_uc_django, name='debug_uc_django'),
+    
     # ===============================
     # RUTAS ESPECÍFICAS DEL CONTRATISTA
     # ===============================

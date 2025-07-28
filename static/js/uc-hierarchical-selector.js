@@ -1,6 +1,17 @@
 /**
  * Componente de Selector Jerárquico de UC
- * Implementa la interfaz dinámica para selección de Unidades Constructivas
+ * Implementa la interfaz dinámica para selección de Uni    getCategoryIcon(category) {
+        const icons = {
+            postes: '🏗️',
+            postes_peso: '⚖️',
+            estructuras: '🏢',
+            alta_tension: '⚡',
+            transformadores: '🔌',
+            conductores: '🔗',
+            equipos: '🛡️'
+        };
+        return icons[category] || '📦';
+    }uctivas
  */
 
 class UCHierarchicalSelector {
@@ -11,12 +22,14 @@ class UCHierarchicalSelector {
             onSelectionChange: options.onSelectionChange || (() => {}),
             onComplete: options.onComplete || (() => {}),
             showPreview: options.showPreview !== false,
+            categoryFilter: options.categoryFilter || null, // Nuevo: filtro de categorías
             ...options
         };
         
         this.currentCategory = null;
         this.currentSelections = {};
         this.currentStep = 0;
+        this.categoryFilter = options.categoryFilter || null;
         
         this.init();
     }
@@ -78,11 +91,25 @@ class UCHierarchicalSelector {
             return '<div class="error">Sistema UC no disponible. Verifica que los archivos JavaScript se hayan cargado correctamente.</div>';
         }
         
+        console.log(`🔍 [${this.containerId}] Aplicando filtro de categorías:`, this.categoryFilter);
+        console.log(`📦 [${this.containerId}] Estructura UC disponible:`, Object.keys(window.UC_HIERARCHICAL_STRUCTURE));
+        
+        // Aplicar filtro de categorías si está definido
+        const categories = this.categoryFilter 
+            ? Object.entries(window.UC_HIERARCHICAL_STRUCTURE).filter(([key]) => {
+                const isIncluded = this.categoryFilter.includes(key);
+                console.log(`   - [${this.containerId}] ${key}: ${isIncluded ? 'INCLUIDO' : 'EXCLUIDO'}`);
+                return isIncluded;
+              })
+            : Object.entries(window.UC_HIERARCHICAL_STRUCTURE);
+        
+        console.log(`✅ [${this.containerId}] Categorías filtradas:`, categories.map(([key]) => key));
+        
         return `
             <div class="uc-categories">
                 <h4>Selecciona el tipo de unidad constructiva:</h4>
                 <div class="uc-category-grid">
-                    ${Object.entries(window.UC_HIERARCHICAL_STRUCTURE).map(([key, config]) => `
+                    ${categories.map(([key, config]) => `
                         <div class="uc-category-card" data-category="${key}">
                             <div class="uc-category-icon">
                                 ${this.getCategoryIcon(config.category)}
@@ -102,7 +129,9 @@ class UCHierarchicalSelector {
             postes_peso: '⚖️',
             estructuras: '🏗️',
             alta_tension: '⚡',
-            transformadores: '🔌'
+            transformadores: '🔌',
+            conductores: '�',  // Cambiar a icono de cadena/conexión
+            equipos: '🛡️'      // Cambiar a icono de escudo/protección
         };
         return icons[category] || '📦';
     }
@@ -113,7 +142,9 @@ class UCHierarchicalSelector {
             postes_peso: 'Postes con especificaciones de peso específicas',
             estructuras: 'Estructuras avanzadas y configuraciones complejas',
             alta_tension: 'Estructuras para líneas de alta tensión',
-            transformadores: 'Transformadores de diferentes tipos y potencias'
+            transformadores: 'Transformadores de diferentes tipos y potencias',
+            conductores: 'Cables y conductores eléctricos',
+            equipos: 'Equipos de protección y control'
         };
         return descriptions[category] || 'Unidades constructivas especializadas';
     }

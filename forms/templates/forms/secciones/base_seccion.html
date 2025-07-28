@@ -17,6 +17,12 @@
     <link rel="stylesheet" href="{% static 'forms/css/form.css' %}" />
     <!-- CSS mínimo para highlight de campos protegidos -->
     <link rel="stylesheet" href="{% static 'forms/css/desmantelado-highlight.css' %}" />
+    <!-- CSS para el sistema de iteraciones compartidas -->
+    <link rel="stylesheet" href="{% static 'forms/css/iteraciones-compartidas.css' %}" />
+    <!-- CSS para el selector UC jerárquico -->
+    <link rel="stylesheet" href="{% static 'css/uc-hierarchical-selector.css' %}" />
+    <!-- CSS para campos compartidos -->
+    <link rel="stylesheet" href="{% static 'css/shared-fields.css' %}" />
   </head>
   <body data-section="{{ seccion }}" data-csrf-token="{{ csrf_token }}" data-debug="{{ debug|yesno:'true,false' }}">
     <!-- Header con fondo azul -->
@@ -45,25 +51,25 @@
                  class="nav-pill {% if seccion == 'estructuras' %}active{% endif %}" 
                  data-step="estructuras">
                 <i class="fas fa-building mr-2"></i>
-                <span class="hidden md:inline">Estructuras</span>
+                <span class="md:inline">Estructuras</span>
               </a>
               <a href="{% url 'forms:crear_conductores' %}" 
                  class="nav-pill {% if seccion == 'conductores' %}active{% endif %}" 
                  data-step="conductores">
                 <i class="fas fa-bolt mr-2"></i>
-                <span class="hidden md:inline">Conductores</span>
+                <span class="md:inline">Conductores</span>
               </a>
               <a href="{% url 'forms:crear_equipos' %}" 
                  class="nav-pill {% if seccion == 'equipos' %}active{% endif %}" 
                  data-step="equipos">
                 <i class="fas fa-shield-alt mr-2"></i>
-                <span class="hidden md:inline">Equipos</span>
+                <span class="md:inline">Equipos</span>
               </a>
               <a href="{% url 'forms:crear_transformadores' %}" 
                  class="nav-pill {% if seccion == 'transformadores' %}active{% endif %}" 
                  data-step="transformadores">
                 <i class="fas fa-microchip mr-2"></i>
-                <span class="hidden md:inline">Transformadores</span>
+                <span class="md:inline">Transformadores</span>
               </a>
             </div>
             
@@ -91,8 +97,8 @@
           {% endblock %}
         </div>
 
-        <!-- Tabla de Iteraciones Compartida -->
-        {% include 'forms/components/tabla_iteraciones.html' %}
+        <!-- TABLA DE ITERACIONES COMENTADA - AHORA SE USA EL SISTEMA JAVASCRIPT UNIFICADO -->
+        <!-- {% include 'forms/components/tabla_iteraciones.html' %} -->
 
         <!-- Botones de acción -->
         <div class="flex justify-center items-center gap-4 mt-8">
@@ -139,6 +145,15 @@
     <script src="{% static 'forms/js/modules/tipos-inversion.js' %}"></script>
     <script src="{% static 'forms/js/modules/iteraciones-manager.js' %}"></script>
     <script src="{% static 'forms/js/modules/transformador-autocompletado.js' %}"></script>
+    <!-- Sistema de iteraciones compartidas -->
+    <script src="{% static 'forms/js/iteraciones-compartidas.js' %}"></script>
+    <!-- Sistema de campos compartidos -->
+    <script src="{% static 'js/shared-fields.js' %}"></script>
+    
+    <!-- Script de demostración (solo en desarrollo) -->
+    {% if debug %}
+    <script src="{% static 'forms/js/demo-iteraciones.js' %}"></script>
+    {% endif %}
     
     <!-- 5. Scripts específicos si existen -->
     {% if seccion == 'estructuras' %}

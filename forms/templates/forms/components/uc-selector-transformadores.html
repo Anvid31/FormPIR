@@ -1,0 +1,215 @@
+<!-- Componente UC Selector para Transformadores -->
+<div class="form-group">
+    <label for="uc-selector-transformadores" class="form-label">
+        <i class="fas fa-plug text-green-500 mr-2"></i>
+        UC Transformador (Código Único)
+        <span class="tooltip">
+            <i class="fas fa-question-circle help-icon"></i>
+            <span class="tooltip-content">
+                Selecciona la Unidad Constructiva del transformador usando el selector jerárquico.
+                Esta selección reemplaza el selector UC anterior.
+            </span>
+        </span>
+    </label>
+    
+    <!-- Contenedor del selector jerárquico para transformadores -->
+    <div id="uc-selector-transformadores-container" class="mb-4">
+        <!-- El selector jerárquico se renderizará aquí -->
+    </div>
+    
+    <!-- Campos ocultos para almacenar los valores -->
+    <input type="hidden" id="uc_transformador_jerarquico" name="uc_transformador_jerarquico" value="">
+    <input type="hidden" id="descripcion_uc_transformador_jerarquico" name="descripcion_uc_transformador_jerarquico" value="">
+    
+    <!-- Vista previa del UC seleccionado -->
+    <div id="uc-transformador-preview" class="hidden mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+        <div class="flex items-center justify-between">
+            <div class="flex-1">
+                <h4 class="font-semibold text-green-800 mb-2">
+                    <i class="fas fa-plug mr-1"></i>
+                    UC Transformador Seleccionado:
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-sm font-medium text-green-700">Código:</span>
+                        <span id="uc-transformador-code-display" class="ml-2 font-mono text-green-900 font-bold"></span>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-green-700">Descripción:</span>
+                        <span id="uc-transformador-desc-display" class="ml-2 text-green-900"></span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="clearUCTransformadorSelection()" class="text-red-600 hover:text-red-800 ml-4 p-2 rounded-full hover:bg-red-100 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let intentos = 0;
+    const maxIntentos = 50;
+    
+    function initializeUCTransformadorSelector() {
+        intentos++;
+        
+        const scriptsListos = typeof UCHierarchicalSelector !== 'undefined' && 
+                             typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined';
+        
+        if (!scriptsListos && intentos < maxIntentos) {
+            setTimeout(initializeUCTransformadorSelector, 100);
+            return;
+        }
+        
+        if (!scriptsListos) {
+            console.warn('⚠️ Timeout esperando scripts UC para transformadores');
+            return;
+        }
+        
+        const container = document.getElementById('uc-selector-transformadores-container');
+        if (!container) {
+            console.warn('⚠️ Container uc-selector-transformadores-container no encontrado');
+            return;
+        }
+        
+        try {
+            // Verificar que la categoría N1T exista
+            if (!window.UC_HIERARCHICAL_STRUCTURE.N1T) {
+                console.error('❌ Categoría N1T no encontrada en UC_HIERARCHICAL_STRUCTURE');
+                console.log('Categorías disponibles:', Object.keys(window.UC_HIERARCHICAL_STRUCTURE));
+                return;
+            }
+            
+            console.log('🎯 Creando selector UC Transformador con filtro: ["N1T"]');
+            
+            // Crear el selector jerárquico específico para transformadores
+            const selector = new UCHierarchicalSelector(
+                'uc-selector-transformadores-container',
+                {
+                    onComplete: (result) => {
+                        handleUCTransformadorSelection(result);
+                    },
+                    categoryFilter: ['N1T'] // SOLO mostrar categorías de transformadores
+                }
+            );
+            
+            window.ucTransformadorSelector = selector;
+            console.log('✅ Selector UC Transformador inicializado');
+        } catch (error) {
+            console.error('❌ Error inicializando selector UC Transformador:', error);
+        }
+    }
+    
+    function handleUCTransformadorSelection(result) {
+        const code = result.code || '';
+        const description = result.description || '';
+        
+        // Actualizar campos ocultos del nuevo selector
+        document.getElementById('uc_transformador_jerarquico').value = code;
+        document.getElementById('descripcion_uc_transformador_jerarquico').value = description;
+        
+        // Sincronizar con el sistema existente de transformadores
+        const ucResultado = document.getElementById('uc_transformador_resultado');
+        const descResultado = document.getElementById('descripcion_transformador_resultado');
+        if (ucResultado) ucResultado.value = code;
+        if (descResultado) descResultado.value = description;
+        
+        // Actualizar preview
+        document.getElementById('uc-transformador-code-display').textContent = code || 'N/A';
+        document.getElementById('uc-transformador-desc-display').textContent = description || 'Sin descripción';
+        document.getElementById('uc-transformador-preview').classList.remove('hidden');
+        
+        // Autocompletado: actualizar campos tradicionales de transformador
+        if (result.selections) {
+            autocompletarCamposTransformador(result.selections);
+        }
+        
+        // Disparar evento personalizado para integración con IteracionesManager
+        document.dispatchEvent(new CustomEvent('ucTransformadorSelected', {
+            detail: { code, description, selections: result.selections }
+        }));
+        
+        console.log('🔌 UC Transformador seleccionado:', { code, description, selections: result.selections });
+    }
+    
+    function autocompletarCamposTransformador(selections) {
+        // Mapear selecciones UC a campos tradicionales del formulario
+        if (selections.tipo_instalacion) {
+            const tipoInstalacionSelect = document.getElementById('tipo_transformador') || 
+                                        document.getElementById('transformador_tipo_transformador');
+            if (tipoInstalacionSelect) {
+                // Mapear valores UC a valores del select
+                const tipoMap = {
+                    'aereo': 'Aéreo',
+                    'pedestal': 'Pedestal',
+                    'subestacion': 'Subestación'
+                };
+                const valorSelect = tipoMap[selections.tipo_instalacion];
+                if (valorSelect) {
+                    tipoInstalacionSelect.value = valorSelect;
+                    tipoInstalacionSelect.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+        
+        if (selections.potencia) {
+            const potenciaSelect = document.getElementById('potencia_transformador') || 
+                                 document.getElementById('transformador_potencia_transformador');
+            if (potenciaSelect) {
+                // Convertir potencia a kVA
+                const potenciaValue = selections.potencia + ' kVA';
+                potenciaSelect.value = potenciaValue;
+                potenciaSelect.dispatchEvent(new Event('change'));
+            }
+        }
+        
+        if (selections.fases) {
+            const fasesSelect = document.getElementById('conexion_transformador') || 
+                              document.getElementById('transformador_conexion_transformador');
+            if (fasesSelect) {
+                // Mapear fases a tipo de conexión
+                const fasesMap = { 
+                    'monofasico': 'Monofásico', 
+                    'trifasico': 'Trifásico' 
+                };
+                const faseValue = fasesMap[selections.fases];
+                if (faseValue) {
+                    fasesSelect.value = faseValue;
+                    fasesSelect.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+        
+        if (selections.zona) {
+            // Mapear zona si existe campo específico (urbano/rural)
+            const zonaMap = { 'urbano': 'Urbano', 'rural': 'Rural' };
+            const zona = zonaMap[selections.zona];
+            // Actualizar campos de zona si existen
+        }
+        
+        console.log('🔄 Autocompletado campos transformador:', selections);
+    }
+    
+    window.clearUCTransformadorSelection = function() {
+        document.getElementById('uc_transformador_jerarquico').value = '';
+        document.getElementById('descripcion_uc_transformador_jerarquico').value = '';
+        document.getElementById('uc-transformador-preview').classList.add('hidden');
+        
+        // Limpiar también campos del sistema existente
+        const ucResultado = document.getElementById('uc_transformador_resultado');
+        const descResultado = document.getElementById('descripcion_transformador_resultado');
+        if (ucResultado) ucResultado.value = '';
+        if (descResultado) descResultado.value = '';
+        
+        if (window.ucTransformadorSelector && typeof window.ucTransformadorSelector.reset === 'function') {
+            window.ucTransformadorSelector.reset();
+        }
+        
+        console.log('🗑️ Selección UC Transformador limpiada');
+    };
+    
+    initializeUCTransformadorSelector();
+});
+</script>

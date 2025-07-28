@@ -1,0 +1,63 @@
+/* Estilos para las secciones compartidas */
+#shared-project-info, #shared-documents {
+    position: relative;
+    overflow: hidden;
+}
+
+#shared-project-info::before, #shared-documents::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+    border-radius: 8px 8px 0 0;
+}
+
+/* Indicador de sincronización */
+.shared-field {
+    transition: all 0.3s ease;
+}
+
+.shared-field:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Animación sutil cuando se sincroniza */
+.shared-field.syncing {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+/* Estilo para el indicador de compartido */
+.text-green-600 i.fa-sync {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Efecto hover mejorado para los campos compartidos */
+.shared-field:hover {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+
+/* Mejorar el contraste del texto del indicador */
+.text-green-600 {
+    color: #059669 !important;
+    font-weight: 500;
+}
+
+/* Estilo para campos ocultos de compatibilidad */
+div[style*="display: none"] {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+}

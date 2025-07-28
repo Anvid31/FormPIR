@@ -1,0 +1,70 @@
+{% extends 'forms/secciones/base_seccion.html' %}
+
+{% block title %}Debug UC Selectores - Django{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Debug UC Selectores desde Django</h1>
+    <p class="text-muted">Prueba de selectores UC integrados en la aplicación Django</p>
+    
+    <div class="row">
+        <!-- Selector para Estructuras -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Estructuras (N1-N4)</h5>
+                </div>
+                <div class="card-body">
+                    {% include 'forms/components/uc-selector-estructuras.html' %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Selector para Conductores -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Conductores (N1C)</h5>
+                </div>
+                <div class="card-body">
+                    {% include 'forms/components/uc-selector-conductores-new.html' %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Selector para Equipos -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Equipos (N1E)</h5>
+                </div>
+                <div class="card-body">
+                    {% include 'forms/components/uc-selector-equipos.html' %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Selector para Transformadores -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Transformadores (N1T)</h5>
+                </div>
+                <div class="card-body">
+                    {% include 'forms/components/uc-selector-transformadores.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-info">
+        <h6>Comportamiento esperado:</h6>
+        <ul>
+            <li><strong>Estructuras:</strong> Solo debe mostrar N1, N2, N3, N4</li>
+            <li><strong>Conductores:</strong> Solo debe mostrar N1C</li>
+            <li><strong>Equipos:</strong> Solo debe mostrar N1E</li>
+            <li><strong>Transformadores:</strong> Solo debe mostrar N1T</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

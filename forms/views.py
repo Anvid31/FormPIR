@@ -6,8 +6,66 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import logout, authenticate, login
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
+from django.db import connection, transaction
 from .models import FormularioGlobal, CustomUser
 from django.contrib.auth.forms import AuthenticationForm
+
+def crear_formulario_oracle_safe(user, **kwargs):
+    """
+    Función helper para crear formularios de manera segura en Oracle
+    Maneja el problema de ID nulo en secuencias Oracle usando un enfoque directo
+    """
+    try:
+        # Si estamos usando Oracle, usar SQL directo para evitar problemas con Django ORM
+        if connection.vendor == 'oracle':
+            with transaction.atomic():
+                cursor = connection.cursor()
+                
+                # Obtener el siguiente ID de la secuencia
+                cursor.execute("SELECT FORMS_FORMULARIO_SEQ.NEXTVAL FROM dual")
+                next_id = cursor.fetchone()[0]
+                print(f"Oracle: Obtenido ID {next_id} desde secuencia")
+                
+                # Insertar directamente usando SQL
+                insert_sql = """
+                INSERT INTO FORMS_FORMULARIO 
+                (ID, TRABAJO, MUNICIPIO, REGIONAL, DIRECCION, ESTADO_ACTUAL, CREADO_POR_ID, ACTIVO, CREATED_AT, UPDATED_AT)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, SYSDATE, SYSDATE)
+                """
+                
+                cursor.execute(insert_sql, [
+                    next_id,
+                    kwargs.get('trabajo', '')[:200] or None,  # Limitar longitud y manejar strings vacíos
+                    kwargs.get('municipio', '')[:100] or None,
+                    kwargs.get('regional', '')[:100] or None, 
+                    kwargs.get('direccion', '')[:200] or None,
+                    'contratista',  # Estado por defecto
+                    user.id if user else None,  # Manejar el caso de usuario None
+                    1  # activo = True
+                ])
+                
+                print(f"✅ Formulario insertado directamente en Oracle con ID: {next_id}")
+                
+                # Recuperar el objeto usando Django ORM
+                formulario = FormularioGlobal.objects.get(id=next_id)
+                return formulario
+        else:
+            # Para otros motores de BD, usar Django ORM normal
+            formulario = FormularioGlobal.objects.create(
+                trabajo=kwargs.get('trabajo', ''),
+                municipio=kwargs.get('municipio', ''),
+                regional=kwargs.get('regional', ''),
+                direccion=kwargs.get('direccion', ''),
+                creado_por=user,
+                **{k: v for k, v in kwargs.items() if k not in ['trabajo', 'municipio', 'regional', 'direccion']}
+            )
+            print(f"✅ Formulario creado con Django ORM, ID: {formulario.id}")
+            return formulario
+            
+    except Exception as e:
+        print(f"❌ Error al crear formulario: {e}")
+        print(f"   Tipo de error: {type(e).__name__}")
+        raise
 
 def is_admin(user):
     """Verificar si el usuario es administrador"""
@@ -144,15 +202,19 @@ def lista_formularios(request):
 def crear_formulario(request):
     """Crear nuevo formulario"""
     if request.method == 'POST':
-        formulario = FormularioGlobal.objects.create(
-            trabajo=request.POST.get('trabajo', ''),
-            municipio=request.POST.get('municipio', ''),
-            regional=request.POST.get('regional', ''),
-            direccion=request.POST.get('direccion', ''),
-            creado_por=request.user
-        )
-        messages.success(request, f'Formulario {formulario.get_numero_formulario()} creado exitosamente')
-        return redirect('forms:lista')
+        try:
+            formulario = crear_formulario_oracle_safe(
+                user=request.user,
+                trabajo=request.POST.get('trabajo', ''),
+                municipio=request.POST.get('municipio', ''),
+                regional=request.POST.get('regional', ''),
+                direccion=request.POST.get('direccion', '')
+            )
+            messages.success(request, f'Formulario {formulario.get_numero_formulario()} creado exitosamente')
+            return redirect('forms:lista')
+        except Exception as e:
+            messages.error(request, f'Error al crear formulario: {str(e)}')
+            return redirect('forms:crear_formulario')
     
     return render(request, 'forms/form_modular.html')
 
@@ -160,27 +222,32 @@ def crear_formulario(request):
 def crear_estructuras(request):
     """Vista para la sección de Estructuras"""
     if request.method == 'POST':
-        # Manejar envío del formulario de estructuras
-        formulario = FormularioGlobal.objects.create(
-            trabajo=request.POST.get('trabajo', ''),
-            municipio=request.POST.get('municipio', ''),
-            regional=request.POST.get('regional', ''),
-            direccion=request.POST.get('direccion', ''),
-            creado_por=request.user
-        )
-        
-        # Procesar archivos si existen
-        if 'archivo_cad' in request.FILES:
-            formulario.archivo_autocad = request.FILES['archivo_cad']
+        try:
+            # Manejar envío del formulario de estructuras
+            formulario = crear_formulario_oracle_safe(
+                user=request.user,
+                trabajo=request.POST.get('trabajo', ''),
+                municipio=request.POST.get('municipio', ''),
+                regional=request.POST.get('regional', ''),
+                direccion=request.POST.get('direccion', '')
+            )
             
-        if 'archivo_kmz' in request.FILES:
-            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            # Procesar archivos si existen
+            if 'archivo_cad' in request.FILES:
+                formulario.archivo_autocad = request.FILES['archivo_cad']
+                
+            if 'archivo_kmz' in request.FILES:
+                formulario.archivo_kmz = request.FILES['archivo_kmz']
+                
+            # Guardar el formulario con los archivos
+            formulario.save()
             
-        # Guardar el formulario con los archivos
-        formulario.save()
-        
-        messages.success(request, f'Formulario de Estructuras {formulario.get_numero_formulario()} creado exitosamente')
-        return redirect('forms:lista')
+            messages.success(request, f'Formulario de Estructuras {formulario.get_numero_formulario()} creado exitosamente')
+            return redirect('forms:lista')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear formulario de estructuras: {str(e)}')
+            # No redirigir, mostrar el formulario con el error
     
     context = {
         'seccion': 'estructuras',
@@ -193,27 +260,31 @@ def crear_estructuras(request):
 def crear_conductores(request):
     """Vista para la sección de Conductores"""
     if request.method == 'POST':
-        # Manejar envío del formulario de conductores
-        formulario = FormularioGlobal.objects.create(
-            trabajo=request.POST.get('trabajo', ''),
-            municipio=request.POST.get('municipio', ''),
-            regional=request.POST.get('regional', ''),
-            direccion=request.POST.get('direccion', ''),
-            creado_por=request.user
-        )
-        
-        # Procesar archivos si existen
-        if 'archivo_cad' in request.FILES:
-            formulario.archivo_autocad = request.FILES['archivo_cad']
+        try:
+            # Manejar envío del formulario de conductores
+            formulario = crear_formulario_oracle_safe(
+                user=request.user,
+                trabajo=request.POST.get('trabajo', ''),
+                municipio=request.POST.get('municipio', ''),
+                regional=request.POST.get('regional', ''),
+                direccion=request.POST.get('direccion', '')
+            )
             
-        if 'archivo_kmz' in request.FILES:
-            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            # Procesar archivos si existen
+            if 'archivo_cad' in request.FILES:
+                formulario.archivo_autocad = request.FILES['archivo_cad']
+                
+            if 'archivo_kmz' in request.FILES:
+                formulario.archivo_kmz = request.FILES['archivo_kmz']
+                
+            # Guardar el formulario con los archivos
+            formulario.save()
             
-        # Guardar el formulario con los archivos
-        formulario.save()
-        
-        messages.success(request, f'Formulario de Conductores {formulario.get_numero_formulario()} creado exitosamente')
-        return redirect('forms:lista')
+            messages.success(request, f'Formulario de Conductores {formulario.get_numero_formulario()} creado exitosamente')
+            return redirect('forms:lista')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear formulario de conductores: {str(e)}')
     
     context = {
         'seccion': 'conductores',
@@ -226,27 +297,31 @@ def crear_conductores(request):
 def crear_equipos(request):
     """Vista para la sección de Equipos"""
     if request.method == 'POST':
-        # Manejar envío del formulario de equipos
-        formulario = FormularioGlobal.objects.create(
-            trabajo=request.POST.get('trabajo', ''),
-            municipio=request.POST.get('municipio', ''),
-            regional=request.POST.get('regional', ''),
-            direccion=request.POST.get('direccion', ''),
-            creado_por=request.user
-        )
-        
-        # Procesar archivos si existen
-        if 'archivo_cad' in request.FILES:
-            formulario.archivo_autocad = request.FILES['archivo_cad']
+        try:
+            # Manejar envío del formulario de equipos
+            formulario = crear_formulario_oracle_safe(
+                user=request.user,
+                trabajo=request.POST.get('trabajo', ''),
+                municipio=request.POST.get('municipio', ''),
+                regional=request.POST.get('regional', ''),
+                direccion=request.POST.get('direccion', '')
+            )
             
-        if 'archivo_kmz' in request.FILES:
-            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            # Procesar archivos si existen
+            if 'archivo_cad' in request.FILES:
+                formulario.archivo_autocad = request.FILES['archivo_cad']
+                
+            if 'archivo_kmz' in request.FILES:
+                formulario.archivo_kmz = request.FILES['archivo_kmz']
+                
+            # Guardar el formulario con los archivos
+            formulario.save()
             
-        # Guardar el formulario con los archivos
-        formulario.save()
-        
-        messages.success(request, f'Formulario de Equipos {formulario.get_numero_formulario()} creado exitosamente')
-        return redirect('forms:lista')
+            messages.success(request, f'Formulario de Equipos {formulario.get_numero_formulario()} creado exitosamente')
+            return redirect('forms:lista')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear formulario de equipos: {str(e)}')
     
     context = {
         'seccion': 'equipos',
@@ -259,27 +334,31 @@ def crear_equipos(request):
 def crear_transformadores(request):
     """Vista para la sección de Transformadores"""
     if request.method == 'POST':
-        # Manejar envío del formulario de transformadores
-        formulario = FormularioGlobal.objects.create(
-            trabajo=request.POST.get('trabajo', ''),
-            municipio=request.POST.get('municipio', ''),
-            regional=request.POST.get('regional', ''),
-            direccion=request.POST.get('direccion', ''),
-            creado_por=request.user
-        )
-        
-        # Procesar archivos si existen
-        if 'archivo_cad' in request.FILES:
-            formulario.archivo_autocad = request.FILES['archivo_cad']
+        try:
+            # Manejar envío del formulario de transformadores
+            formulario = crear_formulario_oracle_safe(
+                user=request.user,
+                trabajo=request.POST.get('trabajo', ''),
+                municipio=request.POST.get('municipio', ''),
+                regional=request.POST.get('regional', ''),
+                direccion=request.POST.get('direccion', '')
+            )
             
-        if 'archivo_kmz' in request.FILES:
-            formulario.archivo_kmz = request.FILES['archivo_kmz']
+            # Procesar archivos si existen
+            if 'archivo_cad' in request.FILES:
+                formulario.archivo_autocad = request.FILES['archivo_cad']
+                
+            if 'archivo_kmz' in request.FILES:
+                formulario.archivo_kmz = request.FILES['archivo_kmz']
+                
+            # Guardar el formulario con los archivos
+            formulario.save()
             
-        # Guardar el formulario con los archivos
-        formulario.save()
-        
-        messages.success(request, f'Formulario de Transformadores {formulario.get_numero_formulario()} creado exitosamente')
-        return redirect('forms:lista')
+            messages.success(request, f'Formulario de Transformadores {formulario.get_numero_formulario()} creado exitosamente')
+            return redirect('forms:lista')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear formulario de transformadores: {str(e)}')
     
     context = {
         'seccion': 'transformadores',
@@ -896,3 +975,7 @@ def contratista_finalizar_formulario(request):
     }
     
     return render(request, 'contratista/finalizar_formulario.html', context)
+
+def debug_uc_django(request):
+    """Vista de debug para UC desde Django"""
+    return render(request, 'forms/debug-uc-django.html')

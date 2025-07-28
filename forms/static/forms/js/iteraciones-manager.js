@@ -177,27 +177,79 @@ class IteracionesManager {
                 break;
 
             case 'conductores':
+                // Campos tradicionales de conductor
                 especificos.tipo_conductor_n1 = this.obtenerValorCampo('tipo_conductor_n1');
                 especificos.calibre_conductor_n1 = this.obtenerValorCampo('calibre_conductor_n1');
                 especificos.tipo_conductor_n2_n3 = this.obtenerValorCampo('tipo_conductor_n2_n3');
                 especificos.calibre_conductor_n2_n3 = this.obtenerValorCampo('calibre_conductor_n2_n3');
                 especificos.longitud_conductor = this.obtenerValorCampo('longitud_conductor');
+                
+                // Nuevos campos UC Conductor
+                especificos.uc_conductor = this.obtenerValorCampo('uc_conductor');
+                especificos.descripcion_uc_conductor = this.obtenerValorCampo('descripcion_uc_conductor');
+                
+                // Intentar obtener datos del selector UC Conductor si está disponible
+                if (window.ucConductorSelector && window.ucConductorSelector.getCurrentSelection) {
+                    const seleccionUC = window.ucConductorSelector.getCurrentSelection();
+                    if (seleccionUC) {
+                        especificos.uc_conductor_selecciones = seleccionUC;
+                        especificos.uc_conductor_jerarquia = seleccionUC.hierarchy || {};
+                    }
+                }
+                
+                console.log('📊 Datos específicos de conductores (con UC):', especificos);
                 break;
 
             case 'equipos':
+                // Campos tradicionales de equipo
                 especificos.tipo_equipo = this.obtenerValorCampo('tipo_equipo');
                 especificos.marca_equipo = this.obtenerValorCampo('marca_equipo');
                 especificos.modelo_equipo = this.obtenerValorCampo('modelo_equipo');
                 especificos.serie_equipo = this.obtenerValorCampo('serie_equipo');
                 especificos.voltaje_operacion = this.obtenerValorCampo('voltaje_operacion');
+                
+                // Nuevos campos UC Equipo
+                especificos.uc_equipo = this.obtenerValorCampo('uc_equipo');
+                especificos.descripcion_uc_equipo = this.obtenerValorCampo('descripcion_uc_equipo');
+                
+                // Intentar obtener datos del selector UC Equipo si está disponible
+                if (window.ucEquipoSelector && window.ucEquipoSelector.getCurrentSelection) {
+                    const seleccionUC = window.ucEquipoSelector.getCurrentSelection();
+                    if (seleccionUC) {
+                        especificos.uc_equipo_selecciones = seleccionUC;
+                        especificos.uc_equipo_jerarquia = seleccionUC.hierarchy || {};
+                    }
+                }
+                
+                console.log('📊 Datos específicos de equipos (con UC):', especificos);
                 break;
 
             case 'transformador':
+                // Campos tradicionales de transformador
                 especificos.potencia_transformador = this.obtenerValorCampo('potencia_transformador');
                 especificos.tipo_transformador = this.obtenerValorCampo('tipo_transformador');
                 especificos.marca_transformador = this.obtenerValorCampo('marca_transformador');
                 especificos.relacion_transformacion = this.obtenerValorCampo('relacion_transformacion');
                 especificos.conexion_transformador = this.obtenerValorCampo('conexion_transformador');
+                
+                // Nuevos campos UC Transformador jerárquico
+                especificos.uc_transformador_jerarquico = this.obtenerValorCampo('uc_transformador_jerarquico');
+                especificos.descripcion_uc_transformador_jerarquico = this.obtenerValorCampo('descripcion_uc_transformador_jerarquico');
+                
+                // Campos UC Transformador tradicional (sistema existente)
+                especificos.uc_transformador_resultado = this.obtenerValorCampo('uc_transformador_resultado');
+                especificos.descripcion_transformador_resultado = this.obtenerValorCampo('descripcion_transformador_resultado');
+                
+                // Intentar obtener datos del selector UC Transformador si está disponible
+                if (window.ucTransformadorSelector && window.ucTransformadorSelector.getCurrentSelection) {
+                    const seleccionUC = window.ucTransformadorSelector.getCurrentSelection();
+                    if (seleccionUC) {
+                        especificos.uc_transformador_selecciones = seleccionUC;
+                        especificos.uc_transformador_jerarquia = seleccionUC.hierarchy || {};
+                    }
+                }
+                
+                console.log('📊 Datos específicos de transformadores (con UC):', especificos);
                 break;
         }
 

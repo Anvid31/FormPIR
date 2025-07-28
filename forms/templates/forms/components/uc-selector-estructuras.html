@@ -1,0 +1,222 @@
+<!-- Componente UC Selector Jerárquico para Estructuras -->
+<div class="form-group">
+  <label for="uc-selector" class="form-label">
+    <i class="fas fa-building text-blue-500 mr-2"></i>
+    UC Estructura (Código Único)
+    <span class="tooltip-icon ml-2" data-tooltip="Selecciona la Unidad Constructiva de Estructura usando el sistema jerárquico">
+      <i class="fas fa-info-circle text-gray-400"></i>
+    </span>
+  </label>
+  
+  <!-- Contenedor del selector jerárquico -->
+  <div id="uc-selector-container" class="mb-4">
+    <!-- El selector jerárquico se renderizará aquí -->
+  </div>
+  
+  <!-- Campos ocultos para almacenar los valores -->
+  <input type="hidden" id="uc_nueva" name="uc_nueva" value="">
+  <input type="hidden" id="descripcion_uc" name="descripcion_uc" value="">
+  
+  <!-- Vista previa del UC seleccionado -->
+  <div id="uc-preview" class="hidden mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+    <div class="flex items-center justify-between">
+      <div>
+        <h4 class="font-semibold text-blue-800 mb-2">
+          <i class="fas fa-building mr-1"></i>
+          UC Estructura Seleccionado:
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <span class="text-sm font-medium text-blue-700">Código:</span>
+            <span id="uc-code-display" class="ml-2 font-mono text-blue-900 font-bold"></span>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-blue-700">Descripción:</span>
+            <span id="uc-desc-display" class="ml-2 text-blue-800"></span>
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="clearUCSelection()" class="text-red-500 hover:text-red-700 ml-4">
+        <i class="fas fa-times-circle text-xl"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🏗️ Inicializando selector UC para Estructuras...');
+    
+    let intentos = 0;
+    const maxIntentos = 50;
+    
+    function initializeUCEstructuraSelector() {
+        intentos++;
+        
+        const scriptsListos = typeof UCHierarchicalSelector !== 'undefined' && 
+                             typeof window.UC_HIERARCHICAL_STRUCTURE !== 'undefined';
+        
+        if (!scriptsListos && intentos < maxIntentos) {
+            console.log(`⏳ Estructura - Intento ${intentos}: Esperando scripts UC...`);
+            setTimeout(initializeUCEstructuraSelector, 100);
+            return;
+        }
+        
+        if (!scriptsListos) {
+            console.error('❌ Scripts UC no disponibles después de esperar. Timeout.');
+            return;
+        }
+        
+        // Verificar que las categorías de estructuras existan
+        const expectedCategories = ['N1', 'N2', 'N3', 'N4'];
+        const missingCategories = expectedCategories.filter(cat => !window.UC_HIERARCHICAL_STRUCTURE[cat]);
+        if (missingCategories.length > 0) {
+            console.error('❌ Categorías de estructura faltantes:', missingCategories);
+            console.log('Categorías disponibles:', Object.keys(window.UC_HIERARCHICAL_STRUCTURE));
+            return;
+        }
+        
+        const container = document.getElementById('uc-selector-container');
+        if (!container) {
+            console.error('❌ Contenedor uc-selector-container no encontrado');
+            return;
+        }
+        
+        console.log('🎯 Creando selector UC Estructura con filtro: ["N1", "N2", "N3", "N4"]');
+        
+        // Crear el selector jerárquico específico para estructuras
+        const selector = new UCHierarchicalSelector(
+            'uc-selector-container',
+            {
+                onComplete: (result) => {
+                    console.log('✅ Estructura - Selección completada:', result);
+                    handleUCEstructuraSelection(result);
+                },
+                categoryFilter: ['N1', 'N2', 'N3', 'N4'] // Solo estructuras
+            }
+        );
+        
+        window.ucEstructuraSelector = selector;
+        console.log('✅ Selector UC Estructura inicializado correctamente');
+    }
+    
+    function handleUCEstructuraSelection(result) {
+        const code = result.code || '';
+        const description = result.description || '';
+        
+        // Actualizar campos ocultos
+        document.getElementById('uc_nueva').value = code;
+        document.getElementById('descripcion_uc').value = description;
+        
+        // Actualizar preview
+        document.getElementById('uc-code-display').textContent = code;
+        document.getElementById('uc-desc-display').textContent = description;
+        document.getElementById('uc-preview').classList.remove('hidden');
+        
+        console.log('✅ UC Estructura actualizado:', { code, description });
+        
+        // Autocompletar campos si es posible
+        autocompletarCamposEstructura(result.selections || {});
+    }
+    
+    function autocompletarCamposEstructura(selections) {
+        console.log('🔄 Autocompletando campos de estructura:', selections);
+        
+        // Aquí puedes agregar lógica para autocompletar otros campos del formulario
+        // basándose en las selecciones del UC
+        
+        // Ejemplo: Si hay un campo de altura en el formulario
+        if (selections.altura) {
+            const alturaField = document.querySelector('input[name="altura"], select[name="altura"]');
+            if (alturaField) {
+                alturaField.value = selections.altura;
+                console.log('✅ Campo altura autocompletado:', selections.altura);
+            }
+        }
+        
+        // Ejemplo: Si hay un campo de material
+        if (selections.material) {
+            const materialField = document.querySelector('select[name="material"]');
+            if (materialField) {
+                materialField.value = selections.material;
+                console.log('✅ Campo material autocompletado:', selections.material);
+            }
+        }
+    }
+    
+    // Limpiar selección
+    window.clearUCSelection = function() {
+        console.log('🔄 Limpiando selección UC Estructura...');
+        
+        document.getElementById('uc_nueva').value = '';
+        document.getElementById('descripcion_uc').value = '';
+        document.getElementById('uc-preview').classList.add('hidden');
+        
+        if (window.ucEstructuraSelector && window.ucEstructuraSelector.reset) {
+            window.ucEstructuraSelector.reset();
+        }
+        
+        console.log('✅ Selección UC Estructura limpiada');
+    };
+    
+    window.setUCSelection = function(data) {
+        if (data && data.code) {
+            handleUCEstructuraSelection(data);
+        }
+    };
+    
+    initializeUCEstructuraSelector();
+});
+</script>
+
+<!-- Estilos específicos para estructuras -->
+<style>
+#uc-selector-container {
+    min-height: 400px;
+    transition: all 0.3s ease;
+}
+
+#uc-preview {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.uc-hierarchical-selector {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+}
+
+.uc-hierarchical-selector .uc-selector-header h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.uc-category-card:hover {
+    transform: translateY(-1px);
+}
+
+.uc-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .uc-category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
