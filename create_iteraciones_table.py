@@ -10,9 +10,9 @@ from django.db import connection
 # SQL para crear la tabla de iteraciones
 sql_create_table = """
 CREATE TABLE "formulario_iteraciones" (
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "session_key" VARCHAR(40) NOT NULL,
-    "formulario_id" VARCHAR(50) NULL,
+    "id" NUMBER(19) NOT NULL,
+    "session_key" VARCHAR2(40) NOT NULL,
+    "formulario_id" VARCHAR2(50) NULL,
     "usuario_id" NUMBER(19) NULL,
     "seccion" NVARCHAR2(20) NOT NULL,
     "estado" NVARCHAR2(10) DEFAULT 'temporal' NOT NULL,
@@ -30,9 +30,8 @@ CREATE TABLE "formulario_iteraciones" (
     "direccion" NVARCHAR2(200) NULL,
     "cantidad" NUMBER(11) DEFAULT 1 NOT NULL,
     "datos_especificos" CLOB DEFAULT '{}' NOT NULL,
-    "fecha_creacion" TIMESTAMP NOT NULL,
-    "fecha_actualizacion" TIMESTAMP NOT NULL,
-    CONSTRAINT "formulario_iteraciones_pk" PRIMARY KEY ("id"),
+    "fecha_creacion" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "fecha_actualizacion" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT "formulario_iteraciones_fk_usuario" FOREIGN KEY ("usuario_id") REFERENCES "FORMS_CUSTOMUSER" ("id")
 )
 """
@@ -76,6 +75,9 @@ try:
         else:
             print("Creando tabla formulario_iteraciones...")
             cursor.execute(sql_create_table)
+            
+            print("Agregando clave primaria...")
+            cursor.execute("ALTER TABLE formulario_iteraciones ADD CONSTRAINT formulario_iteraciones_pk PRIMARY KEY (id)")
             
             print("Creando secuencia...")
             cursor.execute(sql_create_sequence)

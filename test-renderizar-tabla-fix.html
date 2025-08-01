@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Error renderizarTablaIteraciones Solucionado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .console-output {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🛠️ Test - Error renderizarTablaIteraciones Solucionado</h1>
+        
+        <div class="test-result" id="test-result">
+            <p>⏳ Ejecutando test...</p>
+        </div>
+
+        <div class="console-output" id="console-output">
+            <div>🔄 Iniciando prueba de función renderizarTablaIteraciones...</div>
+        </div>
+        
+        <button onclick="testFunction()">🧪 Probar Función</button>
+        <button onclick="clearConsole()">🧹 Limpiar Consola</button>
+    </div>
+
+    <script>
+        // Simular la función problemática con la corrección aplicada
+        let iteraciones = []; // Array global simulado
+
+        function renderizarTablaIteraciones() {
+            const tbody = document.getElementById('iterationTableBody');
+            
+            // ✅ CORRECCIÓN: Verificar si el elemento existe antes de acceder a él
+            if (!tbody) {
+                console.warn('Elemento iterationTableBody no encontrado. La tabla puede estar comentada o no existe.');
+                logToConsole('⚠️ Elemento iterationTableBody no encontrado - función retorna sin error');
+                return;
+            }
+            
+            logToConsole('✅ Elemento iterationTableBody encontrado');
+            tbody.innerHTML = '';
+            
+            if (iteraciones.length === 0) {
+                // Mostrar mensaje cuando no hay iteraciones
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="12" class="px-6 py-4 text-center text-gray-500 italic">
+                        No hay iteraciones agregadas. Selecciona una UC y haz clic en "Agregar Iteración".
+                    </td>
+                `;
+                tbody.appendChild(row);
+                logToConsole('✅ Tabla renderizada con mensaje de "sin iteraciones"');
+                return;
+            }
+            
+            // Renderizar iteraciones existentes
+            iteraciones.forEach((iter, idx) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>Iteración ${idx + 1}</td>`;
+                tbody.appendChild(row);
+            });
+            
+            logToConsole(`✅ Tabla renderizada con ${iteraciones.length} iteraciones`);
+        }
+
+        // Función para mostrar mensajes en la consola visual
+        function logToConsole(message) {
+            const consoleOutput = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            consoleOutput.appendChild(logEntry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function testFunction() {
+            logToConsole('🧪 Iniciando test de renderizarTablaIteraciones...');
+            
+            try {
+                // Caso 1: Sin tabla en el DOM (simula el error original)
+                logToConsole('📋 Test Caso 1: Tabla no existe en el DOM');
+                renderizarTablaIteraciones();
+                
+                // Caso 2: Crear tabla temporal y probar
+                logToConsole('📋 Test Caso 2: Crear tabla temporal');
+                const tempTable = document.createElement('table');
+                const tempTbody = document.createElement('tbody');
+                tempTbody.id = 'iterationTableBody';
+                tempTable.appendChild(tempTbody);
+                document.body.appendChild(tempTable);
+                
+                renderizarTablaIteraciones();
+                
+                // Caso 3: Con iteraciones
+                logToConsole('📋 Test Caso 3: Con iteraciones de prueba');
+                iteraciones = [
+                    { nueva: { codigo: 'TEST001' } },
+                    { nueva: { codigo: 'TEST002' } }
+                ];
+                renderizarTablaIteraciones();
+                
+                // Limpiar tabla temporal
+                document.body.removeChild(tempTable);
+                iteraciones = [];
+                
+                // Resultado final
+                document.getElementById('test-result').innerHTML = `
+                    <div class="success">
+                        <h3>✅ Test Exitoso</h3>
+                        <p>La función renderizarTablaIteraciones() ahora maneja correctamente los casos donde:</p>
+                        <ul>
+                            <li>✅ El elemento 'iterationTableBody' no existe (tabla comentada)</li>
+                            <li>✅ La función retorna sin errores</li>
+                            <li>✅ Se muestra un warning apropiado en consola</li>
+                            <li>✅ No se produce el error TypeError original</li>
+                        </ul>
+                        <p><strong>Error Original Solucionado:</strong> "Cannot set properties of null (setting 'innerHTML')"</p>
+                    </div>
+                `;
+                
+                logToConsole('🎉 Test completado exitosamente - Error corregido');
+                
+            } catch (error) {
+                document.getElementById('test-result').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Test Fallido</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+                logToConsole('❌ Error en test: ' + error.message);
+            }
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '<div>🧹 Consola limpiada</div>';
+        }
+
+        // Ejecutar test automáticamente al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('🚀 Página cargada, ejecutando test automático...');
+            setTimeout(testFunction, 1000);
+        });
+    </script>
+</body>
+</html>

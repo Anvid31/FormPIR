@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Filtro de Contratos y Previews de Documentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .form-select, .form-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+        .shared-field {
+            border: 2px solid #3498db;
+        }
+        .console-output {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .hidden { display: none; }
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test - Filtro de Contratos y Previews de Documentos</h1>
+        
+        <div class="console-output" id="console-output">
+            <div>🔄 Iniciando prueba de filtro de contratos y previews...</div>
+        </div>
+    </div>
+
+    <!-- Simulación de los componentes compartidos -->
+    <div class="test-container">
+        <h2>📋 Información del Proyecto (Compartida)</h2>
+        
+        <div class="form-group">
+            <label class="form-label">NOMBRE DEL PROYECTO</label>
+            <select id="shared_nombre" name="shared_nombre" class="form-select shared-field" data-sync-field="nombre">
+                <option value="">Seleccionar proyecto</option>
+                <option value="Automatización de redes distribución CENS">Automatización de redes distribución CENS</option>
+                <option value="Electrificación Rural CENS">Electrificación Rural CENS</option>
+                <option value="Expansión redes de distribución CENS">Expansión redes de distribución CENS</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">BANCO DEL PROYECTO</label>
+            <input type="text" id="shared_banco_proyecto" name="shared_banco_proyecto" 
+                   class="form-input bg-gray-50 shared-field" data-sync-field="banco_proyecto" 
+                   placeholder="Se autocompletará según el proyecto" readonly />
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">CONTRATO</label>
+            <select id="shared_contrato" name="shared_contrato" class="form-select shared-field" data-sync-field="contrato">
+                <option value="">Seleccionar contrato</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Simulación de documentos compartidos -->
+    <div class="test-container">
+        <h2>📁 Documentos y Archivos (Compartidos)</h2>
+        
+        <div class="form-group">
+            <label class="form-label">ARCHIVO AUTOCAD</label>
+            <input type="file" id="shared_archivo_cad" name="shared_archivo_cad" 
+                   class="shared-file" data-sync-field="archivo_cad" accept=".dwg,.dxf,.dws" />
+            <div id="shared_archivo_cad_preview" class="file-preview hidden">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center;">
+                        <span>📄</span>
+                        <span id="shared_archivo_cad_filename" style="margin-left: 10px;"></span>
+                    </div>
+                    <button type="button" onclick="removeSharedFile('shared_archivo_cad')" style="background: #e74c3c; padding: 5px 10px;">❌</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">ARCHIVO KMZ</label>
+            <input type="file" id="shared_archivo_kmz" name="shared_archivo_kmz" 
+                   class="shared-file" data-sync-field="archivo_kmz" accept=".kmz" />
+            <div id="shared_archivo_kmz_preview" class="file-preview hidden">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center;">
+                        <span>🗺️</span>
+                        <span id="shared_archivo_kmz_filename" style="margin-left: 10px;"></span>
+                    </div>
+                    <button type="button" onclick="removeSharedFile('shared_archivo_kmz')" style="background: #e74c3c; padding: 5px 10px;">❌</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campos ocultos para compatibilidad -->
+    <div style="display: none;">
+        <input type="text" id="nombre" name="nombre" />
+        <input type="text" id="banco_proyecto" name="banco_proyecto" />
+        <select id="contrato" name="contrato"></select>
+        <input type="file" id="archivo_cad" name="archivo_cad" />
+        <input type="file" id="archivo_kmz" name="archivo_kmz" />
+    </div>
+
+    <!-- Controles de prueba -->
+    <div class="test-container">
+        <h2>🎮 Controles de Prueba</h2>
+        <button onclick="testContractFilter()">🧪 Probar Filtro de Contratos</button>
+        <button onclick="testFilePreview()">📁 Probar Preview de Archivos</button>
+        <button onclick="clearConsole()">🧹 Limpiar Consola</button>
+    </div>
+
+    <script>
+        // Simular el mapping de proyectos para la prueba
+        window.PROYECTO_COMPLETO_MAPPING = {
+            "Automatización de redes distribución CENS": {
+                banco: "BANCO_AUTO_001",
+                contratos: [
+                    { codigo: "CONT_AUTO_001", contratista: "Contratista A", regional: "Norte" },
+                    { codigo: "CONT_AUTO_002", contratista: "Contratista B", regional: "Sur" }
+                ]
+            },
+            "Electrificación Rural CENS": {
+                banco: "BANCO_RURAL_001", 
+                contratos: [
+                    { codigo: "CONT_RURAL_001", contratista: "Contratista C", regional: "Este" },
+                    { codigo: "CONT_RURAL_002", contratista: "Contratista D", regional: "Oeste" }
+                ]
+            },
+            "Expansión redes de distribución CENS": {
+                banco: "BANCO_EXP_001",
+                contratos: [
+                    { codigo: "CONT_EXP_001", contratista: "Contratista E", regional: "Centro" }
+                ]
+            }
+        };
+
+        // Simular funciones de autocompletado
+        window.autoCompleteBanco = function() {
+            const nombreField = document.getElementById('nombre') || document.getElementById('shared_nombre');
+            const bancoField = document.getElementById('banco_proyecto') || document.getElementById('shared_banco_proyecto');
+            
+            if (nombreField && bancoField && nombreField.value) {
+                const proyecto = window.PROYECTO_COMPLETO_MAPPING[nombreField.value];
+                if (proyecto) {
+                    bancoField.value = proyecto.banco;
+                    logToConsole(`🏦 Banco autocompletado: ${proyecto.banco}`);
+                }
+            }
+        };
+
+        window.actualizarContratos = function() {
+            const nombreField = document.getElementById('nombre') || document.getElementById('shared_nombre');
+            const contratoSelect = document.getElementById('contrato') || document.getElementById('shared_contrato');
+            
+            if (!nombreField || !contratoSelect) {
+                logToConsole('❌ No se encontraron elementos nombre o contrato');
+                return;
+            }
+            
+            const nombreProyecto = nombreField.value;
+            
+            // Limpiar opciones existentes
+            contratoSelect.innerHTML = '<option value="">Seleccionar contrato</option>';
+            
+            if (nombreProyecto && window.PROYECTO_COMPLETO_MAPPING[nombreProyecto]) {
+                const contratos = window.PROYECTO_COMPLETO_MAPPING[nombreProyecto].contratos;
+                
+                contratos.forEach((contrato) => {
+                    const option = document.createElement('option');
+                    option.value = contrato.codigo;
+                    option.textContent = contrato.codigo;
+                    option.dataset.contratista = contrato.contratista;
+                    option.dataset.regional = contrato.regional;
+                    contratoSelect.appendChild(option);
+                });
+                
+                logToConsole(`📋 ${contratos.length} contratos cargados para: ${nombreProyecto}`);
+            }
+        };
+
+        // Función para mostrar mensajes en la consola visual
+        function logToConsole(message) {
+            const consoleOutput = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            consoleOutput.appendChild(logEntry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        // Función global para remover archivos (simulada)
+        window.removeSharedFile = function(inputId) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = '';
+                const fieldName = input.getAttribute('data-sync-field');
+                const preview = document.getElementById(`shared_${fieldName}_preview`);
+                if (preview) {
+                    preview.classList.add('hidden');
+                }
+                logToConsole(`🗑️ Archivo ${fieldName} removido`);
+            }
+        };
+
+        // Funciones de prueba
+        function testContractFilter() {
+            logToConsole('🧪 Probando filtro de contratos...');
+            
+            const proyectos = Object.keys(window.PROYECTO_COMPLETO_MAPPING);
+            const nombreField = document.getElementById('shared_nombre');
+            
+            if (nombreField) {
+                // Seleccionar primer proyecto
+                nombreField.value = proyectos[0];
+                nombreField.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const contratoSelect = document.getElementById('shared_contrato');
+                    if (contratoSelect && contratoSelect.options.length > 1) {
+                        logToConsole(`✅ Filtro funcionando: ${contratoSelect.options.length - 1} contratos cargados`);
+                    } else {
+                        logToConsole('❌ Error: No se cargaron contratos');
+                    }
+                }, 200);
+            }
+        }
+
+        function testFilePreview() {
+            logToConsole('📁 Para probar previews de archivos, selecciona archivos manualmente en los inputs de arriba');
+            logToConsole('🎯 Formatos soportados: CAD (.dwg, .dxf, .dws) y KMZ (.kmz)');
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '<div>🧹 Consola limpiada</div>';
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('🚀 Página cargada, inicializando sistema...');
+            
+            // Simular el sistema de campos compartidos (versión simplificada)
+            setTimeout(() => {
+                if (typeof window.SharedFieldsManager === 'undefined') {
+                    logToConsole('⚠️ Sistema SharedFieldsManager no encontrado, usando simulación');
+                    
+                    // Configurar event listeners básicos
+                    const sharedNombre = document.getElementById('shared_nombre');
+                    if (sharedNombre) {
+                        sharedNombre.addEventListener('change', function() {
+                            // Sincronizar con campo oculto
+                            const hiddenNombre = document.getElementById('nombre');
+                            if (hiddenNombre) {
+                                hiddenNombre.value = this.value;
+                            }
+                            
+                            // Ejecutar autocompletados
+                            window.autoCompleteBanco();
+                            window.actualizarContratos();
+                            
+                            // Sincronizar banco de vuelta
+                            setTimeout(() => {
+                                const hiddenBanco = document.getElementById('banco_proyecto');
+                                const sharedBanco = document.getElementById('shared_banco_proyecto');
+                                if (hiddenBanco && sharedBanco) {
+                                    sharedBanco.value = hiddenBanco.value;
+                                }
+                                
+                                // Sincronizar contratos
+                                const hiddenContrato = document.getElementById('contrato');
+                                const sharedContrato = document.getElementById('shared_contrato');
+                                if (hiddenContrato && sharedContrato) {
+                                    sharedContrato.innerHTML = hiddenContrato.innerHTML;
+                                }
+                            }, 100);
+                        });
+                    }
+                    
+                    // Configurar previews de archivos
+                    ['shared_archivo_cad', 'shared_archivo_kmz'].forEach(inputId => {
+                        const input = document.getElementById(inputId);
+                        if (input) {
+                            input.addEventListener('change', function() {
+                                if (this.files.length > 0) {
+                                    const file = this.files[0];
+                                    const fieldName = this.getAttribute('data-sync-field');
+                                    const preview = document.getElementById(`shared_${fieldName}_preview`);
+                                    const filename = document.getElementById(`shared_${fieldName}_filename`);
+                                    
+                                    if (preview && filename) {
+                                        filename.textContent = file.name;
+                                        preview.classList.remove('hidden');
+                                        logToConsole(`📎 Archivo seleccionado: ${file.name}`);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    
+                    logToConsole('✅ Sistema simulado configurado');
+                } else {
+                    logToConsole('✅ Sistema SharedFieldsManager encontrado');
+                }
+                
+                // Ejecutar test automático
+                setTimeout(testContractFilter, 500);
+            }, 1000);
+        });
+    </script>
+    
+    <!-- Cargar el sistema real si está disponible -->
+    <script src="forms/static/js/shared-fields.js"></script>
+</body>
+</html>

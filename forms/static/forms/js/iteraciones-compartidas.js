@@ -664,16 +664,14 @@ if (typeof window.IteracionesManager === 'undefined') {
 let iteracionesManager;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Esperar un poco para asegurar que otros scripts se hayan cargado
-    setTimeout(() => {
-        iteracionesManager = new IteracionesManager();
-        window.iteracionesManager = iteracionesManager; // Hacer disponible globalmente
-        
-        console.log('🚀 Sistema de Iteraciones Compartidas inicializado');
-    }, 1000);
+    // Inicializar inmediatamente, no esperar
+    iteracionesManager = new IteracionesManager();
+    window.iteracionesManager = iteracionesManager; // Hacer disponible globalmente
+    
+    console.log('🚀 Sistema de Iteraciones Compartidas inicializado');
 });
 
-    // Exponer para uso global
+    // Exponer para uso global inmediatamente
     window.IteracionesManager = IteracionesManager;
 } else {
     console.log('✅ IteracionesManager ya está definido, usando instancia existente');

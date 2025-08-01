@@ -18,15 +18,82 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('🏗️ Configurando autocompletados para Estructuras...');
       
-      // Solo configurar la sección activa, NO crear nueva tabla
-      setTimeout(function() {
+      // Función para esperar el IteracionesManager con reintentos
+      function esperarIteracionesManager(intentos = 0) {
         if (window.iteracionesManager && window.iteracionesManager.setSeccionActiva) {
           window.iteracionesManager.setSeccionActiva('estructuras');
           console.log('✅ Sistema de iteraciones configurado para Estructuras');
+        } else if (intentos < 20) { // Máximo 2 segundos (20 * 100ms)
+          setTimeout(() => esperarIteracionesManager(intentos + 1), 100);
         } else {
-          console.warn('⚠️ IteracionesManager no disponible');
+          console.log('ℹ️  IteracionesManager no disponible después de 2 segundos - continuando sin él');
         }
-      }, 100);
+      }
+      
+      // Configurar autocompletados para campos compartidos
+      function configurarAutocompletados() {
+        // 1. Configurar autocompletado de banco cuando cambie el proyecto
+        const nombreField = document.getElementById('shared_nombre');
+        if (nombreField && typeof window.autoCompleteBanco === 'function') {
+          nombreField.addEventListener('change', function() {
+            // Sincronizar al campo oculto primero
+            const nombreOculto = document.getElementById('nombre');
+            if (nombreOculto) {
+              nombreOculto.value = this.value;
+            }
+            
+            // Ejecutar autocompleta  do de banco
+            setTimeout(() => {
+              window.autoCompleteBanco();
+              
+              // Después del banco, actualizar contratos
+              setTimeout(() => {
+                if (typeof window.actualizarContratos === 'function') {
+                  window.actualizarContratos();
+                  
+                  // Sincronizar contratos del campo oculto al compartido
+                  setTimeout(() => {
+                    const contratoOculto = document.getElementById('contrato');
+                    const contratoCompartido = document.getElementById('shared_contrato');
+                    
+                    if (contratoOculto && contratoCompartido) {
+                      contratoCompartido.innerHTML = contratoOculto.innerHTML;
+                      console.log('✅ Contratos sincronizados al campo compartido');
+                    }
+                  }, 100);
+                }
+              }, 100);
+            }, 100);
+          });
+          
+          console.log('✅ Autocompletado de banco configurado para campo compartido');
+        }
+        
+        // 2. Configurar autocompletado de municipios cuando cambie el contrato
+        const contratoField = document.getElementById('shared_contrato');
+        if (contratoField && typeof window.actualizarMunicipiosPorContrato === 'function') {
+          contratoField.addEventListener('change', function() {
+            // Sincronizar al campo oculto primero
+            const contratoOculto = document.getElementById('contrato');
+            if (contratoOculto) {
+              contratoOculto.value = this.value;
+            }
+            
+            // Ejecutar autocompletado de municipios
+            setTimeout(() => {
+              window.actualizarMunicipiosPorContrato();
+            }, 100);
+          });
+          
+          console.log('✅ Autocompletado de municipios configurado para campo compartido');
+        }
+      }
+      
+      // Iniciar configuraciones
+      esperarIteracionesManager();
+      
+      // Configurar autocompletados después de un pequeño delay para asegurar que todo esté cargado
+      setTimeout(configurarAutocompletados, 500);
       
       console.log('✅ Estructuras configuradas correctamente');
     });

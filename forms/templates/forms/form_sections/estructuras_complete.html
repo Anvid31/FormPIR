@@ -1004,9 +1004,22 @@ function capturarDatosUC() {
     return resultado;
 }
 
-// Función para renderizar la tabla de iteraciones
+// Función para renderizar la tabla de iteraciones (adaptada para sistema compartido)
 function renderizarTablaIteraciones() {
+    // Verificar si el sistema de iteraciones compartidas está disponible
+    if (typeof window.IteracionesManager !== 'undefined' && window.iteracionesManager) {
+        console.log('✅ Sistema de iteraciones compartidas detectado');
+        return;
+    }
+    
     const tbody = document.getElementById('iterationTableBody');
+    
+    // Verificar si el elemento existe antes de acceder a él
+    if (!tbody) {
+        console.log('ℹ️  Elemento iterationTableBody no encontrado - usando sistema compartido');
+        return;
+    }
+    
     tbody.innerHTML = '';
     
     if (iteraciones.length === 0) {
@@ -1176,18 +1189,31 @@ document.addEventListener('DOMContentLoaded', function() {
     
     renderizarTablaIteraciones();
     
-    // Verificar que los elementos necesarios existan
-    const elementosNecesarios = [
-        'agregarIteracion',
-        'iterationTableBody',
-        'uc_nueva',
-        'descripcion_uc'
-    ];
+    // Verificar elementos según el sistema disponible
+    let elementosNecesarios = [];
+    
+    // Si existe el sistema compartido, verificar sus elementos
+    if (typeof window.IteracionesManager !== 'undefined') {
+        elementosNecesarios = ['uc-selector-container'];
+    } else {
+        // Si no, verificar elementos legacy (solo si existen)
+        elementosNecesarios = ['uc_nueva', 'descripcion_uc'];
+        
+        // Solo verificar elementos legacy si la tabla no está comentada
+        const legacyElements = ['agregarIteracion', 'iterationTableBody'];
+        const legacyExist = legacyElements.some(id => document.getElementById(id));
+        
+        if (legacyExist) {
+            elementosNecesarios = elementosNecesarios.concat(legacyElements);
+        } else {
+            console.log('ℹ️  Tabla legacy comentada - esperando sistema compartido');
+        }
+    }
     
     const elementosFaltantes = elementosNecesarios.filter(id => !document.getElementById(id));
     
     if (elementosFaltantes.length > 0) {
-        console.error('❌ Elementos faltantes:', elementosFaltantes);
+        console.warn('⚠️ Elementos faltantes:', elementosFaltantes);
     } else {
         console.log('✅ Todos los elementos necesarios están presentes');
     }
