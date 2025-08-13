@@ -1,0 +1,17 @@
+/**
+ * Estilos mínimos para destacar campos protegidos
+ * Solo highlight, NO modificación de dimensiones
+ */
+.desmantelado-highlight {
+    outline: 2px solid #ef4444 !important;
+    outline-offset: 1px !important;
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.3) !important;
+}
+
+.desmantelado-highlight:focus {
+    outline: 3px solid #dc2626 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.4) !important;
+}
+
+/* NO más estilos que puedan interferir con dimensiones */

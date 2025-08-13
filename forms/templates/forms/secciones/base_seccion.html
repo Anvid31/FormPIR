@@ -10,6 +10,10 @@
       rel="stylesheet"
     />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Silenciar warning de Tailwind CDN en desarrollo
+      tailwind.config = { content: [], future: { removeDeprecatedGapUtilities: true } };
+    </script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -73,9 +77,19 @@
               </a>
             </div>
             
-            <!-- Progress indicator -->
-            <div class="text-sm text-gray-600">
-              <span class="font-medium">Sección actual:</span> {{ titulo }}
+            <!-- Progress indicator and Dashboard button -->
+            <div class="flex items-center gap-4">
+              <div class="text-sm text-gray-600">
+                <span class="font-medium">Sección actual:</span> {{ titulo }}
+              </div>
+              
+              <!-- Botón Dashboard -->
+              <a href="{% url 'forms:dashboard' %}" 
+                 class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                 title="Volver al Dashboard">
+                <i class="fas fa-home"></i>
+                <span class="hidden md:inline">Dashboard</span>
+              </a>
             </div>
           </div>
         </div>
@@ -97,8 +111,6 @@
           {% endblock %}
         </div>
 
-        <!-- TABLA DE ITERACIONES COMENTADA - AHORA SE USA EL SISTEMA JAVASCRIPT UNIFICADO -->
-        <!-- {% include 'forms/components/tabla_iteraciones.html' %} -->
 
         <!-- Botones de acción -->
         <div class="flex justify-center items-center gap-4 mt-8">
@@ -142,11 +154,12 @@
     <!-- 4. Módulos de Funcionalidad -->
     <script src="{% static 'forms/js/modules/autocompletion-utils.js' %}"></script>
     <script src="{% static 'forms/js/modules/autocompletion.js' %}"></script>
-    <script src="{% static 'forms/js/modules/tipos-inversion.js' %}"></script>
+    <!-- ✅ SISTEMA UNIFICADO DE TIPOS DE INVERSIÓN -->
+    <script src="{% static 'forms/js/sistema-tipos-inversion-final.js' %}"></script>
+    <!-- ✅ SISTEMA DE ITERACIONES COMPARTIDAS FINAL -->
+    <script src="{% static 'forms/js/sistema-iteraciones-compartidas-final.js' %}"></script>
     <script src="{% static 'forms/js/modules/iteraciones-manager.js' %}"></script>
     <script src="{% static 'forms/js/modules/transformador-autocompletado.js' %}"></script>
-    <!-- Sistema de iteraciones compartidas -->
-    <script src="{% static 'forms/js/iteraciones-compartidas.js' %}"></script>
     <!-- Sistema de campos compartidos -->
     <script src="{% static 'js/shared-fields.js' %}"></script>
     
@@ -238,5 +251,8 @@
         }
       }
     </style>
+    
+    <!-- Console Cleaner - Carga al final -->
+    <script src="{% static 'forms/js/console-cleaner.js' %}"></script>
   </body>
 </html>

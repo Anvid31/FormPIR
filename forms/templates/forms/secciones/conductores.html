@@ -4,7 +4,7 @@
 {% block section_content %}
   {% include 'forms/form_sections/conductores_complete.html' %}
   
-  <!-- NOTA: La tabla de iteraciones se inyecta automáticamente por iteraciones-compartidas.js -->
+
   
 {% endblock %}
 
@@ -13,19 +13,46 @@
     console.log('⚡ Scripts específicos de conductores cargados');
     
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('⚡ Configurando autocompletados para Conductores...');
+      console.log('⚡ Configurando Conductores...');
       
-      // Solo configurar la sección activa, NO crear nueva tabla
-      setTimeout(function() {
-        if (window.iteracionesManager && window.iteracionesManager.setSeccionActiva) {
-          window.iteracionesManager.setSeccionActiva('conductores');
-          console.log('✅ Sistema de iteraciones configurado para Conductores');
+      // SISTEMA COMPARTIDO DE ITERACIONES
+      setTimeout(() => {
+        if (typeof SistemaIteracionesCompartidasFinal !== 'undefined') {
+          console.log('✅ Sistema Compartido de Iteraciones disponible para Conductores');
+          // El sistema se auto-inicializa
         } else {
-          console.warn('⚠️ IteracionesManager no disponible');
+          console.error('❌ SistemaIteracionesCompartidasFinal no disponible');
         }
-      }, 100);
+      }, 1000);
       
-      console.log('✅ Conductores configurados correctamente');
+      // Verificar que el sistema unificado de tipos de inversión esté disponible
+      if (window.TiposInversionState) {
+        console.log('✅ Sistema unificado de tipos de inversión disponible para Conductores');
+        window.TiposInversionState.seccionActual = 'conductores';
+      } else {
+        console.warn('⚠️ Sistema unificado de tipos de inversión no disponible');
+      }
+      
+      // Verificar presencia de campos requeridos
+      setTimeout(() => {
+        const camposRequeridos = [
+          { id: 't_inv', nombre: 'Tipo de Inversión' },
+          { id: 'montaje_integral_checkbox', nombre: 'Checkbox Montaje Integral' },
+          { id: 'desmantelado_checkbox', nombre: 'Checkbox Desmantelado' },
+          { id: 'estructura_retirada_campo', nombre: 'Campo Estructura Retirada' }
+        ];
+        
+        camposRequeridos.forEach(campo => {
+          const elemento = document.getElementById(campo.id);
+          if (elemento) {
+            console.log(`✅ ${campo.nombre} encontrado en Conductores`);
+          } else {
+            console.warn(`⚠️ ${campo.nombre} NO encontrado en Conductores`);
+          }
+        });
+      }, 500);
+      
+      console.log('✅ Conductores configurados correctamente con sistema unificado');
     });
   </script>
 {% endblock %}

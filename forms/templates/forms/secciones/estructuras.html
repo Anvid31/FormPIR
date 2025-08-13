@@ -4,47 +4,66 @@
 {% block section_content %}
   {% include 'forms/form_sections/estructuras_complete.html' %}
   
-  <!-- NOTA: La tabla de iteraciones se inyecta automáticamente por iteraciones-compartidas.js -->
+
   
 {% endblock %}
 
 {% block section_scripts %}
   <!-- Script de verificación temporal -->
-  <script src="{% static 'forms/js/tests/test-valores-predefinidos.js' %}"></script>
-  
   <script>
     console.log('🏗️ Scripts específicos de estructuras cargados');
     
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🏗️ Configurando autocompletados para Estructuras...');
+      console.log('🏗️ Configurando Estructuras...');
       
-      // Función para esperar el IteracionesManager con reintentos
-      function esperarIteracionesManager(intentos = 0) {
-        if (window.iteracionesManager && window.iteracionesManager.setSeccionActiva) {
-          window.iteracionesManager.setSeccionActiva('estructuras');
-          console.log('✅ Sistema de iteraciones configurado para Estructuras');
-        } else if (intentos < 20) { // Máximo 2 segundos (20 * 100ms)
-          setTimeout(() => esperarIteracionesManager(intentos + 1), 100);
+      // SISTEMA COMPARTIDO DE ITERACIONES
+      setTimeout(() => {
+        if (typeof SistemaIteracionesCompartidasFinal !== 'undefined') {
+          console.log('✅ Sistema Compartido de Iteraciones disponible para Estructuras');
+          // El sistema se auto-inicializa
         } else {
-          console.log('ℹ️  IteracionesManager no disponible después de 2 segundos - continuando sin él');
+          console.error('❌ SistemaIteracionesCompartidasFinal no disponible');
+        }
+      }, 1000);
+      
+      // Función para esperar el SharedFieldsManager
+      function esperarSharedFieldsManager(intentos = 0) {
+        if (window.sharedFieldsManager) {
+          console.log('✅ SharedFieldsManager detectado - configurando autocompletados adicionales');
+          configurarAutocompletadosEstructuras();
+        } else if (intentos < 20) {
+          setTimeout(() => esperarSharedFieldsManager(intentos + 1), 100);
+        } else {
+          console.log('⚠️ SharedFieldsManager no disponible - configurando autocompletados manualmente');
+          configurarAutocompletadosEstructuras();
         }
       }
       
-      // Configurar autocompletados para campos compartidos
-      function configurarAutocompletados() {
+      // Configurar autocompletados específicos para Estructuras
+      function configurarAutocompletadosEstructuras() {
+        console.log('🔧 Configurando autocompletados específicos para Estructuras...');
+        
         // 1. Configurar autocompletado de banco cuando cambie el proyecto
         const nombreField = document.getElementById('shared_nombre');
-        if (nombreField && typeof window.autoCompleteBanco === 'function') {
-          nombreField.addEventListener('change', function() {
-            // Sincronizar al campo oculto primero
+        if (nombreField) {
+          const proyectoHandler = function() {
+            const proyectoSeleccionado = this.value;
+            console.log('🎯 Proyecto seleccionado en Estructuras:', proyectoSeleccionado);
+            
+            if (!proyectoSeleccionado) return;
+            
+            // Sincronizar al campo oculto
             const nombreOculto = document.getElementById('nombre');
             if (nombreOculto) {
-              nombreOculto.value = this.value;
+              nombreOculto.value = proyectoSeleccionado;
             }
             
-            // Ejecutar autocompleta  do de banco
+            // Ejecutar autocompletado de banco
             setTimeout(() => {
-              window.autoCompleteBanco();
+              if (typeof window.autoCompleteBanco === 'function') {
+                window.autoCompleteBanco();
+                console.log('✅ Banco autocompletado desde Estructuras');
+              }
               
               // Después del banco, actualizar contratos
               setTimeout(() => {
@@ -58,44 +77,207 @@
                     
                     if (contratoOculto && contratoCompartido) {
                       contratoCompartido.innerHTML = contratoOculto.innerHTML;
-                      console.log('✅ Contratos sincronizados al campo compartido');
+                      contratoCompartido.disabled = false;
+                      contratoCompartido.classList.add("bg-green-50", "border-green-300");
+                      console.log('✅ Contratos sincronizados en Estructuras');
                     }
-                  }, 100);
+                  }, 200);
                 }
-              }, 100);
-            }, 100);
-          });
+              }, 200);
+            }, 200);
+          };
           
-          console.log('✅ Autocompletado de banco configurado para campo compartido');
+          // Remover listeners previos y agregar nuevo
+          nombreField.removeEventListener('change', proyectoHandler);
+          nombreField.addEventListener('change', proyectoHandler);
+          console.log('✅ Handler de proyecto configurado para Estructuras');
         }
         
-        // 2. Configurar autocompletado de municipios cuando cambie el contrato
+        // 2. Configurar filtrado de municipios cuando cambie el contrato - RESTAURADO
         const contratoField = document.getElementById('shared_contrato');
-        if (contratoField && typeof window.actualizarMunicipiosPorContrato === 'function') {
-          contratoField.addEventListener('change', function() {
-            // Sincronizar al campo oculto primero
+        if (contratoField) {
+          const contratoHandler = function() {
+            const contratoSeleccionado = this.value;
+            console.log('📄 Contrato seleccionado en Estructuras:', contratoSeleccionado);
+            
+            if (!contratoSeleccionado) return;
+            
+            // Sincronizar al campo oculto para compatibilidad
             const contratoOculto = document.getElementById('contrato');
             if (contratoOculto) {
-              contratoOculto.value = this.value;
+              contratoOculto.value = contratoSeleccionado;
+              console.log('✅ Contrato sincronizado al campo oculto');
             }
             
-            // Ejecutar autocompletado de municipios
+            // Ejecutar autocompletado de regional
             setTimeout(() => {
-              window.actualizarMunicipiosPorContrato();
-            }, 100);
+              if (typeof window.autoCompleteRegional === 'function') {
+                window.autoCompleteRegional();
+                console.log('✅ Regional autocompletada desde contrato');
+              }
+              
+              // Ejecutar filtrado de municipios por contrato - CLAVE
+              setTimeout(() => {
+                filtrarMunicipiosPorContrato(contratoSeleccionado);
+              }, 200);
+            }, 200);
+          };
+          
+          // Remover listeners previos y agregar nuevo
+          contratoField.removeEventListener('change', contratoHandler);
+          contratoField.addEventListener('change', contratoHandler);
+          console.log('✅ Handler de contrato configurado para Estructuras con filtrado de municipios');
+        }
+        
+        // 3. Configurar autocompletado de departamento cuando cambie municipio
+        const municipioField = document.getElementById('shared_municipio');
+        if (municipioField) {
+          const municipioHandler = function() {
+            const municipioSeleccionado = this.value;
+            console.log('🏙️ Municipio seleccionado en Estructuras:', municipioSeleccionado);
+            
+            // Sincronizar al campo oculto
+            const municipioOculto = document.getElementById('municipio');
+            if (municipioOculto) {
+              municipioOculto.value = municipioSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de departamento
+            setTimeout(() => {
+              if (typeof window.autoCompleteDepartamento === 'function') {
+                window.autoCompleteDepartamento();
+                console.log('✅ Departamento autocompletado desde municipio');
+              }
+              
+              // Ejecutar autocompletado de circuitos
+              setTimeout(() => {
+                if (typeof window.actualizarCircuitos === 'function') {
+                  window.actualizarCircuitos();
+                  console.log('✅ Circuitos actualizados desde municipio');
+                }
+              }, 200);
+            }, 200);
+          };
+          
+          municipioField.removeEventListener('change', municipioHandler);
+          municipioField.addEventListener('change', municipioHandler);
+          console.log('✅ Handler de municipio configurado para Estructuras');
+        }
+      }
+      
+      // Función para filtrar municipios por contrato - RESTAURADA
+      function filtrarMunicipiosPorContrato(contratoSeleccionado) {
+        console.log('🔍 Iniciando filtrado de municipios por contrato:', contratoSeleccionado);
+        
+        const municipioShared = document.getElementById('shared_municipio');
+        const nombreProyecto = document.getElementById('shared_nombre')?.value || 
+                              document.getElementById('nombre')?.value;
+        
+        if (!municipioShared || !nombreProyecto) {
+          console.warn('⚠️ Campos necesarios no encontrados para filtrado de municipios');
+          return;
+        }
+        
+        // Limpiar opciones existentes
+        municipioShared.innerHTML = '<option value="">Seleccionar municipio</option>';
+        
+        if (!contratoSeleccionado || contratoSeleccionado === 'Por definir') {
+          // Mostrar todos los municipios si no hay contrato específico
+          if (typeof window.MUNICIPIO_MAPPING !== 'undefined') {
+            Object.keys(window.MUNICIPIO_MAPPING).sort().forEach(municipio => {
+              const option = document.createElement('option');
+              option.value = municipio;
+              option.textContent = municipio;
+              municipioShared.appendChild(option);
+            });
+            
+            municipioShared.disabled = false;
+            municipioShared.classList.remove('bg-gray-100', 'cursor-not-allowed');
+            municipioShared.classList.add('bg-white');
+            console.log('📋 Mostrando todos los municipios (sin filtro)');
+          }
+          return;
+        }
+        
+        // Buscar la regional del contrato seleccionado
+        let regionalDelContrato = null;
+        
+        if (typeof window.PROYECTO_COMPLETO_MAPPING !== 'undefined' && 
+            window.PROYECTO_COMPLETO_MAPPING[nombreProyecto]) {
+          
+          const contratos = window.PROYECTO_COMPLETO_MAPPING[nombreProyecto].contratos;
+          const contratoData = contratos.find(c => c.codigo === contratoSeleccionado);
+          
+          if (contratoData && contratoData.regional !== 'Por definir') {
+            regionalDelContrato = contratoData.regional;
+            console.log('🏢 Regional encontrada para contrato:', regionalDelContrato);
+          }
+        }
+        
+        if (!regionalDelContrato || typeof window.MUNICIPIO_MAPPING === 'undefined') {
+          console.warn('⚠️ No se puede filtrar municipios - datos no disponibles');
+          municipioShared.disabled = true;
+          municipioShared.classList.add('bg-gray-100', 'cursor-not-allowed');
+          return;
+        }
+        
+        // Filtrar municipios por regional
+        const municipiosFiltrados = Object.keys(window.MUNICIPIO_MAPPING).filter(municipio => {
+          const datosM = window.MUNICIPIO_MAPPING[municipio];
+          
+          // Manejar variaciones de nombres de regionales
+          if (regionalDelContrato === "CÚCUTA Y PAMPLONA") {
+            return datosM.regional === "CUCUTA" || datosM.regional === "PAMPLONA";
+          } else if (regionalDelContrato === "OCAÑA Y AGUACHICA") {
+            return datosM.regional === "OCAÑA" || datosM.regional === "AGUACHICA";
+          } else {
+            return datosM.regional === regionalDelContrato || 
+                   datosM.regional === regionalDelContrato.replace("Ú", "U");
+          }
+        });
+        
+        if (municipiosFiltrados.length > 0) {
+          // Agregar municipios filtrados al select
+          municipiosFiltrados.sort().forEach(municipio => {
+            const option = document.createElement('option');
+            option.value = municipio;
+            option.textContent = municipio;
+            municipioShared.appendChild(option);
           });
           
-          console.log('✅ Autocompletado de municipios configurado para campo compartido');
+          // Habilitar el campo con indicador visual
+          municipioShared.disabled = false;
+          municipioShared.classList.remove('bg-gray-100', 'cursor-not-allowed');
+          municipioShared.classList.add('bg-blue-50', 'border-blue-300');
+          
+          console.log(`✅ Municipios filtrados para regional ${regionalDelContrato}:`, 
+                     municipiosFiltrados.length, 'municipios disponibles');
+          
+          // Sincronizar también al campo oculto
+          const municipioOculto = document.getElementById('municipio');
+          if (municipioOculto) {
+            municipioOculto.innerHTML = municipioShared.innerHTML;
+          }
+          
+        } else {
+          // No hay municipios para esta regional
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = `No hay municipios disponibles para la regional ${regionalDelContrato}`;
+          option.disabled = true;
+          municipioShared.appendChild(option);
+          
+          municipioShared.disabled = true;
+          municipioShared.classList.add('bg-red-50', 'border-red-300');
+          
+          console.log(`⚠️ No se encontraron municipios para la regional ${regionalDelContrato}`);
         }
       }
       
       // Iniciar configuraciones
-      esperarIteracionesManager();
+      esperarSharedFieldsManager();
       
-      // Configurar autocompletados después de un pequeño delay para asegurar que todo esté cargado
-      setTimeout(configurarAutocompletados, 500);
-      
-      console.log('✅ Estructuras configuradas correctamente');
+      console.log('✅ Estructuras configuradas correctamente con filtrado de municipios restaurado');
     });
   </script>
 {% endblock %}

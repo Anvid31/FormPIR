@@ -7,7 +7,7 @@
   {% include 'forms/components/shared-documents.html' %}
 
   <!-- Campos ocultos para mantener compatibilidad con el formulario original -->
-  <div style="display: none;">
+  <div style="display: none">
     <input type="text" id="nombre" name="nombre" />
     <input type="text" id="banco_proyecto" name="banco_proyecto" />
     <input type="text" id="contrato" name="contrato" />
@@ -59,7 +59,13 @@
         </label>
         <div class="flex items-start gap-4">
           <div class="flex-1">
-            <select id="t_inv" name="t_inv" class="form-select" required onchange="handleTipoInversion()">
+            <select
+              id="t_inv"
+              name="t_inv"
+              class="form-select"
+              required
+              onchange="handleTipoInversion()"
+            >
               <option value="">Seleccionar</option>
               <option value="I">I</option>
               <option value="II">II</option>
@@ -208,7 +214,6 @@
           </span>
         </label>
 
-        
         <div class="flex items-start gap-4">
           <!-- Campo de entrada -->
           <div class="flex-1">
@@ -220,7 +225,7 @@
               placeholder="Z10000"
             />
           </div>
-          
+
           <!-- Checkbox Desmantelado junto al campo -->
           <div
             class="flex items-center space-x-2"
@@ -243,7 +248,7 @@
             </label>
           </div>
         </div>
-        
+
         <!-- Texto de ayuda para desmantelado -->
         <div class="mt-1">
           <div
@@ -251,7 +256,8 @@
             id="desmantelado_help"
             style="display: none"
           >
-            Solo habilita: Información del proyecto, Documentos/archivos y Estructura retirada
+            Solo habilita: Información del proyecto, Documentos/archivos y
+            Estructura retirada
           </div>
         </div>
       </div>
@@ -377,7 +383,9 @@
           readonly
           disabled
         />
-        <small class="text-xs text-gray-500 mt-1">Valor fijo para estructuras</small>
+        <small class="text-xs text-gray-500 mt-1"
+          >Valor fijo para estructuras</small
+        >
       </div>
 
       <div class="form-group">
@@ -391,7 +399,9 @@
           readonly
           disabled
         />
-        <small class="text-xs text-gray-500 mt-1">Valor fijo para estructuras</small>
+        <small class="text-xs text-gray-500 mt-1"
+          >Valor fijo para estructuras</small
+        >
       </div>
     </div>
   </div>
@@ -409,18 +419,22 @@
     <!-- Contenedor de campos de estructuras -->
     <div id="form-uc">
       <!-- Estructura Nueva - Solo Selector UC Jerárquico -->
-      <div class="bg-emerald-50/50 rounded-lg border border-emerald-200 p-6 mb-6">
-        
+      <div
+        class="bg-emerald-50/50 rounded-lg border border-emerald-200 p-6 mb-6"
+      >
         <!-- Selector UC Jerárquico Integrado -->
         <div class="mb-6">
-          <h3 class="text-lg font-semibold text-emerald-800 mb-4 flex items-center">
+          <h3
+            class="text-lg font-semibold text-emerald-800 mb-4 flex items-center"
+          >
             <i class="fas fa-cube mr-2"></i>
             Configuración de Unidad Constructiva
           </h3>
           <p class="text-sm text-gray-600 mb-4">
-            Utiliza el selector jerárquico para configurar automáticamente todos los parámetros de la estructura según el tipo de UC seleccionado.
+            Utiliza el selector jerárquico para configurar automáticamente todos
+            los parámetros de la estructura según el tipo de UC seleccionado.
           </p>
-          
+
           <!-- El selector UC jerárquico reemplaza todos los campos individuales -->
           {% include 'forms/components/uc-selector-estructuras.html' %}
         </div>
@@ -447,584 +461,554 @@
                     stroke-linejoin="round"
                     stroke-width="2"
                     d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                />
-              </svg>
-              <p class="mb-2 text-sm text-green-600">
-                <span class="font-semibold">Click para subir</span> o arrastra y
-                suelta
-              </p>
-              <p class="text-xs text-green-500">
-                JPG, PNG • Múltiples archivos • Máximo 5MB cada uno
-              </p>
-            </div>
-            <input
-              id="fotos"
-              name="fotos"
-              type="file"
-              accept="image/*"
-              multiple
-              class="hidden"
-            />
-          </label>
+                  />
+                </svg>
+                <p class="mb-2 text-sm text-green-600">
+                  <span class="font-semibold">Click para subir</span> o arrastra
+                  y suelta
+                </p>
+                <p class="text-xs text-green-500">
+                  JPG, PNG • Múltiples archivos • Máximo 5MB cada uno
+                </p>
+              </div>
+              <input
+                id="fotos"
+                name="fotos"
+                type="file"
+                accept="image/*"
+                multiple
+                class="hidden"
+              />
+            </label>
+          </div>
+          <div
+            id="preview"
+            class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-4"
+          ></div>
         </div>
-        <div
-          id="preview"
-          class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-4"
-        ></div>
       </div>
-
-      <!-- Botón Agregar Iteración -->
-      <div class="mt-6 flex justify-end">
-        <!-- TABLA LEGACY COMENTADA - Se usa tabla compartida de iteraciones-compartidas.js
-        <button
-          type="button"
-          id="agregarIteracion"
-          class="btn-agregar-iteracion px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-        >
-          <i class="fas fa-plus"></i>
-          Agregar Iteración
-        </button>
-      </div>
+      <!-- Fin contenedor form-uc -->
     </div>
-
-    <!-- 
-    TABLA LEGACY COMENTADA - NO USAR
-    Esta tabla está comentada porque ahora usamos el sistema unificado de iteraciones-compartidas.js
-    
-    <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
-      <h2 class="text-xl font-semibold mb-6 flex items-center text-blue-600">
-        <i class="fas fa-table mr-2"></i>
-        Registro de Iteraciones
-      </h2>
-
-      <div class="overflow-x-auto rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th
-                colspan="4"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
-              >
-                Estructura Retirada
-              </th>
-              <th
-                colspan="7"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Estructura Nueva
-              </th>
-              <th
-                rowspan="2"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"
-              >
-                Acciones
-              </th>
-            </tr>
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
-              >
-                Material
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
-              >
-                Altura
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
-              >
-                Apoyo
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-amber-50"
-              >
-                UC
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Material
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Altura
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Población
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Disposición
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Apoyo
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                UC
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-emerald-50"
-              >
-                Fotos
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-red-50"
-              >
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody
-            id="iterationTableBody"
-            class="bg-white divide-y divide-gray-200"
-          >
-            <!-- Las filas se agregarán dinámicamente aquí -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-    
-    FIN TABLA LEGACY COMENTADA 
-    -->
-    
-    <!-- Fin contenedor form-uc -->
   </div>
-</div>
-<!-- Fin del wrapper del formulario completo -->
+  <!-- Fin del wrapper del formulario completo -->
 
-<form id="formEstructuras" method="post" enctype="multipart/form-data">
-  <!-- ...todos los campos del formulario... -->
-  <input type="hidden" id="iteraciones_json" name="iteraciones_json" />
-  <!-- ...botón de envío... -->
-</form>
+  <form id="formEstructuras" method="post" enctype="multipart/form-data">
+    <!-- ...todos los campos del formulario... -->
+    <input type="hidden" id="iteraciones_json" name="iteraciones_json" />
+    <!-- ...botón de envío... -->
+  </form>
 
-<script>
-// Array para almacenar las iteraciones
-let iteraciones = [];
+  <script>
+    // Array para almacenar las iteraciones
+    let iteraciones = [];
 
-// Función para parsear información del UC desde la descripción
-function parseUCFromDescription(ucCode, ucDescription) {
-    if (!ucDescription) return {};
-    
-    const parsed = {
-        material: '',
-        altura: '',
-        poblacion: '',
-        apoyo: '',
-        codigo: ucCode || ''
-    };
-    
-    const desc = ucDescription.toLowerCase();
-    
-    // Extraer material - patrones más específicos
-    if (desc.includes('concreto')) {
-        parsed.material = 'concreto';
-    } else if (desc.includes('metálico') || desc.includes('metalico')) {
-        parsed.material = 'metálico';
-    } else if (desc.includes('madera')) {
-        parsed.material = 'madera';
-    } else if (desc.includes('fibra de vidrio')) {
-        parsed.material = 'fibra de vidrio';
-    }
-    
-    // Extraer altura (buscar patrón "## m")
-    const alturaMatch = ucDescription.match(/(\d+)\s*m/);
-    if (alturaMatch) {
+    // Función para parsear información del UC desde la descripción
+    function parseUCFromDescription(ucCode, ucDescription) {
+      if (!ucDescription) return {};
+
+      const parsed = {
+        material: "",
+        altura: "",
+        poblacion: "",
+        apoyo: "",
+        codigo: ucCode || "",
+      };
+
+      const desc = ucDescription.toLowerCase();
+
+      // Extraer material - patrones más específicos
+      if (desc.includes("concreto")) {
+        parsed.material = "concreto";
+      } else if (desc.includes("metálico") || desc.includes("metalico")) {
+        parsed.material = "metálico";
+      } else if (desc.includes("madera")) {
+        parsed.material = "madera";
+      } else if (desc.includes("fibra de vidrio")) {
+        parsed.material = "fibra de vidrio";
+      }
+
+      // Extraer altura (buscar patrón "## m")
+      const alturaMatch = ucDescription.match(/(\d+)\s*m/);
+      if (alturaMatch) {
         parsed.altura = alturaMatch[1];
-    }
-    
-    // Extraer población - patrones mejorados
-    if (desc.includes('urbano')) {
-        parsed.poblacion = 'urbano';
-    } else if (desc.includes('rural')) {
-        parsed.poblacion = 'rural';
-    } else if (desc.includes('circuito doble') || desc.includes('protegida')) {
-        // Circuitos dobles y líneas protegidas suelen ser urbanos
-        parsed.poblacion = 'urbano';
-    } else if (desc.includes('línea aérea desnuda') || desc.includes('circuito sencillo')) {
-        // Líneas aéreas desnudas y circuitos sencillos suelen ser rurales
-        parsed.poblacion = 'rural';
-    }
-    
-    // Extraer apoyo/disposición (suspensión/retención)
-    if (desc.includes('suspensión')) {
-        parsed.apoyo = 'suspensión';
-    } else if (desc.includes('retención')) {
-        parsed.apoyo = 'retención';
-    }
-    
-    console.log(`parseUCFromDescription para ${ucCode}:`, parsed);
-    return parsed;
-}
+      }
 
-// Función de debug para inspeccionar el selector UC
-function debugUCSelector() {
-    console.log('=== DEBUG UC SELECTOR ===');
-    
-    // Buscar todos los elementos relacionados con UC
-    const elementos = {
-        'uc_nueva': document.getElementById('uc_nueva'),
-        'descripcion_uc': document.getElementById('descripcion_uc'),
-        'uc-preview': document.querySelector('.uc-preview'),
-        'uc-code-display': document.getElementById('uc-code-display'),
-        'uc-desc-display': document.getElementById('uc-desc-display'),
-        'uc-selector-container': document.getElementById('uc-selector-container')
-    };
-    
-    // Mostrar valores
-    Object.entries(elementos).forEach(([key, elem]) => {
+      // Extraer población - patrones mejorados
+      if (desc.includes("urbano")) {
+        parsed.poblacion = "urbano";
+      } else if (desc.includes("rural")) {
+        parsed.poblacion = "rural";
+      } else if (
+        desc.includes("circuito doble") ||
+        desc.includes("protegida")
+      ) {
+        // Circuitos dobles y líneas protegidas suelen ser urbanos
+        parsed.poblacion = "urbano";
+      } else if (
+        desc.includes("línea aérea desnuda") ||
+        desc.includes("circuito sencillo")
+      ) {
+        // Líneas aéreas desnudas y circuitos sencillos suelen ser rurales
+        parsed.poblacion = "rural";
+      }
+
+      // Extraer apoyo/disposición (suspensión/retención)
+      if (desc.includes("suspensión")) {
+        parsed.apoyo = "suspensión";
+      } else if (desc.includes("retención")) {
+        parsed.apoyo = "retención";
+      }
+
+      console.log(`parseUCFromDescription para ${ucCode}:`, parsed);
+      return parsed;
+    }
+
+    // Función de debug para inspeccionar el selector UC
+    function debugUCSelector() {
+      console.log("=== DEBUG UC SELECTOR ===");
+
+      // Buscar todos los elementos relacionados con UC
+      const elementos = {
+        uc_nueva: document.getElementById("uc_nueva"),
+        descripcion_uc: document.getElementById("descripcion_uc"),
+        "uc-preview": document.querySelector(".uc-preview"),
+        "uc-code-display": document.getElementById("uc-code-display"),
+        "uc-desc-display": document.getElementById("uc-desc-display"),
+        "uc-selector-container": document.getElementById(
+          "uc-selector-container"
+        ),
+      };
+
+      // Mostrar valores
+      Object.entries(elementos).forEach(([key, elem]) => {
         if (elem) {
-            console.log(`${key}:`, {
-                value: elem.value || elem.textContent,
-                innerHTML: elem.innerHTML?.substring(0, 200) + '...',
-                attributes: Array.from(elem.attributes || []).map(a => `${a.name}="${a.value}"`)
-            });
+          console.log(`${key}:`, {
+            value: elem.value || elem.textContent,
+            innerHTML: elem.innerHTML?.substring(0, 200) + "...",
+            attributes: Array.from(elem.attributes || []).map(
+              (a) => `${a.name}="${a.value}"`
+            ),
+          });
         } else {
-            console.log(`${key}: NO ENCONTRADO`);
+          console.log(`${key}: NO ENCONTRADO`);
         }
-    });
-    
-    // **NUEVO** - Análisis detallado del preview
-    const previewContainer = document.querySelector('.uc-preview, #uc-preview');
-    if (previewContainer) {
-        console.log('=== ANÁLISIS DETALLADO DEL PREVIEW ===');
-        const textoCompleto = previewContainer.textContent || previewContainer.innerText || '';
-        console.log('Texto completo del preview:', textoCompleto);
-        
+      });
+
+      // **NUEVO** - Análisis detallado del preview
+      const previewContainer = document.querySelector(
+        ".uc-preview, #uc-preview"
+      );
+      if (previewContainer) {
+        console.log("=== ANÁLISIS DETALLADO DEL PREVIEW ===");
+        const textoCompleto =
+          previewContainer.textContent || previewContainer.innerText || "";
+        console.log("Texto completo del preview:", textoCompleto);
+
         // Intentar extraer patrones comunes
         const patrones = {
-            codigo: textoCompleto.match(/([A-Z]\d+[A-Z]?\d*)/),
-            material: textoCompleto.match(/Poste de ([^-]+)/i) || textoCompleto.match(/concreto|madera|metálico|fibra de vidrio/i),
-            altura: textoCompleto.match(/(\d+)\s*m/i),
-            poblacion: textoCompleto.match(/urbano|rural/gi),
-            disposicion: textoCompleto.match(/suspensión|retención/gi)
+          codigo: textoCompleto.match(/([A-Z]\d+[A-Z]?\d*)/),
+          material:
+            textoCompleto.match(/Poste de ([^-]+)/i) ||
+            textoCompleto.match(/concreto|madera|metálico|fibra de vidrio/i),
+          altura: textoCompleto.match(/(\d+)\s*m/i),
+          poblacion: textoCompleto.match(/urbano|rural/gi),
+          disposicion: textoCompleto.match(/suspensión|retención/gi),
         };
-        
-        console.log('Patrones encontrados en preview:', patrones);
-        
-        // Buscar elementos seleccionados dentro del preview
-        const elementosSeleccionados = previewContainer.querySelectorAll('.selected, .active, [data-selected], .highlighted');
-        if (elementosSeleccionados.length > 0) {
-            console.log('Elementos seleccionados en preview:', Array.from(elementosSeleccionados).map(el => ({
-                tag: el.tagName,
-                texto: el.textContent,
-                clases: el.className,
-                atributos: Array.from(el.attributes).map(a => `${a.name}="${a.value}"`).join(', ')
-            })));
-        }
-    }
-    
-    // Buscar campos ocultos relacionados con UC
-    const hiddenInputs = document.querySelectorAll('input[type="hidden"][name*="uc"], input[type="hidden"][id*="uc"]');
-    console.log('Campos ocultos UC:', Array.from(hiddenInputs).map(input => ({
-        id: input.id,
-        name: input.name,
-        value: input.value
-    })));
-    
-    // Buscar selectores
-    const selects = document.querySelectorAll('select[name*="uc"], select[id*="uc"]');
-    console.log('Selectores UC:', Array.from(selects).map(select => ({
-        id: select.id,
-        name: select.name,
-        value: select.value,
-        selectedText: select.selectedOptions[0]?.textContent
-    })));
-    
-    // Buscar todos los elementos que puedan contener datos UC
-    const allInputs = document.querySelectorAll('input, select, textarea');
-    const ucRelated = Array.from(allInputs).filter(input => 
-        input.id?.toLowerCase().includes('uc') || 
-        input.name?.toLowerCase().includes('uc') ||
-        input.className?.toLowerCase().includes('uc')
-    );
-    console.log('Todos los elementos relacionados con UC:', ucRelated.map(elem => ({
-        tag: elem.tagName,
-        id: elem.id,
-        name: elem.name,
-        value: elem.value,
-        className: elem.className
-    })));
-    
-    // **NUEVO** - Probar la extracción de datos en tiempo real
-    console.log('=== PRUEBA DE EXTRACCIÓN EN TIEMPO REAL ===');
-    const datosExtraidos = obtenerDatosUCDesdeSelector();
-    console.log('Datos que se extraerían actualmente:', datosExtraidos);
-}
 
-// Función alternativa para obtener datos del selector UC
-function obtenerDatosUCDesdeSelector() {
-    console.log('=== OBTENIENDO DATOS UC ===');
-    
-    // Esta función intenta múltiples formas de obtener los datos
-    const datos = {
-        material: '',
-        altura: '',
-        poblacion: '',
-        disposicion: '',
-        apoyo: '',
-        codigo: ''
-    };
-    
-    // Método 1: Campos ocultos principales
-    const ucCodigo = document.getElementById('uc_nueva')?.value || '';
-    const ucDescripcion = document.getElementById('descripcion_uc')?.value || '';
-    
-    console.log('Método 1 - Campos principales:', { ucCodigo, ucDescripcion });
-    
-    if (ucCodigo) datos.codigo = ucCodigo;
-    
-    // Método 2: **NUEVO** - Buscar en el preview del selector (MUY IMPORTANTE)
-    const previewContainer = document.querySelector('.uc-preview, #uc-preview, .selected-uc-info');
-    if (previewContainer) {
-        const texto = previewContainer.textContent || previewContainer.innerText || '';
-        console.log('Método 2 - Preview encontrado, texto completo:', texto);
-        
+        console.log("Patrones encontrados en preview:", patrones);
+
+        // Buscar elementos seleccionados dentro del preview
+        const elementosSeleccionados = previewContainer.querySelectorAll(
+          ".selected, .active, [data-selected], .highlighted"
+        );
+        if (elementosSeleccionados.length > 0) {
+          console.log(
+            "Elementos seleccionados en preview:",
+            Array.from(elementosSeleccionados).map((el) => ({
+              tag: el.tagName,
+              texto: el.textContent,
+              clases: el.className,
+              atributos: Array.from(el.attributes)
+                .map((a) => `${a.name}="${a.value}"`)
+                .join(", "),
+            }))
+          );
+        }
+      }
+
+      // Buscar campos ocultos relacionados con UC
+      const hiddenInputs = document.querySelectorAll(
+        'input[type="hidden"][name*="uc"], input[type="hidden"][id*="uc"]'
+      );
+      console.log(
+        "Campos ocultos UC:",
+        Array.from(hiddenInputs).map((input) => ({
+          id: input.id,
+          name: input.name,
+          value: input.value,
+        }))
+      );
+
+      // Buscar selectores
+      const selects = document.querySelectorAll(
+        'select[name*="uc"], select[id*="uc"]'
+      );
+      console.log(
+        "Selectores UC:",
+        Array.from(selects).map((select) => ({
+          id: select.id,
+          name: select.name,
+          value: select.value,
+          selectedText: select.selectedOptions[0]?.textContent,
+        }))
+      );
+
+      // Buscar todos los elementos que puedan contener datos UC
+      const allInputs = document.querySelectorAll("input, select, textarea");
+      const ucRelated = Array.from(allInputs).filter(
+        (input) =>
+          input.id?.toLowerCase().includes("uc") ||
+          input.name?.toLowerCase().includes("uc") ||
+          input.className?.toLowerCase().includes("uc")
+      );
+      console.log(
+        "Todos los elementos relacionados con UC:",
+        ucRelated.map((elem) => ({
+          tag: elem.tagName,
+          id: elem.id,
+          name: elem.name,
+          value: elem.value,
+          className: elem.className,
+        }))
+      );
+
+      // **NUEVO** - Probar la extracción de datos en tiempo real
+      console.log("=== PRUEBA DE EXTRACCIÓN EN TIEMPO REAL ===");
+      const datosExtraidos = obtenerDatosUCDesdeSelector();
+      console.log("Datos que se extraerían actualmente:", datosExtraidos);
+    }
+
+    // Función alternativa para obtener datos del selector UC
+    function obtenerDatosUCDesdeSelector() {
+      console.log("=== OBTENIENDO DATOS UC ===");
+
+      // Esta función intenta múltiples formas de obtener los datos
+      const datos = {
+        material: "",
+        altura: "",
+        poblacion: "",
+        disposicion: "",
+        apoyo: "",
+        codigo: "",
+      };
+
+      // Método 1: Campos ocultos principales
+      const ucCodigo = document.getElementById("uc_nueva")?.value || "";
+      const ucDescripcion =
+        document.getElementById("descripcion_uc")?.value || "";
+
+      console.log("Método 1 - Campos principales:", {
+        ucCodigo,
+        ucDescripcion,
+      });
+
+      if (ucCodigo) datos.codigo = ucCodigo;
+
+      // Método 2: **NUEVO** - Buscar en el preview del selector (MUY IMPORTANTE)
+      const previewContainer = document.querySelector(
+        ".uc-preview, #uc-preview, .selected-uc-info"
+      );
+      if (previewContainer) {
+        const texto =
+          previewContainer.textContent || previewContainer.innerText || "";
+        console.log("Método 2 - Preview encontrado, texto completo:", texto);
+
         // Buscar el código UC en el preview (generalmente aparece como código)
         const codigoMatch = texto.match(/([A-Z]\d+[A-Z]?\d*)/);
         if (codigoMatch && !datos.codigo) {
-            datos.codigo = codigoMatch[1];
-            console.log('Código UC encontrado en preview:', codigoMatch[1]);
+          datos.codigo = codigoMatch[1];
+          console.log("Código UC encontrado en preview:", codigoMatch[1]);
         }
-        
+
         // Buscar información específica en el texto del preview
         // Patrón: "Poste de X - Y m - Z - W"
-        const descripcionMatch = texto.match(/Poste de ([^-]+)\s*-\s*(\d+)\s*m\s*-\s*([^-]+)\s*-\s*([^-\n]+)/);
+        const descripcionMatch = texto.match(
+          /Poste de ([^-]+)\s*-\s*(\d+)\s*m\s*-\s*([^-]+)\s*-\s*([^-\n]+)/
+        );
         if (descripcionMatch) {
-            datos.material = descripcionMatch[1].trim();
-            datos.altura = descripcionMatch[2];
-            datos.poblacion = descripcionMatch[3].trim();
-            datos.disposicion = descripcionMatch[4].trim();
-            datos.apoyo = descripcionMatch[4].trim(); // apoyo = disposición
-            console.log('Datos parseados desde preview:', { 
-                material: datos.material, 
-                altura: datos.altura, 
-                poblacion: datos.poblacion, 
-                disposicion: datos.disposicion 
-            });
+          datos.material = descripcionMatch[1].trim();
+          datos.altura = descripcionMatch[2];
+          datos.poblacion = descripcionMatch[3].trim();
+          datos.disposicion = descripcionMatch[4].trim();
+          datos.apoyo = descripcionMatch[4].trim(); // apoyo = disposición
+          console.log("Datos parseados desde preview:", {
+            material: datos.material,
+            altura: datos.altura,
+            poblacion: datos.poblacion,
+            disposicion: datos.disposicion,
+          });
         }
-        
+
         // Métodos alternativos de parsing si el formato es diferente
         if (!datos.material) {
-            // Buscar "material: X" o similar
-            const materialMatch = texto.match(/material[:\s]+([^\n,]+)/i) || 
-                                 texto.match(/concreto|madera|metálico|fibra de vidrio/i);
-            if (materialMatch) {
-                datos.material = materialMatch[1] ? materialMatch[1].trim() : materialMatch[0];
-                console.log('Material encontrado alternativo:', datos.material);
-            }
+          // Buscar "material: X" o similar
+          const materialMatch =
+            texto.match(/material[:\s]+([^\n,]+)/i) ||
+            texto.match(/concreto|madera|metálico|fibra de vidrio/i);
+          if (materialMatch) {
+            datos.material = materialMatch[1]
+              ? materialMatch[1].trim()
+              : materialMatch[0];
+            console.log("Material encontrado alternativo:", datos.material);
+          }
         }
-        
+
         if (!datos.altura) {
-            // Buscar "X m" o "altura: X"
-            const alturaMatch = texto.match(/(\d+)\s*m/i) || texto.match(/altura[:\s]+(\d+)/i);
-            if (alturaMatch) {
-                datos.altura = alturaMatch[1];
-                console.log('Altura encontrada alternativa:', datos.altura);
-            }
+          // Buscar "X m" o "altura: X"
+          const alturaMatch =
+            texto.match(/(\d+)\s*m/i) || texto.match(/altura[:\s]+(\d+)/i);
+          if (alturaMatch) {
+            datos.altura = alturaMatch[1];
+            console.log("Altura encontrada alternativa:", datos.altura);
+          }
         }
-        
+
         if (!datos.poblacion) {
-            // Buscar urbano/rural
-            if (texto.toLowerCase().includes('urbano')) {
-                datos.poblacion = 'urbano';
-            } else if (texto.toLowerCase().includes('rural')) {
-                datos.poblacion = 'rural';
-            }
-            console.log('Población encontrada alternativa:', datos.poblacion);
+          // Buscar urbano/rural
+          if (texto.toLowerCase().includes("urbano")) {
+            datos.poblacion = "urbano";
+          } else if (texto.toLowerCase().includes("rural")) {
+            datos.poblacion = "rural";
+          }
+          console.log("Población encontrada alternativa:", datos.poblacion);
         }
-        
+
         if (!datos.disposicion) {
-            // Buscar suspensión/retención
-            if (texto.toLowerCase().includes('suspensión')) {
-                datos.disposicion = 'suspensión';
-                datos.apoyo = 'suspensión';
-            } else if (texto.toLowerCase().includes('retención')) {
-                datos.disposicion = 'retención';
-                datos.apoyo = 'retención';
-            }
-            console.log('Disposición encontrada alternativa:', datos.disposicion);
+          // Buscar suspensión/retención
+          if (texto.toLowerCase().includes("suspensión")) {
+            datos.disposicion = "suspensión";
+            datos.apoyo = "suspensión";
+          } else if (texto.toLowerCase().includes("retención")) {
+            datos.disposicion = "retención";
+            datos.apoyo = "retención";
+          }
+          console.log("Disposición encontrada alternativa:", datos.disposicion);
         }
-    }
-    
-    // Método 3: Buscar en elementos específicos del preview
-    const ucCodeDisplay = document.getElementById('uc-code-display');
-    const ucDescDisplay = document.getElementById('uc-desc-display');
-    
-    if (ucCodeDisplay && ucCodeDisplay.textContent && !datos.codigo) {
+      }
+
+      // Método 3: Buscar en elementos específicos del preview
+      const ucCodeDisplay = document.getElementById("uc-code-display");
+      const ucDescDisplay = document.getElementById("uc-desc-display");
+
+      if (ucCodeDisplay && ucCodeDisplay.textContent && !datos.codigo) {
         datos.codigo = ucCodeDisplay.textContent.trim();
-        console.log('Método 3a - Código desde uc-code-display:', datos.codigo);
-    }
-    
-    if (ucDescDisplay && ucDescDisplay.textContent) {
+        console.log("Método 3a - Código desde uc-code-display:", datos.codigo);
+      }
+
+      if (ucDescDisplay && ucDescDisplay.textContent) {
         const descripcionCompleta = ucDescDisplay.textContent.trim();
-        console.log('Método 3b - Descripción desde uc-desc-display:', descripcionCompleta);
-        
+        console.log(
+          "Método 3b - Descripción desde uc-desc-display:",
+          descripcionCompleta
+        );
+
         // Parsear la descripción completa
-        const parsed = parseUCFromDescription(datos.codigo, descripcionCompleta);
-        Object.keys(parsed).forEach(key => {
-            if (parsed[key] && !datos[key]) {
-                datos[key] = parsed[key];
-            }
+        const parsed = parseUCFromDescription(
+          datos.codigo,
+          descripcionCompleta
+        );
+        Object.keys(parsed).forEach((key) => {
+          if (parsed[key] && !datos[key]) {
+            datos[key] = parsed[key];
+          }
         });
-    }
-    
-    // Método 4: Buscar en la estructura jerárquica del selector
-    const selectorContainer = document.getElementById('uc-selector-container');
-    if (selectorContainer) {
+      }
+
+      // Método 4: Buscar en la estructura jerárquica del selector
+      const selectorContainer = document.getElementById(
+        "uc-selector-container"
+      );
+      if (selectorContainer) {
         // Buscar elementos seleccionados dentro del contenedor
-        const selectedElements = selectorContainer.querySelectorAll('.selected, .active, [data-selected="true"]');
-        selectedElements.forEach(elem => {
-            const text = elem.textContent || elem.innerText || '';
-            const dataValue = elem.getAttribute('data-value') || elem.getAttribute('data-code') || '';
-            
-            if (dataValue && !datos.codigo) {
-                datos.codigo = dataValue;
-                console.log('Método 4a - Código desde elemento seleccionado:', dataValue);
+        const selectedElements = selectorContainer.querySelectorAll(
+          '.selected, .active, [data-selected="true"]'
+        );
+        selectedElements.forEach((elem) => {
+          const text = elem.textContent || elem.innerText || "";
+          const dataValue =
+            elem.getAttribute("data-value") ||
+            elem.getAttribute("data-code") ||
+            "";
+
+          if (dataValue && !datos.codigo) {
+            datos.codigo = dataValue;
+            console.log(
+              "Método 4a - Código desde elemento seleccionado:",
+              dataValue
+            );
+          }
+
+          if (text && text.includes("m")) {
+            const alturaMatch = text.match(/(\d+)\s*m/);
+            if (alturaMatch && !datos.altura) {
+              datos.altura = alturaMatch[1];
+              console.log(
+                "Método 4b - Altura desde elemento seleccionado:",
+                datos.altura
+              );
             }
-            
-            if (text && text.includes('m')) {
-                const alturaMatch = text.match(/(\d+)\s*m/);
-                if (alturaMatch && !datos.altura) {
-                    datos.altura = alturaMatch[1];
-                    console.log('Método 4b - Altura desde elemento seleccionado:', datos.altura);
-                }
-            }
+          }
         });
-    }
-    
-    // Método 5: Si tenemos UC_MAPPING y un código, usarlo
-    if (window.UC_MAPPING && datos.codigo) {
+      }
+
+      // Método 5: Si tenemos UC_MAPPING y un código, usarlo
+      if (window.UC_MAPPING && datos.codigo) {
         let mappingData = null;
-        
+
         // Buscar coincidencia exacta
         if (window.UC_MAPPING[datos.codigo]) {
-            mappingData = window.UC_MAPPING[datos.codigo];
-            console.log('Método 5 - Coincidencia exacta en UC_MAPPING para', datos.codigo, ':', mappingData);
+          mappingData = window.UC_MAPPING[datos.codigo];
+          console.log(
+            "Método 5 - Coincidencia exacta en UC_MAPPING para",
+            datos.codigo,
+            ":",
+            mappingData
+          );
         } else {
-            // Buscar códigos similares si no hay coincidencia exacta
-            const codePrefix = datos.codigo.substring(0, 3);
-            const similarCodes = Object.keys(window.UC_MAPPING).filter(code => 
-                code.startsWith(codePrefix)
+          // Buscar códigos similares si no hay coincidencia exacta
+          const codePrefix = datos.codigo.substring(0, 3);
+          const similarCodes = Object.keys(window.UC_MAPPING).filter((code) =>
+            code.startsWith(codePrefix)
+          );
+
+          if (similarCodes.length > 0) {
+            mappingData = window.UC_MAPPING[similarCodes[0]];
+            console.log(
+              `Método 5 - Usando código similar ${similarCodes[0]} para ${datos.codigo}:`,
+              mappingData
             );
-            
-            if (similarCodes.length > 0) {
-                mappingData = window.UC_MAPPING[similarCodes[0]];
-                console.log(`Método 5 - Usando código similar ${similarCodes[0]} para ${datos.codigo}:`, mappingData);
-            }
+          }
         }
-        
+
         if (mappingData) {
-            // Parsear los datos del mapping
-            const parsed = parseUCFromDescription(datos.codigo, mappingData);
-            Object.keys(parsed).forEach(key => {
-                if (parsed[key] && !datos[key]) {
-                    datos[key] = parsed[key];
-                    console.log(`Método 5 - Completado ${key} desde UC_MAPPING:`, parsed[key]);
-                }
-            });
-            
-            // Inferir población si no se encontró en el preview
-            if (!datos.poblacion) {
-                // Buscar patrones específicos que indiquen el tipo de población
-                if (mappingData.toLowerCase().includes('línea aérea')) {
-                    // Las líneas aéreas desnudas generalmente son rurales
-                    // Las líneas aéreas con circuito doble pueden ser urbanas
-                    if (mappingData.toLowerCase().includes('circuito doble') || 
-                        mappingData.toLowerCase().includes('protegida') ||
-                        mappingData.toLowerCase().includes('urbano')) {
-                        datos.poblacion = 'urbano';
-                    } else {
-                        datos.poblacion = 'rural';
-                    }
-                    console.log('Método 5 - Población inferida:', datos.poblacion);
-                }
-                
-                // Si aún no tenemos población, usar rural como default para líneas
-                if (!datos.poblacion && mappingData.toLowerCase().includes('línea')) {
-                    datos.poblacion = 'rural';
-                    console.log('Método 5 - Población por defecto (línea):', datos.poblacion);
-                }
+          // Parsear los datos del mapping
+          const parsed = parseUCFromDescription(datos.codigo, mappingData);
+          Object.keys(parsed).forEach((key) => {
+            if (parsed[key] && !datos[key]) {
+              datos[key] = parsed[key];
+              console.log(
+                `Método 5 - Completado ${key} desde UC_MAPPING:`,
+                parsed[key]
+              );
             }
-        }
-    }
-    
-    console.log('Datos finales obtenidos:', datos);
-    return datos;
-}
+          });
 
-// Función para capturar los datos de la UC y otros campos - MEJORADA
-function capturarDatosUC() {
-    console.log('=== CAPTURANDO DATOS UC ===');
-    
-    // Usar la función alternativa para obtener datos
-    const datosUC = obtenerDatosUCDesdeSelector();
-    
-    // Capturar fotos
-    const fotosInput = document.getElementById('fotos');
-    let fotos = [];
-    if (fotosInput && fotosInput.files.length > 0) {
+          // Inferir población si no se encontró en el preview
+          if (!datos.poblacion) {
+            // Buscar patrones específicos que indiquen el tipo de población
+            if (mappingData.toLowerCase().includes("línea aérea")) {
+              // Las líneas aéreas desnudas generalmente son rurales
+              // Las líneas aéreas con circuito doble pueden ser urbanas
+              if (
+                mappingData.toLowerCase().includes("circuito doble") ||
+                mappingData.toLowerCase().includes("protegida") ||
+                mappingData.toLowerCase().includes("urbano")
+              ) {
+                datos.poblacion = "urbano";
+              } else {
+                datos.poblacion = "rural";
+              }
+              console.log("Método 5 - Población inferida:", datos.poblacion);
+            }
+
+            // Si aún no tenemos población, usar rural como default para líneas
+            if (
+              !datos.poblacion &&
+              mappingData.toLowerCase().includes("línea")
+            ) {
+              datos.poblacion = "rural";
+              console.log(
+                "Método 5 - Población por defecto (línea):",
+                datos.poblacion
+              );
+            }
+          }
+        }
+      }
+
+      console.log("Datos finales obtenidos:", datos);
+      return datos;
+    }
+
+    // Función para capturar los datos de la UC y otros campos - MEJORADA
+    function capturarDatosUC() {
+      console.log("=== CAPTURANDO DATOS UC ===");
+
+      // Usar la función alternativa para obtener datos
+      const datosUC = obtenerDatosUCDesdeSelector();
+
+      // Capturar fotos
+      const fotosInput = document.getElementById("fotos");
+      let fotos = [];
+      if (fotosInput && fotosInput.files.length > 0) {
         for (let i = 0; i < fotosInput.files.length; i++) {
-            fotos.push(fotosInput.files[i].name);
+          fotos.push(fotosInput.files[i].name);
         }
-    }
+      }
 
-    // Capturar datos de estructura retirada
-    const retiradaCodigo = document.getElementById('estructura_retirada_campo')?.value || '';
-    
-    // Construir objeto final
-    const resultado = {
+      // Capturar datos de estructura retirada
+      const retiradaCodigo =
+        document.getElementById("estructura_retirada_campo")?.value || "";
+
+      // Construir objeto final
+      const resultado = {
         retirada: {
-            material: '-',
-            altura: '-',
-            apoyo: '-',
-            codigo: retiradaCodigo || '-'
+          material: "-",
+          altura: "-",
+          apoyo: "-",
+          codigo: retiradaCodigo || "-",
         },
         nueva: {
-            material: datosUC.material || '-',
-            altura: datosUC.altura || '-',
-            poblacion: datosUC.poblacion || '-',
-            disposicion: datosUC.disposicion || datosUC.apoyo || '-',
-            apoyo: datosUC.apoyo || datosUC.disposicion || '-',
-            codigo: datosUC.codigo || '-',
-            fotos: fotos
-        }
-    };
-    
-    console.log('Resultado final capturarDatosUC:', resultado);
-    return resultado;
-}
+          material: datosUC.material || "-",
+          altura: datosUC.altura || "-",
+          poblacion: datosUC.poblacion || "-",
+          disposicion: datosUC.disposicion || datosUC.apoyo || "-",
+          apoyo: datosUC.apoyo || datosUC.disposicion || "-",
+          codigo: datosUC.codigo || "-",
+          fotos: fotos,
+        },
+      };
 
-// Función para renderizar la tabla de iteraciones (adaptada para sistema compartido)
-function renderizarTablaIteraciones() {
-    // Verificar si el sistema de iteraciones compartidas está disponible
-    if (typeof window.IteracionesManager !== 'undefined' && window.iteracionesManager) {
-        console.log('✅ Sistema de iteraciones compartidas detectado');
-        return;
+      console.log("Resultado final capturarDatosUC:", resultado);
+      return resultado;
     }
-    
-    const tbody = document.getElementById('iterationTableBody');
-    
-    // Verificar si el elemento existe antes de acceder a él
-    if (!tbody) {
-        console.log('ℹ️  Elemento iterationTableBody no encontrado - usando sistema compartido');
+
+    // Función para renderizar la tabla de iteraciones (adaptada para sistema compartido)
+    function renderizarTablaIteraciones() {
+      // Verificar si el sistema de iteraciones compartidas está disponible
+      if (
+        typeof window.IteracionesManager !== "undefined" &&
+        window.iteracionesManager
+      ) {
+        console.log("✅ Sistema de iteraciones compartidas detectado");
         return;
-    }
-    
-    tbody.innerHTML = '';
-    
-    if (iteraciones.length === 0) {
+      }
+
+      const tbody = document.getElementById("iterationTableBody");
+
+      // Verificar si el elemento existe antes de acceder a él
+      if (!tbody) {
+        console.log(
+          "ℹ️  Elemento iterationTableBody no encontrado - usando sistema compartido"
+        );
+        return;
+      }
+
+      tbody.innerHTML = "";
+
+      if (iteraciones.length === 0) {
         // Mostrar mensaje cuando no hay iteraciones
-        const row = document.createElement('tr');
+        const row = document.createElement("tr");
         row.innerHTML = `
             <td colspan="12" class="px-6 py-4 text-center text-gray-500 italic">
                 No hay iteraciones agregadas. Selecciona una UC y haz clic en "Agregar Iteración".
@@ -1032,23 +1016,33 @@ function renderizarTablaIteraciones() {
         `;
         tbody.appendChild(row);
         return;
-    }
-    
-    iteraciones.forEach((iter, idx) => {
-        const row = document.createElement('tr');
+      }
+
+      iteraciones.forEach((iter, idx) => {
+        const row = document.createElement("tr");
         row.innerHTML = `
             <td class="px-6 py-4">${iter.retirada.material}</td>
             <td class="px-6 py-4">${iter.retirada.altura}</td>
             <td class="px-6 py-4">${iter.retirada.apoyo}</td>
-            <td class="px-6 py-4"><span class="font-mono text-xs bg-amber-100 px-2 py-1 rounded">${iter.retirada.codigo}</span></td>
+            <td class="px-6 py-4"><span class="font-mono text-xs bg-amber-100 px-2 py-1 rounded">${
+              iter.retirada.codigo
+            }</span></td>
             <td class="px-6 py-4">${iter.nueva.material}</td>
-            <td class="px-6 py-4">${iter.nueva.altura}${iter.nueva.altura !== '-' ? 'm' : ''}</td>
+            <td class="px-6 py-4">${iter.nueva.altura}${
+          iter.nueva.altura !== "-" ? "m" : ""
+        }</td>
             <td class="px-6 py-4">${iter.nueva.poblacion}</td>
             <td class="px-6 py-4">${iter.nueva.disposicion}</td>
             <td class="px-6 py-4">${iter.nueva.apoyo}</td>
-            <td class="px-6 py-4"><span class="font-mono text-xs bg-emerald-100 px-2 py-1 rounded">${iter.nueva.codigo}</span></td>
+            <td class="px-6 py-4"><span class="font-mono text-xs bg-emerald-100 px-2 py-1 rounded">${
+              iter.nueva.codigo
+            }</span></td>
             <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${iter.nueva.fotos.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  iter.nueva.fotos.length > 0
+                    ? "bg-green-100 text-green-800"
+                    : "bg-gray-100 text-gray-800"
+                }">
                     ${iter.nueva.fotos.length}
                 </span>
             </td>
@@ -1059,174 +1053,195 @@ function renderizarTablaIteraciones() {
             </td>
         `;
         tbody.appendChild(row);
-    });
-}
+      });
+    }
 
-// Función para agregar una iteración
-function agregarIteracion() {
-    const datos = capturarDatosUC();
-    
-    // Validación mejorada - verificar si tenemos al menos algo de información UC
-    const tieneInformacionUC = datos.nueva.codigo !== '-' || 
-                              datos.nueva.material !== '-' || 
-                              datos.nueva.altura !== '-';
-    
-    if (!tieneInformacionUC) {
-        alert('Por favor, selecciona una Unidad Constructiva usando el selector jerárquico antes de agregar la iteración.');
-        console.warn('❌ No se encontró información de UC. Ejecutando debug...');
+    // Función para agregar una iteración
+    function agregarIteracion() {
+      const datos = capturarDatosUC();
+
+      // Validación mejorada - verificar si tenemos al menos algo de información UC
+      const tieneInformacionUC =
+        datos.nueva.codigo !== "-" ||
+        datos.nueva.material !== "-" ||
+        datos.nueva.altura !== "-";
+
+      if (!tieneInformacionUC) {
+        alert(
+          "Por favor, selecciona una Unidad Constructiva usando el selector jerárquico antes de agregar la iteración."
+        );
+        console.warn(
+          "❌ No se encontró información de UC. Ejecutando debug..."
+        );
         debugUCSelector(); // Ejecutar debug automáticamente si hay error
         return;
-    }
-    
-    // Verificar si tenemos información mínima necesaria
-    if (datos.nueva.codigo === '-' && datos.nueva.material === '-') {
-        const confirmar = confirm('Se detectó información limitada de la UC. ¿Deseas continuar agregando la iteración?');
+      }
+
+      // Verificar si tenemos información mínima necesaria
+      if (datos.nueva.codigo === "-" && datos.nueva.material === "-") {
+        const confirmar = confirm(
+          "Se detectó información limitada de la UC. ¿Deseas continuar agregando la iteración?"
+        );
         if (!confirmar) {
-            debugUCSelector();
-            return;
+          debugUCSelector();
+          return;
         }
-    }
-    
-    iteraciones.push(datos);
-    renderizarTablaIteraciones();
-    
-    console.log('✅ Iteración agregada correctamente:', datos);
-    console.log('📊 Total de iteraciones:', iteraciones.length);
-    
-    // Opcional: Limpiar el selector de fotos después de agregar
-    const fotosInput = document.getElementById('fotos');
-    if (fotosInput) {
-        fotosInput.value = '';
-        const preview = document.getElementById('preview');
-        if (preview) preview.innerHTML = '';
-    }
-    
-    // Mostrar mensaje de éxito con información de la UC
-    const infoUC = datos.nueva.codigo !== '-' ? 
-                   `UC: ${datos.nueva.codigo}` : 
-                   `Material: ${datos.nueva.material}, Altura: ${datos.nueva.altura}m`;
-    mostrarMensaje(`Iteración agregada correctamente. ${infoUC}`, 'success');
-}
+      }
 
-// Función para mostrar mensajes al usuario
-function mostrarMensaje(mensaje, tipo = 'info') {
-    // Crear elemento de mensaje
-    const mensajeEl = document.createElement('div');
-    mensajeEl.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 transition-all duration-300 ${
-        tipo === 'success' ? 'bg-green-500' : 
-        tipo === 'error' ? 'bg-red-500' : 
-        'bg-blue-500'
-    }`;
-    mensajeEl.textContent = mensaje;
-    
-    document.body.appendChild(mensajeEl);
-    
-    // Remover después de 3 segundos
-    setTimeout(() => {
+      iteraciones.push(datos);
+      renderizarTablaIteraciones();
+
+      console.log("✅ Iteración agregada correctamente:", datos);
+      console.log("📊 Total de iteraciones:", iteraciones.length);
+
+      // Opcional: Limpiar el selector de fotos después de agregar
+      const fotosInput = document.getElementById("fotos");
+      if (fotosInput) {
+        fotosInput.value = "";
+        const preview = document.getElementById("preview");
+        if (preview) preview.innerHTML = "";
+      }
+
+      // Mostrar mensaje de éxito con información de la UC
+      const infoUC =
+        datos.nueva.codigo !== "-"
+          ? `UC: ${datos.nueva.codigo}`
+          : `Material: ${datos.nueva.material}, Altura: ${datos.nueva.altura}m`;
+      mostrarMensaje(`Iteración agregada correctamente. ${infoUC}`, "success");
+    }
+
+    // Función para mostrar mensajes al usuario
+    function mostrarMensaje(mensaje, tipo = "info") {
+      // Crear elemento de mensaje
+      const mensajeEl = document.createElement("div");
+      mensajeEl.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 transition-all duration-300 ${
+        tipo === "success"
+          ? "bg-green-500"
+          : tipo === "error"
+          ? "bg-red-500"
+          : "bg-blue-500"
+      }`;
+      mensajeEl.textContent = mensaje;
+
+      document.body.appendChild(mensajeEl);
+
+      // Remover después de 3 segundos
+      setTimeout(() => {
         mensajeEl.remove();
-    }, 3000);
-}
+      }, 3000);
+    }
 
-// Función para eliminar una iteración
-function eliminarIteracion(idx) {
-    iteraciones.splice(idx, 1);
-    renderizarTablaIteraciones();
-}
+    // Función para eliminar una iteración
+    function eliminarIteracion(idx) {
+      iteraciones.splice(idx, 1);
+      renderizarTablaIteraciones();
+    }
 
-// Evento para el botón Agregar Iteración
-const btnAgregar = document.getElementById('agregarIteracion');
-if (btnAgregar) {
-    btnAgregar.addEventListener('click', agregarIteracion);
-    
-    // Agregar botón de debug
-    const debugBtn = document.createElement('button');
-    debugBtn.textContent = '🔍 Debug UC';
-    debugBtn.type = 'button';
-    debugBtn.className = 'ml-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm';
-    debugBtn.onclick = debugUCSelector;
-    debugBtn.title = 'Inspeccionar elementos del selector UC para debug';
-    
-    // Insertar el botón de debug después del botón agregar
-    btnAgregar.parentElement.appendChild(debugBtn);
-    
-    console.log('✅ Botones de iteración inicializados');
-}
+    // Evento para el botón Agregar Iteración
+    const btnAgregar = document.getElementById("agregarIteracion");
+    if (btnAgregar) {
+      btnAgregar.addEventListener("click", agregarIteracion);
 
-// Serializar iteraciones antes de enviar el formulario
-const formEstructuras = document.getElementById('formEstructuras');
-if (formEstructuras) {
-    formEstructuras.addEventListener('submit', function(e) {
+      // Agregar botón de debug
+      const debugBtn = document.createElement("button");
+      debugBtn.textContent = "🔍 Debug UC";
+      debugBtn.type = "button";
+      debugBtn.className =
+        "ml-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm";
+      debugBtn.onclick = debugUCSelector;
+      debugBtn.title = "Inspeccionar elementos del selector UC para debug";
+
+      // Insertar el botón de debug después del botón agregar
+      btnAgregar.parentElement.appendChild(debugBtn);
+
+      console.log("✅ Botones de iteración inicializados");
+    }
+
+    // Serializar iteraciones antes de enviar el formulario
+    const formEstructuras = document.getElementById("formEstructuras");
+    if (formEstructuras) {
+      formEstructuras.addEventListener("submit", function (e) {
         if (iteraciones.length === 0) {
-            const confirmacion = confirm('No has agregado ninguna iteración. ¿Deseas continuar sin iteraciones?');
-            if (!confirmacion) {
-                e.preventDefault();
-                return;
-            }
+          const confirmacion = confirm(
+            "No has agregado ninguna iteración. ¿Deseas continuar sin iteraciones?"
+          );
+          if (!confirmacion) {
+            e.preventDefault();
+            return;
+          }
         }
-        
-        document.getElementById('iteraciones_json').value = JSON.stringify(iteraciones);
-        console.log('📤 Enviando formulario con iteraciones:', iteraciones);
-    });
-}
 
-// Función para validar UC antes de envío
-function validarUCSeleccionado() {
-    const ucCodigo = document.getElementById('uc_nueva')?.value;
-    const ucDescripcion = document.getElementById('descripcion_uc')?.value;
-    
-    if (!ucCodigo && !ucDescripcion) {
-        console.warn('⚠️ No se ha seleccionado ninguna UC');
+        document.getElementById("iteraciones_json").value =
+          JSON.stringify(iteraciones);
+        console.log("📤 Enviando formulario con iteraciones:", iteraciones);
+      });
+    }
+
+    // Función para validar UC antes de envío
+    function validarUCSeleccionado() {
+      const ucCodigo = document.getElementById("uc_nueva")?.value;
+      const ucDescripcion = document.getElementById("descripcion_uc")?.value;
+
+      if (!ucCodigo && !ucDescripcion) {
+        console.warn("⚠️ No se ha seleccionado ninguna UC");
         return false;
-    }
-    
-    console.log('✅ UC validado:', { ucCodigo, ucDescripcion });
-    return true;
-}
+      }
 
-// Inicializar tabla vacía al cargar y configurar eventos
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Inicializando sistema de iteraciones...');
-    
-    renderizarTablaIteraciones();
-    
-    // Verificar elementos según el sistema disponible
-    let elementosNecesarios = [];
-    
-    // Si existe el sistema compartido, verificar sus elementos
-    if (typeof window.IteracionesManager !== 'undefined') {
-        elementosNecesarios = ['uc-selector-container'];
-    } else {
+      console.log("✅ UC validado:", { ucCodigo, ucDescripcion });
+      return true;
+    }
+
+    // Inicializar tabla vacía al cargar y configurar eventos
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("🚀 Inicializando sistema de iteraciones...");
+
+      renderizarTablaIteraciones();
+
+      // Verificar elementos según el sistema disponible
+      let elementosNecesarios = [];
+
+      // Si existe el sistema compartido, verificar sus elementos
+      if (typeof window.IteracionesManager !== "undefined") {
+        elementosNecesarios = ["uc-selector-container"];
+      } else {
         // Si no, verificar elementos legacy (solo si existen)
-        elementosNecesarios = ['uc_nueva', 'descripcion_uc'];
-        
+        elementosNecesarios = ["uc_nueva", "descripcion_uc"];
+
         // Solo verificar elementos legacy si la tabla no está comentada
-        const legacyElements = ['agregarIteracion', 'iterationTableBody'];
-        const legacyExist = legacyElements.some(id => document.getElementById(id));
-        
+        const legacyElements = ["agregarIteracion", "iterationTableBody"];
+        const legacyExist = legacyElements.some((id) =>
+          document.getElementById(id)
+        );
+
         if (legacyExist) {
-            elementosNecesarios = elementosNecesarios.concat(legacyElements);
+          elementosNecesarios = elementosNecesarios.concat(legacyElements);
         } else {
-            console.log('ℹ️  Tabla legacy comentada - esperando sistema compartido');
+          console.log(
+            "ℹ️  Tabla legacy comentada - esperando sistema compartido"
+          );
         }
-    }
-    
-    const elementosFaltantes = elementosNecesarios.filter(id => !document.getElementById(id));
-    
-    if (elementosFaltantes.length > 0) {
-        console.warn('⚠️ Elementos faltantes:', elementosFaltantes);
-    } else {
-        console.log('✅ Todos los elementos necesarios están presentes');
-    }
-    
-    // Agregar listener para cambios en el selector UC
-    const ucNueva = document.getElementById('uc_nueva');
-    if (ucNueva) {
-        ucNueva.addEventListener('change', function() {
-            console.log('🔄 UC cambiado:', this.value);
-            validarUCSeleccionado();
+      }
+
+      const elementosFaltantes = elementosNecesarios.filter(
+        (id) => !document.getElementById(id)
+      );
+
+      if (elementosFaltantes.length > 0) {
+        console.warn("⚠️ Elementos faltantes:", elementosFaltantes);
+      } else {
+        console.log("✅ Todos los elementos necesarios están presentes");
+      }
+
+      // Agregar listener para cambios en el selector UC
+      const ucNueva = document.getElementById("uc_nueva");
+      if (ucNueva) {
+        ucNueva.addEventListener("change", function () {
+          console.log("🔄 UC cambiado:", this.value);
+          validarUCSeleccionado();
         });
-    }
-    
-    console.log('✅ Sistema de iteraciones inicializado correctamente');
-});
-</script>
+      }
+
+      console.log("✅ Sistema de iteraciones inicializado correctamente");
+    });
+  </script>
+</div>
