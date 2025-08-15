@@ -294,20 +294,71 @@ class SistemaIteracionesCompartidasFinal {
     }
   }
   
+  // Método para obtener descripción desde la vista previa
+  obtenerDescripcionDesdeVistaPrevia() {
+    try {
+      // Buscar la descripción en .uc-description
+      const ucDescription = document.querySelector('.uc-description');
+      if (ucDescription && ucDescription.textContent) {
+        const descripcion = ucDescription.textContent.trim();
+        console.log(`📝 Descripción encontrada: ${descripcion}`);
+        return descripcion;
+      }
+      
+      // Buscar en el contenedor de vista previa
+      const previewContent = document.querySelector('.uc-preview-content');
+      if (previewContent) {
+        // Buscar span con clase uc-description
+        const descInPreview = previewContent.querySelector('.uc-description');
+        if (descInPreview && descInPreview.textContent) {
+          const descripcion = descInPreview.textContent.trim();
+          console.log(`📝 Descripción encontrada en preview: ${descripcion}`);
+          return descripcion;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.warn('⚠️ Error obteniendo descripción:', error);
+      return null;
+    }
+  }
+  
   recopilarDatosEstructuras() {
-    // Buscar el selector UC de forma más amplia
-    const selectoresUC = [
-      '#uc_completo',
-      '[name="uc_completo"]',
-      '#shared_uc_completo',
-      '#uc-selector select',
-      '.uc-hierarchical-selector select'
-    ];
+    // PRIORIDAD 1: Buscar UC desde la vista previa (visible)
+    let ucCompleto = this.obtenerUCDesdeVistaPrevia();
     
-    let ucSelector = null;
-    for (const selector of selectoresUC) {
-      ucSelector = document.querySelector(selector);
-      if (ucSelector && ucSelector.value) break;
+    // PRIORIDAD 2: Si no se encuentra en vista previa, buscar en selectores tradicionales
+    if (!ucCompleto) {
+      const selectoresUC = [
+        '#uc_completo',
+        '[name="uc_completo"]',
+        '#shared_uc_completo',
+        '#uc-selector select',
+        '.uc-hierarchical-selector select',
+        // Nuevos selectores basados en tu sistema
+        'input[name*="uc"]',
+        'select[name*="uc"]',
+        '[data-uc]',
+        '#selectedUC',
+        '.selected-uc',
+        // Buscar en elementos ocultos también
+        'input[type="hidden"][name*="uc"]',
+        'input[type="hidden"][id*="uc"]'
+      ];
+      
+      console.log('🔎 Buscando UC en selectores tradicionales...');
+      for (const selector of selectoresUC) {
+        const ucSelector = document.querySelector(selector);
+        if (ucSelector) {
+          console.log(`🔍 Examinando selector "${selector}": valor="${ucSelector.value}", texto="${ucSelector.textContent}"`);
+          if (ucSelector.value && ucSelector.value.trim()) {
+            ucCompleto = ucSelector.value.trim();
+            console.log(`✅ UC encontrada en selector "${selector}": ${ucCompleto}`);
+            break;
+          }
+        }
+      }
     }
     
     // Buscar estructura retirada
@@ -337,14 +388,23 @@ class SistemaIteracionesCompartidasFinal {
       if (tipoInversion) break;
     }
     
-    if (!ucSelector || !ucSelector.value) {
-      console.warn('⚠️ Falta seleccionar UC en estructuras');
+    if (!ucCompleto) {
+      console.warn('⚠️ No se pudo obtener UC ni desde vista previa ni desde selectores');
       alert('Por favor, selecciona una UC antes de agregar la iteración.');
       return null;
     }
     
+    // Obtener descripción desde vista previa
+    const descripcionPrevia = this.obtenerDescripcionDesdeVistaPrevia();
+    
+    console.log(`✅ UC obtenida: ${ucCompleto}`);
+    if (descripcionPrevia) {
+      console.log(`✅ Descripción obtenida: ${descripcionPrevia}`);
+    }
+    
     return {
-      uc_completo: ucSelector.value,
+      uc_completo: ucCompleto,
+      descripcion_previa: descripcionPrevia || '',
       estructura_retirada: estructuraRetirada ? estructuraRetirada.value : '',
       tipo_inversion: tipoInversion ? tipoInversion.value : '',
       // Campos adicionales que podrían estar presentes
@@ -421,10 +481,126 @@ class SistemaIteracionesCompartidasFinal {
     return '';
   }
   
+  // Método para obtener UC desde la vista previa
+  obtenerUCDesdeVistaPrevia() {
+    try {
+      console.log('🔍 Iniciando búsqueda de UC en vista previa...');
+      
+      // MÉTODO 1: Buscar específicamente el elemento .uc-code dentro de .uc-preview-content
+      const ucCodeElement = document.querySelector('.uc-preview-content .uc-code');
+      if (ucCodeElement && ucCodeElement.textContent) {
+        const ucCode = ucCodeElement.textContent.trim();
+        console.log(`🎯 UC encontrada en .uc-code: ${ucCode}`);
+        return ucCode;
+      }
+      
+      // MÉTODO 2: Buscar en cualquier elemento con clase uc-code
+      const anyUcCode = document.querySelector('.uc-code');
+      if (anyUcCode && anyUcCode.textContent) {
+        const ucCode = anyUcCode.textContent.trim();
+        console.log(`🎯 UC encontrada en cualquier .uc-code: ${ucCode}`);
+        return ucCode;
+      }
+      
+      // MÉTODO 3: Buscar en el div #uc-preview
+      const ucPreview = document.querySelector('#uc-preview');
+      if (ucPreview) {
+        console.log(`🔎 Examinando #uc-preview:`, ucPreview.innerHTML.substring(0, 200));
+        
+        // Buscar span con clase uc-code dentro de uc-preview
+        const ucCodeInPreview = ucPreview.querySelector('.uc-code');
+        if (ucCodeInPreview && ucCodeInPreview.textContent) {
+          const ucCode = ucCodeInPreview.textContent.trim();
+          console.log(`🎯 UC encontrada en #uc-preview .uc-code: ${ucCode}`);
+          return ucCode;
+        }
+        
+        // Buscar cualquier texto que parezca un código UC
+        const textoCompleto = ucPreview.textContent || '';
+        console.log(`🔎 Texto completo en #uc-preview: "${textoCompleto}"`);
+        
+        const patronesUC = [
+          /\b(N\d+P\d+)\b/g,               // Patrón N1P59
+          /\b([A-Z]\d+[A-Z]\d+)\b/g,       // Patrón general A1B2
+          /\b([A-Z]{1,3}\d{1,4})\b/g       // Patrón más amplio
+        ];
+        
+        for (const patron of patronesUC) {
+          const matches = textoCompleto.match(patron);
+          if (matches && matches.length > 0) {
+            console.log(`🎯 UC encontrada por patrón en #uc-preview: ${matches[0]}`);
+            return matches[0];
+          }
+        }
+      }
+      
+      // MÉTODO 4: Buscar en elementos con clase uc-preview-content
+      const previewContent = document.querySelector('.uc-preview-content');
+      if (previewContent) {
+        console.log(`🔎 Examinando .uc-preview-content:`, previewContent.innerHTML.substring(0, 200));
+        
+        const textoPreview = previewContent.textContent || '';
+        console.log(`🔎 Texto en .uc-preview-content: "${textoPreview}"`);
+        
+        // Buscar códigos UC en el texto
+        const patronesUC = [
+          /\b(N\d+P\d+)\b/g,               // N1P59
+          /\b([A-Z]\d+[A-Z]\d+)\b/g,       // Patrón general
+        ];
+        
+        for (const patron of patronesUC) {
+          const matches = textoPreview.match(patron);
+          if (matches && matches.length > 0) {
+            console.log(`🎯 UC encontrada por patrón en .uc-preview-content: ${matches[0]}`);
+            return matches[0];
+          }
+        }
+      }
+      
+      // MÉTODO 5: Buscar TODOS los elementos span en la página
+      console.log('🔎 Buscando en todos los spans...');
+      const todosLosSpans = document.querySelectorAll('span');
+      for (const span of todosLosSpans) {
+        const texto = span.textContent || '';
+        const clase = span.className || '';
+        
+        if (clase.includes('uc-code') || texto.match(/^N\d+P\d+$/)) {
+          console.log(`🔎 Span encontrado - Clase: "${clase}", Texto: "${texto}"`);
+          if (texto.match(/^N\d+P\d+$/)) {
+            console.log(`🎯 UC encontrada en span: ${texto}`);
+            return texto.trim();
+          }
+        }
+      }
+      
+      console.log('🔍 No se encontró UC en vista previa con ningún método');
+      return null;
+      
+    } catch (error) {
+      console.warn('⚠️ Error buscando UC en vista previa:', error);
+      return null;
+    }
+  }
+  
   generarDescripcion(datos) {
     switch (this.seccionActual) {
       case 'estructuras':
-        return `UC: ${datos.uc_completo} - ${datos.estructura_retirada ? 'Estructura Retirada: ' + datos.estructura_retirada : 'Nueva Estructura'}`;
+        // Priorizar la descripción de la vista previa si existe
+        let descripcion = `UC: ${datos.uc_completo}`;
+        
+        if (datos.descripcion_previa && datos.descripcion_previa.trim()) {
+          descripcion += ` - ${datos.descripcion_previa}`;
+        }
+        
+        if (datos.estructura_retirada && datos.estructura_retirada.trim()) {
+          descripcion += ` - Estructura Retirada: ${datos.estructura_retirada}`;
+        }
+        
+        if (datos.tipo_inversion && datos.tipo_inversion.trim()) {
+          descripcion += ` - Tipo Inversión: ${datos.tipo_inversion}`;
+        }
+        
+        return descripcion;
       case 'conductores':
         return `Conductor ${datos.tipo_conductor} - Calibre: ${datos.calibre} - UC: ${datos.uc_conductor}`;
       case 'equipos':
@@ -517,8 +693,12 @@ class SistemaIteracionesCompartidasFinal {
     
     const elementos = [];
     Object.entries(datos).forEach(([key, value]) => {
+      // Solo incluir si el valor existe y no está vacío
       if (value && value.toString().trim()) {
-        elementos.push(`<strong>${key}:</strong> ${value}`);
+        // Formatear el nombre del campo para mejor legibilidad
+        const nombreFormateado = key.replace(/_/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
+        elementos.push(`<strong>${nombreFormateado}:</strong> ${value}`);
       }
     });
     

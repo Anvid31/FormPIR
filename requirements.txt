@@ -1,2 +1,22 @@
-# Oracle Database
+# Core Django
+Django>=5.2.3
+djangorestframework>=3.14.0
+
+# Database - Oracle only
 oracledb>=2.0.0
+python-decouple>=3.8
+
+# File handling
+Pillow>=10.0.0
+
+# Development
+python-dotenv>=1.0.0
+
+# Security
+cryptography>=41.0.0
+
+# Production server
+gunicorn>=21.2.0
+
+# Other utilities
+requests>=2.31.0
