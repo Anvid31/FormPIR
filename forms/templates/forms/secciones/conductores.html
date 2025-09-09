@@ -1,58 +1,133 @@
 {% extends 'forms/secciones/base_seccion.html' %}
 {% load static %}
 
+{% block section_title %}CONDUCTORES{% endblock %}
+
 {% block section_content %}
   {% include 'forms/form_sections/conductores_complete.html' %}
-  
-
-  
 {% endblock %}
 
 {% block section_scripts %}
   <script>
-    console.log('⚡ Scripts específicos de conductores cargados');
-    
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('⚡ Configurando Conductores...');
-      
-      // SISTEMA COMPARTIDO DE ITERACIONES
-      setTimeout(() => {
-        if (typeof SistemaIteracionesCompartidasFinal !== 'undefined') {
-          console.log('✅ Sistema Compartido de Iteraciones disponible para Conductores');
-          // El sistema se auto-inicializa
+      // Función para esperar el SharedFieldsManager
+      function esperarSharedFieldsManager(intentos = 0) {
+        if (window.sharedFieldsManager) {
+          configurarAutocompletadosConductores();
+        } else if (intentos < 20) {
+          setTimeout(() => esperarSharedFieldsManager(intentos + 1), 100);
         } else {
-          console.error('❌ SistemaIteracionesCompartidasFinal no disponible');
+          configurarAutocompletadosConductores();
         }
-      }, 1000);
-      
-      // Verificar que el sistema unificado de tipos de inversión esté disponible
-      if (window.TiposInversionState) {
-        console.log('✅ Sistema unificado de tipos de inversión disponible para Conductores');
-        window.TiposInversionState.seccionActual = 'conductores';
-      } else {
-        console.warn('⚠️ Sistema unificado de tipos de inversión no disponible');
       }
       
-      // Verificar presencia de campos requeridos
-      setTimeout(() => {
-        const camposRequeridos = [
-          { id: 't_inv', nombre: 'Tipo de Inversión' },
-          { id: 'montaje_integral_checkbox', nombre: 'Checkbox Montaje Integral' },
-          { id: 'desmantelado_checkbox', nombre: 'Checkbox Desmantelado' },
-          { id: 'estructura_retirada_campo', nombre: 'Campo Estructura Retirada' }
-        ];
+      // Configurar autocompletados específicos para Conductores
+      function configurarAutocompletadosConductores() {
+        // 1. Configurar autocompletado de banco cuando cambie el proyecto
+        const nombreField = document.getElementById('shared_nombre');
+        if (nombreField) {
+          const proyectoHandler = function() {
+            const proyectoSeleccionado = this.value;
+            
+            if (!proyectoSeleccionado) return;
+            
+            // Sincronizar al campo oculto
+            const nombreOculto = document.getElementById('nombre');
+            if (nombreOculto) {
+              nombreOculto.value = proyectoSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de banco
+            setTimeout(() => {
+              if (typeof window.autoCompleteBanco === 'function') {
+                window.autoCompleteBanco();
+              }
+              
+              // Después del banco, actualizar contratos
+              setTimeout(() => {
+                if (typeof window.actualizarContratos === 'function') {
+                  window.actualizarContratos();
+                  
+                  // Sincronizar contratos del campo oculto al compartido
+                  setTimeout(() => {
+                    const contratoOculto = document.getElementById('contrato');
+                    const contratoCompartido = document.getElementById('shared_contrato');
+                    
+                    if (contratoOculto && contratoCompartido) {
+                      contratoCompartido.innerHTML = contratoOculto.innerHTML;
+                      contratoCompartido.disabled = false;
+                      contratoCompartido.classList.add("bg-green-50", "border-green-300");
+                    }
+                  }, 200);
+                }
+              }, 200);
+            }, 200);
+          };
+          
+          nombreField.removeEventListener('change', proyectoHandler);
+          nombreField.addEventListener('change', proyectoHandler);
+        }
         
-        camposRequeridos.forEach(campo => {
-          const elemento = document.getElementById(campo.id);
-          if (elemento) {
-            console.log(`✅ ${campo.nombre} encontrado en Conductores`);
-          } else {
-            console.warn(`⚠️ ${campo.nombre} NO encontrado en Conductores`);
-          }
-        });
-      }, 500);
+        // 2. Configurar autocompletado de regional cuando cambie el contrato
+        const contratoField = document.getElementById('shared_contrato');
+        if (contratoField) {
+          const contratoHandler = function() {
+            const contratoSeleccionado = this.value;
+            
+            if (!contratoSeleccionado) return;
+            
+            // Sincronizar al campo oculto
+            const contratoOculto = document.getElementById('contrato');
+            if (contratoOculto) {
+              contratoOculto.value = contratoSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de regional
+            setTimeout(() => {
+              if (typeof window.autoCompleteRegional === 'function') {
+                window.autoCompleteRegional();
+              }
+            }, 200);
+          };
+          
+          contratoField.removeEventListener('change', contratoHandler);
+          contratoField.addEventListener('change', contratoHandler);
+        }
+        
+        // 3. Configurar autocompletado de departamento cuando cambie municipio
+        const municipioField = document.getElementById('shared_municipio');
+        if (municipioField) {
+          const municipioHandler = function() {
+            const municipioSeleccionado = this.value;
+            
+            // Sincronizar al campo oculto
+            const municipioOculto = document.getElementById('municipio');
+            if (municipioOculto) {
+              municipioOculto.value = municipioSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de departamento
+            setTimeout(() => {
+              if (typeof window.autoCompleteDepartamento === 'function') {
+                window.autoCompleteDepartamento();
+              }
+              
+              // Ejecutar autocompletado de circuitos
+              setTimeout(() => {
+                if (typeof window.actualizarCircuitos === 'function') {
+                  window.actualizarCircuitos();
+                }
+              }, 200);
+            }, 200);
+          };
+          
+          municipioField.removeEventListener('change', municipioHandler);
+          municipioField.addEventListener('change', municipioHandler);
+        }
+      }
       
-      console.log('✅ Conductores configurados correctamente con sistema unificado');
+      // Iniciar configuraciones
+      esperarSharedFieldsManager();
     });
   </script>
 {% endblock %}

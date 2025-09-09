@@ -11,44 +11,32 @@
 {% block section_scripts %}
   <!-- Script de verificación temporal -->
   <script>
-    console.log('🏗️ Scripts específicos de estructuras cargados');
-    
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🏗️ Configurando Estructuras...');
-      
       // SISTEMA COMPARTIDO DE ITERACIONES
       setTimeout(() => {
         if (typeof SistemaIteracionesCompartidasFinal !== 'undefined') {
-          console.log('✅ Sistema Compartido de Iteraciones disponible para Estructuras');
           // El sistema se auto-inicializa
-        } else {
-          console.error('❌ SistemaIteracionesCompartidasFinal no disponible');
         }
       }, 1000);
       
       // Función para esperar el SharedFieldsManager
       function esperarSharedFieldsManager(intentos = 0) {
         if (window.sharedFieldsManager) {
-          console.log('✅ SharedFieldsManager detectado - configurando autocompletados adicionales');
           configurarAutocompletadosEstructuras();
         } else if (intentos < 20) {
           setTimeout(() => esperarSharedFieldsManager(intentos + 1), 100);
         } else {
-          console.log('⚠️ SharedFieldsManager no disponible - configurando autocompletados manualmente');
           configurarAutocompletadosEstructuras();
         }
       }
       
       // Configurar autocompletados específicos para Estructuras
       function configurarAutocompletadosEstructuras() {
-        console.log('🔧 Configurando autocompletados específicos para Estructuras...');
-        
         // 1. Configurar autocompletado de banco cuando cambie el proyecto
         const nombreField = document.getElementById('shared_nombre');
         if (nombreField) {
           const proyectoHandler = function() {
             const proyectoSeleccionado = this.value;
-            console.log('🎯 Proyecto seleccionado en Estructuras:', proyectoSeleccionado);
             
             if (!proyectoSeleccionado) return;
             
@@ -62,7 +50,6 @@
             setTimeout(() => {
               if (typeof window.autoCompleteBanco === 'function') {
                 window.autoCompleteBanco();
-                console.log('✅ Banco autocompletado desde Estructuras');
               }
               
               // Después del banco, actualizar contratos
@@ -79,7 +66,6 @@
                       contratoCompartido.innerHTML = contratoOculto.innerHTML;
                       contratoCompartido.disabled = false;
                       contratoCompartido.classList.add("bg-green-50", "border-green-300");
-                      console.log('✅ Contratos sincronizados en Estructuras');
                     }
                   }, 200);
                 }
@@ -90,7 +76,6 @@
           // Remover listeners previos y agregar nuevo
           nombreField.removeEventListener('change', proyectoHandler);
           nombreField.addEventListener('change', proyectoHandler);
-          console.log('✅ Handler de proyecto configurado para Estructuras');
         }
         
         // 2. Configurar filtrado de municipios cuando cambie el contrato - RESTAURADO
@@ -98,7 +83,6 @@
         if (contratoField) {
           const contratoHandler = function() {
             const contratoSeleccionado = this.value;
-            console.log('📄 Contrato seleccionado en Estructuras:', contratoSeleccionado);
             
             if (!contratoSeleccionado) return;
             
@@ -106,14 +90,12 @@
             const contratoOculto = document.getElementById('contrato');
             if (contratoOculto) {
               contratoOculto.value = contratoSeleccionado;
-              console.log('✅ Contrato sincronizado al campo oculto');
             }
             
             // Ejecutar autocompletado de regional
             setTimeout(() => {
               if (typeof window.autoCompleteRegional === 'function') {
                 window.autoCompleteRegional();
-                console.log('✅ Regional autocompletada desde contrato');
               }
               
               // Ejecutar filtrado de municipios por contrato - CLAVE
@@ -126,7 +108,6 @@
           // Remover listeners previos y agregar nuevo
           contratoField.removeEventListener('change', contratoHandler);
           contratoField.addEventListener('change', contratoHandler);
-          console.log('✅ Handler de contrato configurado para Estructuras con filtrado de municipios');
         }
         
         // 3. Configurar autocompletado de departamento cuando cambie municipio
@@ -134,7 +115,6 @@
         if (municipioField) {
           const municipioHandler = function() {
             const municipioSeleccionado = this.value;
-            console.log('🏙️ Municipio seleccionado en Estructuras:', municipioSeleccionado);
             
             // Sincronizar al campo oculto
             const municipioOculto = document.getElementById('municipio');
@@ -146,14 +126,12 @@
             setTimeout(() => {
               if (typeof window.autoCompleteDepartamento === 'function') {
                 window.autoCompleteDepartamento();
-                console.log('✅ Departamento autocompletado desde municipio');
               }
               
               // Ejecutar autocompletado de circuitos
               setTimeout(() => {
                 if (typeof window.actualizarCircuitos === 'function') {
                   window.actualizarCircuitos();
-                  console.log('✅ Circuitos actualizados desde municipio');
                 }
               }, 200);
             }, 200);
@@ -161,20 +139,16 @@
           
           municipioField.removeEventListener('change', municipioHandler);
           municipioField.addEventListener('change', municipioHandler);
-          console.log('✅ Handler de municipio configurado para Estructuras');
         }
       }
       
       // Función para filtrar municipios por contrato - RESTAURADA
       function filtrarMunicipiosPorContrato(contratoSeleccionado) {
-        console.log('🔍 Iniciando filtrado de municipios por contrato:', contratoSeleccionado);
-        
         const municipioShared = document.getElementById('shared_municipio');
         const nombreProyecto = document.getElementById('shared_nombre')?.value || 
                               document.getElementById('nombre')?.value;
         
         if (!municipioShared || !nombreProyecto) {
-          console.warn('⚠️ Campos necesarios no encontrados para filtrado de municipios');
           return;
         }
         
@@ -194,7 +168,6 @@
             municipioShared.disabled = false;
             municipioShared.classList.remove('bg-gray-100', 'cursor-not-allowed');
             municipioShared.classList.add('bg-white');
-            console.log('📋 Mostrando todos los municipios (sin filtro)');
           }
           return;
         }
@@ -210,12 +183,10 @@
           
           if (contratoData && contratoData.regional !== 'Por definir') {
             regionalDelContrato = contratoData.regional;
-            console.log('🏢 Regional encontrada para contrato:', regionalDelContrato);
           }
         }
         
         if (!regionalDelContrato || typeof window.MUNICIPIO_MAPPING === 'undefined') {
-          console.warn('⚠️ No se puede filtrar municipios - datos no disponibles');
           municipioShared.disabled = true;
           municipioShared.classList.add('bg-gray-100', 'cursor-not-allowed');
           return;
@@ -250,9 +221,6 @@
           municipioShared.classList.remove('bg-gray-100', 'cursor-not-allowed');
           municipioShared.classList.add('bg-blue-50', 'border-blue-300');
           
-          console.log(`✅ Municipios filtrados para regional ${regionalDelContrato}:`, 
-                     municipiosFiltrados.length, 'municipios disponibles');
-          
           // Sincronizar también al campo oculto
           const municipioOculto = document.getElementById('municipio');
           if (municipioOculto) {
@@ -269,15 +237,11 @@
           
           municipioShared.disabled = true;
           municipioShared.classList.add('bg-red-50', 'border-red-300');
-          
-          console.log(`⚠️ No se encontraron municipios para la regional ${regionalDelContrato}`);
         }
       }
       
       // Iniciar configuraciones
       esperarSharedFieldsManager();
-      
-      console.log('✅ Estructuras configuradas correctamente con filtrado de municipios restaurado');
     });
   </script>
 {% endblock %}

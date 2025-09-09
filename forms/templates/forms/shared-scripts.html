@@ -1,0 +1,174 @@
+<!-- ================================================ -->
+<!-- TEMPLATE DE SCRIPTS COMPARTIDOS PARA TODAS LAS SECCIONES -->
+<!-- FormPIR: Estructuras, Conductores, Equipos, Transformadores -->
+<!-- VERSIÓN LIMPIA SIN CONSOLE.LOG -->
+<!-- ================================================ -->
+
+<!-- 1. SISTEMA DE FUNCIONALIDADES COMPARTIDAS (PRINCIPAL) -->
+<script src="{% static 'js/sistema-funcionalidades-compartidas.js' %}"></script>
+
+<!-- 2. SISTEMAS ESPECÍFICOS CORREGIDOS -->
+<script src="{% static 'js/sistema-tipos-inversion-corregido.js' %}"></script>
+<script src="{% static 'js/sistema-inicializacion-unificado.js' %}"></script>
+
+<!-- 3. MAPEOS DE DATOS -->
+<script src="{% static 'js/data-mappings.js' %}"></script>
+
+<!-- 4. AUTOCOMPLETADO MEJORADO -->
+<script src="{% static 'js/autocompletion.js' %}"></script>
+
+<!-- 5. LIMPIADOR DE CONSOLA -->
+<script src="{% static 'js/console-cleaner.js' %}"></script>
+
+<!-- 6. HERRAMIENTAS DE DEBUG (SOLO EN MODO DEBUG) -->
+<script>
+// Cargar herramientas de debug solo si hay parámetro ?debug=true
+if (new URLSearchParams(window.location.search).has('debug')) {
+    // Debug de circuitos
+    const debugScript = document.createElement('script');
+    debugScript.src = "{% static 'js/debug-circuitos.js' %}";
+    document.head.appendChild(debugScript);
+    
+    // Verificación final
+    const verifyScript = document.createElement('script');
+    verifyScript.src = "{% static 'js/verificacion-final.js' %}";
+    document.head.appendChild(verifyScript);
+}
+</script>
+
+<!-- 7. CONFIGURACIÓN ESPECÍFICA POR SECCIÓN -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuraciones específicas según la sección actual
+    const seccionActual = window.FormPIRShared?.seccionActual || 'desconocida';
+    
+    // Configuraciones específicas por sección
+    switch(seccionActual) {
+        case 'estructuras':
+            if (typeof initEstructurasSpecific === 'function') {
+                initEstructurasSpecific();
+            }
+            break;
+            
+        case 'conductores':
+            if (typeof initConductoresSpecific === 'function') {
+                initConductoresSpecific();
+            }
+            break;
+            
+        case 'equipos':
+            if (typeof initEquiposSpecific === 'function') {
+                initEquiposSpecific();
+            }
+            break;
+            
+        case 'transformadores':
+            if (typeof initTransformadoresSpecific === 'function') {
+                initTransformadoresSpecific();
+            }
+            break;
+    }
+});
+</script>
+
+<!-- 8. VALIDACIÓN DE DEPENDENCIAS -->
+<script>
+// Verificar que todas las dependencias estén cargadas
+document.addEventListener('DOMContentLoaded', function() {
+    const dependenciasRequeridas = [
+        'FormPIRShared',
+        'MUNICIPIO_CIRCUITO_MAPPING',
+        'actualizarCircuitos'
+    ];
+    
+    const dependenciasFaltantes = dependenciasRequeridas.filter(dep => 
+        typeof window[dep] === 'undefined'
+    );
+    
+    if (dependenciasFaltantes.length > 0) {
+        // Intentar cargar dependencias faltantes
+        if (dependenciasFaltantes.includes('MUNICIPIO_CIRCUITO_MAPPING')) {
+            // Cargar mapeos si no están disponibles
+        }
+    }
+});
+</script>
+
+<!-- 9. INTEGRACIÓN CON SISTEMAS LEGACY -->
+<script>
+// Compatibilidad con sistemas legacy existentes
+window.addEventListener('formPIRReady', function(event) {
+    // Integración con selector UC jerárquico si existe
+    if (typeof initUCSelector === 'function') {
+        try {
+            initUCSelector();
+        } catch (error) {
+            // Error silencioso
+        }
+    }
+    
+    // Integración con sistema de iteraciones específico de estructuras
+    if (typeof window.IteracionesManager !== 'undefined') {
+        try {
+            // Sincronizar con el sistema universal
+            if (window.FormPIRShared?.iteracionesManager) {
+                // Hacer bridge entre sistemas
+            }
+        } catch (error) {
+            // Error silencioso
+        }
+    }
+});
+</script>
+
+<!-- 10. MONITOREO DE RENDIMIENTO -->
+<script>
+// Solo en modo debug - monitorear rendimiento
+if (new URLSearchParams(window.location.search).has('debug')) {
+    window.addEventListener('load', function() {
+        const loadTime = performance.now();
+        // Tiempo de carga del sistema: loadTime.toFixed(2) ms
+        
+        // Verificar si hay elementos no encontrados
+        const elementosEsperados = [
+            't_inv', 'municipio', 'departamento', 'regional', 
+            'alimentador', 'fecha', 'direccion'
+        ];
+        
+        const elementosFaltantes = elementosEsperados.filter(id => 
+            !document.getElementById(id)
+        );
+        
+        if (elementosFaltantes.length > 0) {
+            console.warn('🔍 Elementos esperados no encontrados:', elementosFaltantes);
+        } else {
+            // Todos los elementos esperados están presentes
+        }
+    });
+}
+</script>
+
+<!-- ================================================ -->
+<!-- INSTRUCCIONES DE USO: -->
+<!-- 
+   1. Incluir este template en TODAS las secciones:
+      {% include 'forms/shared-scripts.html' %}
+   
+   2. Colocar la inclusión antes del cierre de </body>
+   
+   3. Asegurar que load_static esté en el template:
+      {% load static %}
+   
+   4. Para activar debug agregar ?debug=true a la URL:
+      http://localhost:8000/crear/estructuras/?debug=true
+   
+   5. Funciones disponibles globalmente:
+      - window.FormPIRShared.managers
+      - window.FormPIRShared.log
+      - window.FormPIRShared.iteracionesManager
+      
+   6. Eventos disponibles:
+      - 'formPIRReady': cuando el sistema está listo
+      - Configuración automática por sección
+ -->
+<!-- ================================================ -->

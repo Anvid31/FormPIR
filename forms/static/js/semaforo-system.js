@@ -6,8 +6,12 @@
 class SistemaSemaforo {
     constructor() {
         this.init();
-    }
-
+              } else {
+                this.mostrarNotificacion('Error en revisión rápida', 'error');
+            }
+        } catch (error) {
+            // Error de conexión
+            this.mostrarNotificacion('Error de conexión', 'error');
     init() {
         // Configuración CSRF para Django
         this.setupCSRF();
@@ -18,7 +22,7 @@ class SistemaSemaforo {
         this.initFilterSystem();
         this.initModalSystem();
         
-        console.log('Sistema Semáforo inicializado');
+        // Sistema Semáforo inicializado
     }
 
     setupCSRF() {
@@ -155,7 +159,7 @@ class SistemaSemaforo {
                 this.mostrarNotificacion(data.error || 'Error al cambiar estado', 'error');
             }
         } catch (error) {
-            console.error('Error:', error);
+            // Error de conexión
             this.mostrarNotificacion('Error de conexión', 'error');
         } finally {
             this.ocultarLoading(e.target);
@@ -205,7 +209,7 @@ class SistemaSemaforo {
                 this.mostrarNotificacion('Error en validación', 'error');
             }
         } catch (error) {
-            console.error('Error:', error);
+            // Error de conexión
             this.mostrarNotificacion('Error de conexión', 'error');
         } finally {
             this.ocultarLoading(e.target);
@@ -221,7 +225,7 @@ class SistemaSemaforo {
                 this.actualizarElementosEstadisticas(data.stats);
             }
         } catch (error) {
-            console.error('Error actualizando estadísticas:', error);
+            // Error actualizando estadísticas
         }
     }
 
@@ -276,7 +280,7 @@ class SistemaSemaforo {
                 this.mostrarResultadosBusqueda(data.formularios);
             }
         } catch (error) {
-            console.error('Error en búsqueda:', error);
+            // Error en búsqueda
         }
     }
 
@@ -433,7 +437,7 @@ window.SemaforoUtils = {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
         } catch (error) {
-            console.error('Error exportando datos:', error);
+            // Error exportando datos
         }
     }
 };

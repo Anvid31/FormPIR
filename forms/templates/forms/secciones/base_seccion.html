@@ -152,10 +152,16 @@
     <script src="{% static 'js/uc-hierarchical-selector.js' %}"></script>
     
     <!-- 4. Módulos de Funcionalidad -->
-    <script src="{% static 'forms/js/modules/autocompletion-utils.js' %}"></script>
+    <!-- REMOVIDO: js/data-mappings.js - Datos cargados desde proyecto-mapping.js -->
+    <!-- REMOVIDO: autocompletion-utils.js - Funciones integradas en autocompletion.js -->
     <script src="{% static 'forms/js/modules/autocompletion.js' %}"></script>
-    <!-- ✅ SISTEMA UNIFICADO DE TIPOS DE INVERSIÓN -->
-    <script src="{% static 'forms/js/sistema-tipos-inversion-final.js' %}"></script>
+    <!-- REMOVIDO: sistema-tipos-inversion-final.js - Archivo faltante -->
+    
+    <!-- ✅ SISTEMA DE FUNCIONALIDADES COMPARTIDAS UNIFICADAS -->
+    <script src="{% static 'js/sistema-funcionalidades-compartidas.js' %}"></script>
+    <!-- REMOVIDO: sistema-tipos-inversion-corregido.js - Archivo faltante -->
+    <!-- REMOVIDO: sistema-inicializacion-unificado.js - Archivo faltante -->
+    
     <!-- ✅ SISTEMA DE ITERACIONES COMPARTIDAS FINAL -->
     <script src="{% static 'forms/js/sistema-iteraciones-compartidas-final.js' %}"></script>
     <script src="{% static 'forms/js/modules/iteraciones-manager.js' %}"></script>
@@ -193,7 +199,7 @@
       window.DEBUG = bodyElement.dataset.debug === 'true';
       
       // Log inicial
-      console.log('🎯 Iniciando FormPIR - Sección:', window.CURRENT_SECTION);
+      // Iniciando FormPIR - Sección: window.CURRENT_SECTION
     </script>
     
     <!-- Validación del sistema UC -->
@@ -203,7 +209,7 @@
         if (typeof UC_MAPPING === 'undefined') {
           console.error('❌ UC_MAPPING no está definido');
         } else {
-          console.log('✅ UC_MAPPING cargado correctamente');
+          // UC_MAPPING cargado correctamente
         }
         
         // El sistema unificado se inicializa automáticamente
@@ -252,7 +258,7 @@
       }
     </style>
     
-    <!-- Console Cleaner - Carga al final -->
-    <script src="{% static 'forms/js/console-cleaner.js' %}"></script>
+    <!-- Sistema unificado FormPIR Core - Reemplaza shared-scripts.html -->
+    <script src="{% static 'js/form-pir-core.js' %}"></script>
   </body>
 </html>

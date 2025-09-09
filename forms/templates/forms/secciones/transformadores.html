@@ -1,58 +1,133 @@
 {% extends 'forms/secciones/base_seccion.html' %}
 {% load static %}
 
+{% block section_title %}TRANSFORMADORES{% endblock %}
+
 {% block section_content %}
   {% include 'forms/form_sections/transformador.html' %}
-  
-
-  
 {% endblock %}
 
 {% block section_scripts %}
   <script>
-    console.log('🔌 Scripts específicos de transformadores cargados');
-    
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🔌 Configurando Transformadores...');
-      
-      // SISTEMA COMPARTIDO DE ITERACIONES
-      setTimeout(() => {
-        if (typeof SistemaIteracionesCompartidasFinal !== 'undefined') {
-          console.log('✅ Sistema Compartido de Iteraciones disponible para Transformadores');
-          // El sistema se auto-inicializa
+      // Función para esperar el SharedFieldsManager
+      function esperarSharedFieldsManager(intentos = 0) {
+        if (window.sharedFieldsManager) {
+          configurarAutocompletadosTransformadores();
+        } else if (intentos < 20) {
+          setTimeout(() => esperarSharedFieldsManager(intentos + 1), 100);
         } else {
-          console.error('❌ SistemaIteracionesCompartidasFinal no disponible');
+          configurarAutocompletadosTransformadores();
         }
-      }, 1000);
-      
-      // Verificar que el sistema unificado de tipos de inversión esté disponible
-      if (window.TiposInversionState) {
-        console.log('✅ Sistema unificado de tipos de inversión disponible para Transformadores');
-        window.TiposInversionState.seccionActual = 'transformadores';
-      } else {
-        console.warn('⚠️ Sistema unificado de tipos de inversión no disponible');
       }
       
-      // Verificar presencia de campos requeridos
-      setTimeout(() => {
-        const camposRequeridos = [
-          { id: 't_inv', nombre: 'Tipo de Inversión' },
-          { id: 'montaje_integral_checkbox', nombre: 'Checkbox Montaje Integral' },
-          { id: 'desmantelado_checkbox', nombre: 'Checkbox Desmantelado' },
-          { id: 'estructura_retirada_campo', nombre: 'Campo Estructura Retirada' }
-        ];
+      // Configurar autocompletados específicos para Transformadores
+      function configurarAutocompletadosTransformadores() {
+        // 1. Configurar autocompletado de banco cuando cambie el proyecto
+        const nombreField = document.getElementById('shared_nombre');
+        if (nombreField) {
+          const proyectoHandler = function() {
+            const proyectoSeleccionado = this.value;
+            
+            if (!proyectoSeleccionado) return;
+            
+            // Sincronizar al campo oculto
+            const nombreOculto = document.getElementById('nombre');
+            if (nombreOculto) {
+              nombreOculto.value = proyectoSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de banco
+            setTimeout(() => {
+              if (typeof window.autoCompleteBanco === 'function') {
+                window.autoCompleteBanco();
+              }
+              
+              // Después del banco, actualizar contratos
+              setTimeout(() => {
+                if (typeof window.actualizarContratos === 'function') {
+                  window.actualizarContratos();
+                  
+                  // Sincronizar contratos del campo oculto al compartido
+                  setTimeout(() => {
+                    const contratoOculto = document.getElementById('contrato');
+                    const contratoCompartido = document.getElementById('shared_contrato');
+                    
+                    if (contratoOculto && contratoCompartido) {
+                      contratoCompartido.innerHTML = contratoOculto.innerHTML;
+                      contratoCompartido.disabled = false;
+                      contratoCompartido.classList.add("bg-green-50", "border-green-300");
+                    }
+                  }, 200);
+                }
+              }, 200);
+            }, 200);
+          };
+          
+          nombreField.removeEventListener('change', proyectoHandler);
+          nombreField.addEventListener('change', proyectoHandler);
+        }
         
-        camposRequeridos.forEach(campo => {
-          const elemento = document.getElementById(campo.id);
-          if (elemento) {
-            console.log(`✅ ${campo.nombre} encontrado en Transformadores`);
-          } else {
-            console.warn(`⚠️ ${campo.nombre} NO encontrado en Transformadores`);
-          }
-        });
-      }, 500);
+        // 2. Configurar autocompletado de regional cuando cambie el contrato
+        const contratoField = document.getElementById('shared_contrato');
+        if (contratoField) {
+          const contratoHandler = function() {
+            const contratoSeleccionado = this.value;
+            
+            if (!contratoSeleccionado) return;
+            
+            // Sincronizar al campo oculto
+            const contratoOculto = document.getElementById('contrato');
+            if (contratoOculto) {
+              contratoOculto.value = contratoSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de regional
+            setTimeout(() => {
+              if (typeof window.autoCompleteRegional === 'function') {
+                window.autoCompleteRegional();
+              }
+            }, 200);
+          };
+          
+          contratoField.removeEventListener('change', contratoHandler);
+          contratoField.addEventListener('change', contratoHandler);
+        }
+        
+        // 3. Configurar autocompletado de departamento cuando cambie municipio
+        const municipioField = document.getElementById('shared_municipio');
+        if (municipioField) {
+          const municipioHandler = function() {
+            const municipioSeleccionado = this.value;
+            
+            // Sincronizar al campo oculto
+            const municipioOculto = document.getElementById('municipio');
+            if (municipioOculto) {
+              municipioOculto.value = municipioSeleccionado;
+            }
+            
+            // Ejecutar autocompletado de departamento
+            setTimeout(() => {
+              if (typeof window.autoCompleteDepartamento === 'function') {
+                window.autoCompleteDepartamento();
+              }
+              
+              // Ejecutar autocompletado de circuitos
+              setTimeout(() => {
+                if (typeof window.actualizarCircuitos === 'function') {
+                  window.actualizarCircuitos();
+                }
+              }, 200);
+            }, 200);
+          };
+          
+          municipioField.removeEventListener('change', municipioHandler);
+          municipioField.addEventListener('change', municipioHandler);
+        }
+      }
       
-      console.log('✅ Transformadores configurados correctamente con sistema unificado');
+      // Iniciar configuraciones
+      esperarSharedFieldsManager();
     });
   </script>
 {% endblock %}

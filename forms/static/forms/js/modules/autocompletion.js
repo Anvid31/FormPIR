@@ -55,18 +55,8 @@ function initializeDisabledFields() {
 
 // Auto-completar UC - Sistema simplificado usando selector UC jerárquico
 function autoCompleteUC() {
-  console.log("⚠️ autoCompleteUC() llamado - Los campos individuales fueron eliminados");
-  console.log("✅ El selector UC jerárquico maneja automáticamente la generación de códigos UC");
-  
-  // Los campos individuales ya no existen:
-  // - material_nueva, altura_nueva, poblacion_nueva, disposicion_nueva
-  // - tipo_red_nueva, apoyo_nueva, peso_nueva, configuracion_nueva
-  // - circuito_nueva, linea_nueva
-  
-  // Solo verificar si existe el campo UC para log
   const ucField = findElementInCurrentSection("uc") || findElementInCurrentSection("uc_nueva");
   if (ucField) {
-    console.log(`📍 Campo UC encontrado: ${ucField.id} con valor: ${ucField.value}`);
   }
   
   return; // Salir temprano - el selector jerárquico maneja todo
@@ -74,21 +64,12 @@ function autoCompleteUC() {
 
 // Función simplificada - Los campos individuales fueron eliminados
 function toggleStructureFields() {
-  console.log("⚠️ toggleStructureFields() llamado - Campos individuales eliminados");
-  console.log("✅ El selector UC jerárquico maneja automáticamente todas las opciones");
-  
-  // Los grupos de campos individuales ya no existen:
-  // - peso_group, configuracion_group, circuito_group, linea_group
-  // - poblacion_group, tipo_red_group
-  // - Campos: apoyo_nueva, material_nueva, altura_nueva, etc.
-  
+
   return; // Salir temprano - el selector jerárquico maneja todo
 }
 
 // Función para mostrar/ocultar campos SIN ejecutar autocompletado automático - SIMPLIFICADA
 function toggleStructureFieldsWithoutAutoComplete() {
-  // console.log("⚠️ toggleStructureFieldsWithoutAutoComplete() llamado - Campos individuales eliminados");
-  // console.log("✅ El selector UC jerárquico maneja automáticamente todas las opciones");
   
   // Los campos individuales ya no existen, no hay nada que ocultar/mostrar
   return; // Salir temprano - el selector jerárquico maneja todo
@@ -96,8 +77,6 @@ function toggleStructureFieldsWithoutAutoComplete() {
 
 // Función simplificada - Los campos individuales de apoyo fueron eliminados
 function updateApoyoOptions(allowedOptions = null) {
-  // console.log("⚠️ updateApoyoOptions() llamado - Campo apoyo_nueva eliminado");
-  // console.log("✅ El selector UC jerárquico maneja automáticamente las opciones de apoyo");
   
   // El campo apoyo_nueva ya no existe
   return; // Salir temprano - el selector jerárquico maneja todo
@@ -156,7 +135,6 @@ function actualizarContratos() {
   const contratoSelect = document.getElementById("contrato") || findElementInCurrentSection("contrato");
   
   if (!nombreField || !contratoSelect) {
-    console.log("No se encontraron elementos nombre o contrato");
     return;
   }
   
@@ -243,7 +221,6 @@ function autoCompleteBanco() {
   const bancoProyecto = document.getElementById("banco_proyecto") || findElementInCurrentSection("banco_proyecto");
   
   if (!nombreField || !bancoProyecto) {
-    console.log("No se encontraron elementos nombre o banco_proyecto");
     return;
   }
 
@@ -257,7 +234,6 @@ function autoCompleteBanco() {
     bancoProyecto.disabled = true;
     bancoProyecto.classList.add("bg-green-50", "border-green-300", "text-gray-700");
     
-    console.log("Banco autocompletado:", banco);
   } else {
     bancoProyecto.value = "";
     bancoProyecto.classList.remove("bg-green-50", "border-green-300");
@@ -278,7 +254,6 @@ function autoCompleteRegional() {
   const contratoSeleccionado = contratoField.value;
   const nombreProyecto = nombreField.value;
 
-  console.log("AutoCompleteRegional - Contrato seleccionado:", contratoSeleccionado);
 
   if (contratoSeleccionado && contratoSeleccionado !== "Por definir") {
     // Buscar la regional del contrato seleccionado
@@ -300,14 +275,12 @@ function autoCompleteRegional() {
       regionalInput.disabled = true; // Solo lectura, autocompletado
       regionalInput.classList.add("bg-green-50", "border-green-300");
       regionalInput.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-      console.log(`Regional autocompletada para contrato ${contratoSeleccionado}:`, regionalDelContrato);
     } else {
       // Limpiar y deshabilitar regional si no se encuentra
       regionalInput.value = "";
       regionalInput.disabled = true;
       regionalInput.classList.remove("bg-green-50", "border-green-300");
       regionalInput.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-      console.log("No se encontró regional para contrato:", contratoSeleccionado);
     }
   } else {
     // Limpiar y deshabilitar regional si no hay contrato válido
@@ -332,10 +305,8 @@ function actualizarMunicipiosPorContrato() {
   const contratoSeleccionado = contratoField.value;
   const nombreProyecto = nombreField.value;
 
-  console.log(
-    "ActualizarMunicipiosPorContrato - Contrato seleccionado:",
-    contratoSeleccionado
-  );
+  // Log para depuración
+  console.log("ActualizarMunicipiosPorContrato - Contrato seleccionado:", contratoSeleccionado);
 
   // Limpiar opciones existentes (excepto la primera)
   municipioSelect.innerHTML =
@@ -355,7 +326,6 @@ function actualizarMunicipiosPorContrato() {
       }
     }
 
-    console.log("Regional del contrato:", regionalDelContrato);
 
     if (regionalDelContrato && typeof MUNICIPIO_MAPPING !== 'undefined') {
       // Filtrar municipios por la regional del contrato
@@ -388,14 +358,10 @@ function actualizarMunicipiosPorContrato() {
           municipioSelect.appendChild(option);
         });
 
-        // Agregar indicador visual
-        municipioSelect.classList.add("bg-blue-50", "border-blue-300");
-
-        console.log(
-          `Municipios filtrados para la regional ${regionalDelContrato}:`,
-          municipiosFiltrados.length,
-          "opciones disponibles"
-        );
+  // Agregar indicador visual
+  municipioSelect.classList.add("bg-blue-50", "border-blue-300");
+  // Log para depuración
+  console.log(`Municipios filtrados para la regional ${regionalDelContrato}:`, municipiosFiltrados.length, "opciones disponibles");
       } else {
         // No hay municipios para esta regional
         const option = document.createElement("option");
@@ -404,10 +370,9 @@ function actualizarMunicipiosPorContrato() {
         option.disabled = true;
         municipioSelect.appendChild(option);
 
-        municipioSelect.classList.add("bg-red-50", "border-red-300");
-        console.log(
-          `No se encontraron municipios para la regional ${regionalDelContrato}`
-        );
+  municipioSelect.classList.add("bg-red-50", "border-red-300");
+  // Log para depuración
+  console.log(`No se encontraron municipios para la regional ${regionalDelContrato}`);
       }
     } else {
       // Si no hay regional específica, mostrar todos los municipios
@@ -427,10 +392,8 @@ function actualizarMunicipiosPorContrato() {
         "bg-red-50",
         "border-red-300"
       );
-
-      console.log(
-        "Mostrando todos los municipios (sin filtro de regional)"
-      );
+      // Log para depuración
+      console.log("Mostrando todos los municipios (sin filtro de regional)");
     }
   } else {
     // Si el contrato es "Por definir" o no hay contrato, mostrar todos los municipios
@@ -450,10 +413,8 @@ function actualizarMunicipiosPorContrato() {
       "bg-red-50",
       "border-red-300"
     );
-
-    console.log(
-      "Mostrando todos los municipios (contrato 'Por definir' o no seleccionado)"
-    );
+    // Log para depuración
+    console.log("Mostrando todos los municipios (contrato 'Por definir' o no seleccionado)");
   }
 
   // Limpiar selects dependientes
@@ -465,70 +426,14 @@ function actualizarMunicipiosPorContrato() {
 }
 
 // Función para actualizar circuitos según municipio seleccionado
+// DESACTIVADA - Redirigida al CircuitoMasterHandler para evitar conflictos
 function actualizarCircuitos() {
-  const municipioField = findElementInCurrentSection("municipio");
-  const alimentadorSelect = findElementInCurrentSection("alimentador");
-  
-  if (!municipioField || !alimentadorSelect) return;
-  
-  const municipioSeleccionado = municipioField.value;
-
-  console.log(
-    "ActualizarCircuitos - Municipio seleccionado:",
-    municipioSeleccionado
-  );
-
-  // Limpiar opciones existentes (excepto la primera)
-  alimentadorSelect.innerHTML = '<option value="">Seleccionar</option>';
-
-  if (
-    municipioSeleccionado &&
-    typeof MUNICIPIO_CIRCUITO_MAPPING !== 'undefined' &&
-    MUNICIPIO_CIRCUITO_MAPPING[municipioSeleccionado]
-  ) {
-    const circuitos = MUNICIPIO_CIRCUITO_MAPPING[municipioSeleccionado];
-
-    // Habilitar el select y agregar opciones de circuitos ordenadas
-    alimentadorSelect.disabled = false;
-    alimentadorSelect.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-    
-    circuitos.sort().forEach((circuito) => {
-      const option = document.createElement("option");
-      option.value = circuito;
-      option.textContent = circuito;
-      alimentadorSelect.appendChild(option);
-    });
-
-    // Agregar indicador visual
-    alimentadorSelect.classList.add("bg-green-50", "border-green-300");
-
-    console.log(
-      `Circuitos actualizados para ${municipioSeleccionado}:`,
-      circuitos.length,
-      "opciones disponibles"
-    );
+  console.warn('⚠️ actualizarCircuitos() redirigido al CircuitoMasterHandler');
+  if (window.circuitoMasterHandler) {
+    return window.circuitoMasterHandler.forceUpdate();
   } else {
-    // Deshabilitar y limpiar si no hay circuitos
-    alimentadorSelect.disabled = true;
-    alimentadorSelect.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
-    alimentadorSelect.classList.remove("bg-green-50", "border-green-300");
-
-    if (municipioSeleccionado) {
-      console.log(
-        "No se encontraron circuitos para municipio:",
-        municipioSeleccionado
-      );
-
-      // Agregar mensaje informativo
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No hay circuitos disponibles";
-      option.disabled = true;
-      alimentadorSelect.appendChild(option);
-    } else {
-      // Si no hay municipio seleccionado, deshabilitar completamente
-      console.log("Sin municipio seleccionado - Circuitos deshabilitados");
-    }
+    console.error('❌ CircuitoMasterHandler no disponible');
+    return false;
   }
 }
 
@@ -542,7 +447,6 @@ function autoCompleteDepartamento() {
   
   const municipioSeleccionado = municipioField.value;
 
-  console.log("AutoCompleteDepartamento - Municipio seleccionado:", municipioSeleccionado);
 
   if (
     municipioSeleccionado &&
@@ -563,18 +467,9 @@ function autoCompleteDepartamento() {
     regionalInput.classList.add("bg-green-50", "border-green-300");
     regionalInput.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed");
 
-    console.log(
-      "Departamento autocompletado:",
-      municipioSeleccionado,
-      "->",
-      datos.departamento
-    );
-    console.log(
-      "Regional autocompletada:",
-      municipioSeleccionado,
-      "->",
-      datos.regional
-    );
+  // Log para depuración
+  console.log("Departamento autocompletado:", municipioSeleccionado, "->", datos.departamento);
+  console.log("Regional autocompletada:", municipioSeleccionado, "->", datos.regional);
   } else {
     // Limpiar y deshabilitar departamento y regional si no hay mapeo
     departamentoInput.value = "";
@@ -587,9 +482,7 @@ function autoCompleteDepartamento() {
     regionalInput.classList.remove("bg-green-50", "border-green-300");
     regionalInput.classList.add("bg-gray-100", "text-gray-500", "cursor-not-allowed");
 
-    if (municipioSeleccionado) {
-      console.log("No se encontró mapeo para municipio:", municipioSeleccionado);
-    }
+  // No hacer nada si municipioSeleccionado pero no hay mapeo
   }
 
   // Actualizar circuitos después del municipio
@@ -604,8 +497,6 @@ function autoCompleteMunicipio() {
 
 // Función simplificada - Campo altura_nueva eliminado
 function actualizarAlturasPorTension() {
-  console.log("⚠️ actualizarAlturasPorTension() llamado - Campo altura_nueva eliminado");
-  console.log("✅ El selector UC jerárquico maneja automáticamente las alturas");
   
   // El campo altura_nueva ya no existe
   return; // Salir temprano - el selector jerárquico maneja todo
@@ -679,7 +570,6 @@ function deshabilitarSeccionInformacionProyecto(deshabilitar) {
     }
   });
   
-  console.log(`📋 Información del Proyecto: ${deshabilitar ? 'DESHABILITADA' : 'HABILITADA'}`);
 }
 
 /**
@@ -712,7 +602,6 @@ function deshabilitarSeccionDocumentosArchivos(deshabilitar) {
     }
   });
   
-  console.log(`📁 Documentos y Archivos: ${deshabilitar ? 'DESHABILITADA' : 'HABILITADA'}`);
 }
 
 /**
@@ -743,7 +632,6 @@ function deshabilitarSeccionInformacionTecnica(deshabilitar) {
     }
   });
   
-  console.log(`⚙️ Información Técnica: ${deshabilitar ? 'DESHABILITADA (excepto estructura retirada)' : 'HABILITADA'}`);
 }
 
 /**
@@ -758,18 +646,15 @@ function deshabilitarSeccionInformacionEstructuras(deshabilitar) {
   
   // Buscar TODOS los campos en la sección
   const campos = seccion.querySelectorAll('input, select, textarea, button, .uc-card, .btn, .form-control');
-  console.log(`🏗️ Encontrados ${campos.length} campos en Información de Estructuras`);
   
   campos.forEach(campo => {
     // NO deshabilitar estructura retirada (aunque esté en esta sección)
     if (campo.id === 'estructura_retirada_campo') {
-      console.log('✅ Manteniendo estructura_retirada_campo habilitado');
       return;
     }
     
     // NO deshabilitar el checkbox de desmantelado (aunque esté en esta sección)
     if (campo.id === 'desmantelado_checkbox') {
-      console.log('✅ Manteniendo desmantelado_checkbox habilitado');
       return;
     }
     
@@ -784,7 +669,6 @@ function deshabilitarSeccionInformacionEstructuras(deshabilitar) {
       campo.style.pointerEvents = '';
     }
     
-    console.log(`${deshabilitar ? '🔒' : '🔓'} Campo ${campo.id || campo.name || campo.className || 'sin-id'}`);
   });
   
   // También buscar y deshabilitar las tarjetas UC (Unidad Constructiva)
@@ -832,7 +716,6 @@ function deshabilitarSeccionInformacionEstructuras(deshabilitar) {
     }
   }
   
-  console.log(`🏗️ Información de Estructuras: ${deshabilitar ? 'DESHABILITADA COMPLETAMENTE' : 'HABILITADA'}`);
 }
 
 /**
@@ -885,7 +768,6 @@ function habilitarDeshabilitarCoordenadas(deshabilitar, seccionPrefix = '') {
     }
   });
   
-  console.log(`Coordenadas ${deshabilitar ? 'deshabilitadas' : 'habilitadas'} ${seccionPrefix ? 'para sección ' + seccionPrefix : ''}`);
 }
 
 /**
@@ -914,7 +796,6 @@ function deshabilitarInformacionEstructuras(deshabilitar, seccionPrefix = '') {
       }
     });
     
-    console.log(`Información de estructuras ${deshabilitar ? 'deshabilitada' : 'habilitada'} ${seccionPrefix ? 'para sección ' + seccionPrefix : ''}`);
   }
 }
 
@@ -943,7 +824,6 @@ function deshabilitarInformacionTecnica(deshabilitar, seccionPrefix = '') {
       }
     });
     
-    console.log(`Información técnica ${deshabilitar ? 'deshabilitada' : 'habilitada'} ${seccionPrefix ? 'para sección ' + seccionPrefix : ''}`);
   }
 }
 
@@ -968,7 +848,6 @@ function deshabilitarFormularioUC(deshabilitar) {
       }
     });
     
-    console.log(`Formulario UC ${deshabilitar ? 'deshabilitado' : 'habilitado'}`);
   }
 }
 
@@ -1031,7 +910,6 @@ function configurarListenersGlobales() {
     
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
-      console.log("🚀 Ejecutando autoComplete UC con debounce...");
       autoCompleteUC();
     }, 300); // 300ms de delay
   };
@@ -1051,7 +929,6 @@ function configurarListenersGlobales() {
       elemento.addEventListener("input", debouncedAutoComplete);
       elemento.addEventListener("blur", debouncedAutoComplete); // También al perder foco
       
-      console.log(`✅ Event listeners (change+input+blur) agregados para ${campoId} (global)`);
     }
     
     // También configurar en secciones dinámicas
@@ -1065,7 +942,6 @@ function configurarListenersGlobales() {
           elementoSeccion.addEventListener("change", debouncedAutoComplete);
           elementoSeccion.addEventListener("input", debouncedAutoComplete);
           elementoSeccion.addEventListener("blur", debouncedAutoComplete);
-          console.log(`✅ Event listeners dinámicos agregados para ${campoId} (sección)`);
         }
       }, 500);
     });
@@ -1078,18 +954,14 @@ function configurarListenersGlobales() {
       nivelTension.removeEventListener("change", handleNivelTensionChange);
       nivelTension.addEventListener("change", function() {
         markUserInteraction(); // Marcar interacción
-        console.log("🔧 Nivel de tensión cambiado:", this.value);
         updateApoyoOptions();
         toggleStructureFields();
         debouncedAutoComplete();
       });
-      console.log("✅ Event listener para nivel_tension configurado");
     }
   };
   
   const configurarApoyo = () => {
-    // console.log("⚠️ configurarApoyo() llamado - Campo apoyo_nueva eliminado");
-    // console.log("✅ El selector UC jerárquico maneja automáticamente el apoyo");
     // El campo apoyo_nueva ya no existe
   };
 
@@ -1114,7 +986,6 @@ function configurarListenersGlobales() {
 
 // Función global para configurar autocompletados en cualquier sección
 function configurarAutocompletadosGlobales() {
-  console.log("Configurando autocompletados globales...");
   
   // Buscar elementos con búsqueda híbrida
   const nombreField = document.getElementById("nombre") || findElementInCurrentSection("nombre");
@@ -1138,7 +1009,6 @@ function configurarAutocompletadosGlobales() {
     nombreField.addEventListener('change', autoCompleteBanco);
     nombreField.addEventListener('change', actualizarContratos);
     */
-    // console.log("⚠️ Listeners de campo nombre delegados a autocompletion-estructuras.js");
   }
 
   if (contratoField) {
@@ -1151,7 +1021,6 @@ function configurarAutocompletadosGlobales() {
     contratoField.addEventListener('change', handleContratoChange);
     contratoField.addEventListener('change', autoCompleteRegional);
     contratoField.addEventListener('change', actualizarMunicipiosPorContrato);
-    console.log("Event listeners configurados para campo contrato");
   }
 
   if (municipioField) {
@@ -1162,7 +1031,6 @@ function configurarAutocompletadosGlobales() {
     // Agregar nuevos listeners
     municipioField.addEventListener('change', autoCompleteDepartamento);
     municipioField.addEventListener('change', actualizarCircuitos);
-    console.log("Event listeners configurados para campo municipio");
   }
 
   // Configurar listeners para campos específicos de estructuras
@@ -1179,7 +1047,6 @@ function handleContratoChange() {
 function configurarListenersEstructuras() {
   // Ya no necesitamos configurar campos de estructura individuales
   // El selector UC jerárquico maneja toda la configuración automáticamente
-  // console.log("⚠️ Campos de estructura eliminados - usando selector UC jerárquico");
   
   // Los campos individuales ya no existen, solo comentamos para referencia
   // const camposEstructura = [
@@ -1188,20 +1055,17 @@ function configurarListenersEstructuras() {
   //   "circuito_nueva", "linea_nueva"
   // ];
 
-  console.log("✅ Configuración de listeners para estructura completada (selector UC jerárquico activo)");
   return; // Salir temprano ya que no hay campos que configurar
 }
 
 // Funciones auxiliares simplificadas - Los campos individuales fueron eliminados
 function handleNivelTensionChange() {
-  console.log("⚠️ handleNivelTensionChange() llamado - Campos eliminados");
   // updateApoyoOptions(); // Campo apoyo_nueva eliminado
   // toggleStructureFields(); // Campos individuales eliminados
   // autoCompleteUC(); // Función simplificada
 }
 
 function handleApoyoChange() {
-  console.log("⚠️ handleApoyoChange() llamado - Campo apoyo_nueva eliminado");
   // toggleStructureFields(); // Campos individuales eliminados
   // autoCompleteUC(); // Función simplificada
 }
@@ -1229,7 +1093,6 @@ function inicializarAutocompletadosEnSeccion(seccionActual = null) {
     toggleStructureFields();
   }
   
-  console.log("Autocompletados inicializados para sección:", currentSection);
 }
 
 // Función de diagnóstico para debugging
@@ -1246,7 +1109,6 @@ function diagnosticarAutocompletado() {
     if (elemento) encontrados++;
   });
   
-  console.log(`� Diagnóstico: ${encontrados}/${campos.length} campos encontrados`);
   
   // Intentar autocompletado
   autoCompleteUC();
@@ -1281,7 +1143,6 @@ function validarDatosUsuario() {
     }
   });
   
-  console.log(`📊 Validación de datos del usuario: ${camposConDatos} campos con datos`, estadoCampos);
   return { camposConDatos, estadoCampos };
 }
 
@@ -1295,7 +1156,6 @@ window.testAutoCompleteUC = function() {
   if (validacion.camposConDatos >= 3) {
     autoCompleteUC();
   } else {
-    console.log("⚠️ Insuficientes datos. Completa al menos 3 campos básicos (apoyo, material, altura)");
   }
 };
 
@@ -1315,7 +1175,6 @@ if (window.SistemaTiposInversion?.estado?.desmanteladoActivo) {
         estructuraRetirada.readOnly = false;
         estructuraRetirada.classList.remove("bg-gray-100", "text-gray-500", "cursor-not-allowed", "opacity-50");
         estructuraRetirada.classList.add("bg-yellow-50", "border-yellow-300", "font-semibold");
-        console.log('🔧 Re-habilitando estructura retirada automáticamente');
     }
 }
   }, 1000);
@@ -1332,7 +1191,6 @@ document.addEventListener('click', function(e) {
       if (estructuraRetirada.disabled || estructuraRetirada.readOnly) {
         estructuraRetirada.disabled = false;
         estructuraRetirada.readOnly = false;
-        console.log('🔧 Re-habilitando estructura retirada por click');
       }
       
       // Si clickean fuera del campo estructura retirada y del checkbox desmantelado,

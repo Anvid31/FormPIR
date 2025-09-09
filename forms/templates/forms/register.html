@@ -448,7 +448,6 @@
                 field.removeAttribute('disabled');
                 field.setAttribute('autocomplete', 'off');
                 
-                console.log('Campo configurado:', {
                     name: field.name,
                     type: field.type,
                     display: field.style.display,
@@ -528,7 +527,6 @@
             setTimeout(() => {
                 if (formFields.length > 0) {
                     formFields[0].focus();
-                    console.log('Focus aplicado al primer campo');
                 }
             }, 100);
             
@@ -547,10 +545,7 @@
             
             // Debug final
             setTimeout(() => {
-                console.log('=== DEBUG CAMPOS REGISTRO ===');
-                console.log('Campos de formulario encontrados:', formFields.length);
                 formFields.forEach((field, index) => {
-                    console.log(`Campo ${index}:`, {
                         name: field.name,
                         type: field.type,
                         id: field.id,

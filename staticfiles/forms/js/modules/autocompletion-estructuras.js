@@ -191,6 +191,10 @@
     
     // Función de inicialización automática
     function initAutocompletionEstructuras() {
+        // DESACTIVADO - CircuitoMasterHandler maneja los circuitos
+        console.warn('⚠️ AutocompletionEstructuras DESACTIVADO - Usando CircuitoMasterHandler');
+        return;
+        
         // Solo inicializar si estamos en la sección de estructuras
         if (window.CURRENT_SECTION === 'estructuras' || 
             document.querySelector('[data-form-section="estructuras"]')) {

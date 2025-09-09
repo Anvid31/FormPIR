@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Sincronización - FormPIR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .syncing {
+            border: 2px solid #10b981 !important;
+            background-color: #d1fae5 !important;
+            transition: all 0.3s ease;
+        }
+        
+        .campo-sincronizado {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6 text-center">🧪 Prueba de Sincronización FormPIR</h1>
+        
+        <!-- Sección 1: Estructuras -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">📊 Sección: Estructuras</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Nombre del Proyecto</label>
+                    <select id="shared_nombre" class="shared-field w-full p-2 border rounded" data-sync-field="nombre">
+                        <option value="">Seleccionar proyecto</option>
+                        <option value="Expansión redes de distribución CENS">Expansión redes de distribución CENS</option>
+                        <option value="Refuerzo y normalización redes MT y BT CENS">Refuerzo y normalización redes MT y BT CENS</option>
+                    </select>
+                    <input type="hidden" id="nombre" name="nombre">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Banco del Proyecto</label>
+                    <input type="text" id="shared_banco_proyecto" class="shared-field w-full p-2 border rounded bg-gray-50" data-sync-field="banco_proyecto" readonly>
+                    <input type="hidden" id="banco_proyecto" name="banco_proyecto">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Contrato</label>
+                    <select id="shared_contrato" class="shared-field w-full p-2 border rounded bg-gray-50" data-sync-field="contrato" disabled>
+                        <option value="">Seleccionar contrato</option>
+                    </select>
+                    <input type="hidden" id="contrato" name="contrato">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección 2: Conductores (Simulada) -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-green-600">⚡ Sección: Conductores</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Nombre del Proyecto (Conductores)</label>
+                    <input type="text" class="shared-field w-full p-2 border rounded" data-sync-field="nombre" readonly>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Banco del Proyecto (Conductores)</label>
+                    <input type="text" class="shared-field w-full p-2 border rounded" data-sync-field="banco_proyecto" readonly>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Contrato (Conductores)</label>
+                    <input type="text" class="shared-field w-full p-2 border rounded" data-sync-field="contrato" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones de Prueba -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-purple-600">🔧 Controles de Prueba</h2>
+            <div class="flex flex-wrap gap-4">
+                <button onclick="probarSincronizacion()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    🧪 Probar Sincronización
+                </button>
+                
+                <button onclick="diagnosticarCampos()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    🔍 Diagnosticar Campos
+                </button>
+                
+                <button onclick="limpiarDatos()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    🧹 Limpiar Datos
+                </button>
+                
+                <button onclick="simularCambioSeccion()" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                    🔄 Simular Cambio de Sección
+                </button>
+            </div>
+        </div>
+        
+        <!-- Logs -->
+        <div class="bg-gray-900 text-green-400 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">📋 Logs del Sistema</h3>
+            <div id="logs" class="font-mono text-sm max-h-64 overflow-y-auto">
+                <div>Sistema de prueba iniciado...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Datos de prueba simulados -->
+    <script>
+        // Simular PROYECTO_COMPLETO_MAPPING
+        window.PROYECTO_COMPLETO_MAPPING = {
+            "Expansión redes de distribución CENS": {
+                "banco": "BID",
+                "contratos": [
+                    {
+                        "codigo": "4600010052",
+                        "contratista": "CONSEIN S.A.S",
+                        "regional": "CESAR"
+                    },
+                    {
+                        "codigo": "4600010053", 
+                        "contratista": "ENERGIA Y CONSTRUCCIONES S.A.S",
+                        "regional": "ATLANTICO"
+                    }
+                ]
+            },
+            "Refuerzo y normalización redes MT y BT CENS": {
+                "banco": "FINDETER",
+                "contratos": [
+                    {
+                        "codigo": "4600010054",
+                        "contratista": "TECNIOBRAS S.A.S",
+                        "regional": "BOLIVAR"
+                    }
+                ]
+            }
+        };
+        
+        // Simular funciones de autocompletado
+        window.autoCompleteBanco = function() {
+            const nombre = document.getElementById('nombre').value;
+            const mapping = window.PROYECTO_COMPLETO_MAPPING[nombre];
+            if (mapping) {
+                document.getElementById('banco_proyecto').value = mapping.banco;
+                addLog(`✅ Banco autocompletado: ${mapping.banco}`);
+            }
+        };
+        
+        // Funciones de prueba
+        function addLog(message) {
+            const logs = document.getElementById('logs');
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function probarSincronizacion() {
+            addLog('🧪 Iniciando prueba de sincronización...');
+            
+            // Simular selección de proyecto
+            const nombreField = document.getElementById('shared_nombre');
+            nombreField.value = 'Expansión redes de distribución CENS';
+            nombreField.dispatchEvent(new Event('change', { bubbles: true }));
+            
+            setTimeout(() => {
+                addLog('📊 Verificando estado de campos...');
+                diagnosticarCampos();
+            }, 1000);
+        }
+        
+        function diagnosticarCampos() {
+            if (window.sharedFieldsManager) {
+                window.sharedFieldsManager.diagnosticar();
+                addLog('🔍 Diagnóstico completado - Revisar consola del navegador');
+            } else {
+                addLog('❌ SharedFieldsManager no está disponible');
+            }
+        }
+        
+        function limpiarDatos() {
+            if (window.sharedFieldsManager) {
+                window.sharedFieldsManager.clearSharedData();
+                addLog('🧹 Datos compartidos limpiados');
+            } else {
+                addLog('❌ SharedFieldsManager no está disponible');
+            }
+        }
+        
+        function simularCambioSeccion() {
+            addLog('🔄 Simulando cambio de sección...');
+            
+            // Disparar evento de cambio de sección
+            document.dispatchEvent(new Event('sectionChanged'));
+            
+            setTimeout(() => {
+                addLog('✅ Cambio de sección simulado - Datos aplicados');
+            }, 500);
+        }
+        
+        // Inicializar cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('🚀 Sistema de prueba inicializado');
+            
+            setTimeout(() => {
+                if (window.sharedFieldsManager) {
+                    addLog('✅ SharedFieldsManager detectado');
+                } else {
+                    addLog('❌ SharedFieldsManager NO detectado');
+                }
+            }, 2000);
+        });
+    </script>
+    
+    <!-- Cargar el sistema corregido -->
+    <script src="shared-fields.js"></script>
+</body>
+</html>

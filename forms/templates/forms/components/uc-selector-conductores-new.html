@@ -80,7 +80,6 @@
         typeof window.UC_HIERARCHICAL_STRUCTURE !== "undefined";
 
       if (!scriptsListos && intentos < maxIntentos) {
-        console.log(
           `⏳ Conductor - Intento ${intentos}: Esperando scripts UC...`
         );
         setTimeout(initializeUCConductorSelector, 100);
@@ -97,7 +96,6 @@
         console.error(
           "❌ Categoría N1C no encontrada en UC_HIERARCHICAL_STRUCTURE"
         );
-        console.log(
           "Categorías disponibles:",
           Object.keys(window.UC_HIERARCHICAL_STRUCTURE)
         );
@@ -114,14 +112,12 @@
         return;
       }
 
-      console.log('🎯 Creando selector UC Conductor con filtro: ["N1C"]');
 
       // Crear el selector jerárquico específico para conductores
       const selector = new UCHierarchicalSelector(
         "uc-selector-conductores-container",
         {
           onComplete: (result) => {
-            console.log("✅ Conductor - Selección completada:", result);
             handleUCConductorSelection(result);
           },
           categoryFilter: ["N1C"], // Solo conductores
@@ -129,7 +125,6 @@
       );
 
       window.ucConductorSelector = selector;
-      console.log("✅ Selector UC Conductor inicializado correctamente");
     }
 
     function handleUCConductorSelection(result) {
@@ -148,14 +143,12 @@
         .getElementById("uc-conductor-preview")
         .classList.remove("hidden");
 
-      console.log("✅ UC Conductor actualizado:", { code, description });
 
       // Autocompletar campos si es posible
       autocompletarCamposConductor(result.selections || {});
     }
 
     function autocompletarCamposConductor(selections) {
-      console.log("🔄 Autocompletando campos de conductor:", selections);
 
       // Autocompletar campos basándose en las selecciones
       if (selections.calibre) {
@@ -164,7 +157,6 @@
         );
         if (calibreField) {
           calibreField.value = selections.calibre;
-          console.log("✅ Campo calibre autocompletado:", selections.calibre);
         }
       }
 
@@ -174,7 +166,6 @@
         );
         if (materialField) {
           materialField.value = selections.tipo_conductor;
-          console.log(
             "✅ Campo material conductor autocompletado:",
             selections.tipo_conductor
           );
@@ -185,13 +176,11 @@
         const tipoRedField = document.querySelector('select[name="tipo_red"]');
         if (tipoRedField) {
           tipoRedField.value = selections.tipo_red;
-          console.log("✅ Campo tipo red autocompletado:", selections.tipo_red);
         }
       }
     }
 
     window.clearUCConductorSelection = function () {
-      console.log("🔄 Limpiando selección UC Conductor...");
 
       document.getElementById("uc_conductor").value = "";
       document.getElementById("descripcion_uc_conductor").value = "";
@@ -201,7 +190,6 @@
         window.ucConductorSelector.reset();
       }
 
-      console.log("✅ Selección UC Conductor limpiada");
     };
 
     initializeUCConductorSelector();
